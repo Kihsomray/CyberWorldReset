@@ -1,0 +1,58 @@
+messages:
+  prefix: '&a&lCyber&f&lWorldReset &8»&r'
+  no-permission: '&cYou don''t have permission to do that!'
+  help-player:
+    - '&8&m―――――&8<&a&l Cyber&f&lWorldReset &8>&8&m―――――'
+    - '&8➼ &a/cwr about &fAbout the plugin.'
+    - '&8➼ &a/cwr help &fSee the help menu.'
+    - '&8&m―――――――――――――――――――――――――――――――――'
+  help-admin:
+    - '&8&m―――――&8<&a&l Cyber&f&lWorldReset &8>&8&m―――――'
+    - '&8➼ &a/cwr about &fAbout the plugin.'
+    - '&8➼ &a/cwr help &fSee the help menu.'
+    - '&8➼ &a/cwr reload &fReload the plugin.'
+    - '&8&m―――――――――――――――――――――――――――――――――'
+
+  # global
+  kick-reason: '&cThe world "{world}" is regenerating! Please join back momentarily.'
+  still-regenerating: '&cA world is in the process of being reset. Please join back momentarily.'
+  cancel-teleport: '&cThe world "{world}" is regenerating! You cannot teleport there right now.'
+  teleporting-safe-world: '&7This world is resetting, teleporting you to the safe world...' # {world}, {safeWorld}
+  teleported-safe-world: '&aYou have been teleported to the safe world!' # {world}, {safeWorld}
+  teleporting-back: '&7Teleporting you back to world "{world}"...'
+  teleported-back: '&aYou have successfully been teleported back!'
+
+  # player
+
+
+  # admin
+  reloading: '&7Reloading...'
+  reloaded: '&aReloaded!'
+  default-world-fail: '&cThe world "{world}" is a default world (server.properties)! This world cannot be reset!'
+  unload-failed: '&cThe world "{world}" failed to unload!'
+
+  no-setups-found: '&cNo world setups found. Create one with &7/cwr create [<world>]&c.'
+  setup-doesnt-exist: '&cThe world setup "{world}" does not exist!'
+
+  saving-world: '&aAttempting to save the world "{world}".'
+  save-failed: '&cThe world "{world}" failed to save!'
+  save-success: '&aThe world "{world}" has been saved!'
+  regen-success: '&aThe world "{world}" has been successfully reset!'
+
+  file-delete-failed: '&cThe world "{world}" failed to delete!'
+
+  rolling-back-world: '&aAttempting to rollback the world "{world}".'
+  rollback-failed: '&cThe world "{world}" failed to roll back!'
+  rollback-success: '&aThe world "{world}" has been rolled back!'
+
+  confirm-regen: '&7Please confirm that you would like to regenerate "{world}" with &a/cwr confirm &7within {time}.'
+  confirmation-needed: '&cYou have already run this command. Please use &7/cwr confirm &cto regenerate!'
+  confirmation-expired: '&cConfirmation for regenerating "{world}" has expired!'
+  confirmation-not-required: '&cYou have nothing to confirm.'
+
+time:
+  days: '&a{time} Day(s)'
+  hours: '&a{time} Hour(s)'
+  minutes: '&a{time} Minute(s)'
+  seconds: '&a{time} Second(s)'
+  splitter: '&a, '

@@ -1,0 +1,51 @@
+config:
+
+  # should admins be forced to confirm before resetting a world?
+  confirmation:
+    enabled: true
+    seconds: 15
+
+  # should the world save before resetting?
+  save-world-before-reset: false
+
+  # STANDARD - only loads in spawn chunks.
+  # Not recommended, drops TPS and lags players.
+
+  # ULTRA-SAFE - loads in 5x5 chunks, over a longer period of time. <-- COMING SOON
+  # Recommended for low-end CPUS or large amounts of players. <-- COMING SOON
+
+  # SAFE - loads in a 5x5 area of chunks at the tp location.
+  # Recommended for mid-range CPUs or medium amounts of players.
+
+  # FAST - force loads chunks when the player teleports there.
+  # Recommended for high-end CPUs or small amounts of players.
+  loading-type: SAFE
+
+  # radius of loading if SAFE or ULTRA-SAFE is enabled.
+  # A radius of 4 would load a 9 x 9 area.
+  loading-radius: 4
+
+  # After rebooting or timers resetting, what delay should there
+  # be until timers are initialized again?
+  timer-load-delay: 10 # TODO - Add start
+
+  # How many ticks after teleporting/kicking players should
+  # the world start to reset? At least 10 ticks is recommended.
+  world-reset-delay: 15
+
+  # Amount of seconds between teleportation of players back to the
+  # world. The higher the number, the less stress on the server.
+  # Highly recommended to enable if using random teleportation.
+  recursive-teleporting: # TODO - Add recursive teleporting
+    enabled: true
+    milliseconds: 150
+
+  # updates the config every time you update. Prior strings will
+  # remain the same! NOTE: disabling this will leave new settings
+  # as default and new lang string won't send.
+  auto-update-configs:
+    config: true
+    lang: true
+
+  # lang: 'en'
+  # en = english (default), es = español, ru = русский.

@@ -1,0 +1,18 @@
+name: CyberWorldReset
+version: ${project.version}
+main: net.zerotoil.cyberworldreset.CyberWorldReset
+api-version: 1.16
+softdepend: [ Multiverse-Core ]
+loadafter: [ Multiverse-Core ]
+authors: [ Kihsomray, CroaBeast ]
+description: Regenerate your world at an interval time
+website: zerotoil.net
+
+commands:
+  cwr:
+    aliases:
+      - cyberworldreset
+      - worldreset
+      - cworldreset
+      - cyberwr
+      - worldregen

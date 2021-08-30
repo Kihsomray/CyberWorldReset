@@ -1,0 +1,59 @@
+package net.zerotoil.cyberworldreset.utilities;
+
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.ExcludeFileFilter;
+import net.lingala.zip4j.model.ZipParameters;
+import net.zerotoil.cyberworldreset.CyberWorldReset;
+import org.bukkit.Bukkit;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+public class ZipUtils {
+
+    private CyberWorldReset main;
+
+    public ZipUtils(CyberWorldReset main) {
+        this.main = main;
+    }
+
+    public File getLastModified(String world) {
+        File directory = new File(main.getDataFolder(),"saved_worlds");
+        File[] files = directory.listFiles();
+        if (files == null || files.length == 0) {
+            return null;
+        }
+        File lastModifiedFile = files[0];
+        for (int i = 1; i < files.length; i++) {
+            if (lastModifiedFile.getName().startsWith(world) &&
+                    (lastModifiedFile.lastModified() < files[i].lastModified())) {
+                lastModifiedFile = files[i];
+            }
+        }
+        return lastModifiedFile;
+    }
+
+    public void zip(String world) throws IOException {
+        ArrayList<File> filesToExclude = new ArrayList<>();
+        String worldLocation = Bukkit.getWorldContainer() + File.separator + world;
+        filesToExclude.add(new File(worldLocation + File.separator + "session.lock"));
+        filesToExclude.add(new File(worldLocation + File.separator + "uid.dat"));
+        ExcludeFileFilter exclude = filesToExclude::contains;
+        ZipParameters zipParameters = new ZipParameters();
+        zipParameters.setExcludeFileFilter(exclude);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String date = world + "_save_" + dtf.format(now).replace(" ", "_")
+                .replace("/", "-").replace(":", "-");
+        ZipFile zipFile = new ZipFile(main.getDataFolder() + File.separator + "saved_worlds" + File.separator + date + ".zip");
+        zipFile.addFolder(new File(worldLocation), zipParameters);
+    }
+
+    public void unZip(String zipFileName) throws IOException {
+        new ZipFile(main.getDataFolder() + File.separator + "saved_worlds" + File.separator + zipFileName).extractAll(String.valueOf(Bukkit.getWorldContainer()));
+    }
+}
