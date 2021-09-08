@@ -5,6 +5,7 @@ import net.zerotoil.cyberworldreset.CyberWorldReset;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +40,10 @@ public class LangUtils {
         return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
-    private int getVersion() {
-        return Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]);
-    }
-
     // gets color of message
     public String getColor(String msg, boolean addPrefix){
         msg = addPrefix ? main.lang().getPrefix() + msg : msg;
-        return getVersion() < 16 ? oldColor(msg) : getHex(msg);
+        return main.getVersion() < 16 ? oldColor(msg) : getHex(msg);
     }
 
     // does player have a permission?
@@ -63,12 +60,12 @@ public class LangUtils {
         if (player == null) return true;
 
         if (player.hasPermission("CyberWorldReset.admin.help")) {
-            for (String i : main.lang().getAdminHelp()) player.sendMessage(i);
+            for (String i : main.lang().getAdminHelp()) player.sendMessage(getColor(i, false));
             return true;
         }
 
         if (player.hasPermission("CyberWorldReset.player.help")) {
-            for (String i : main.lang().getPlayerHelp()) player.sendMessage(i);
+            for (String i : main.lang().getPlayerHelp()) player.sendMessage(getColor(i, false));
             return true;
         }
 
@@ -102,6 +99,12 @@ public class LangUtils {
         list.add(config.getString(path));
         return list;
 
+    }
+
+    public boolean hasParentPerm(Player player, String permission) {
+        for (PermissionAttachmentInfo permissionNode : player.getEffectivePermissions())
+            if (permissionNode.getPermission().startsWith(permission)) return true;
+        return false;
     }
 
 

@@ -2,7 +2,6 @@ package net.zerotoil.cyberworldreset.cache;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.Message;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 
 import java.util.ArrayList;
@@ -20,6 +19,8 @@ public class Lang {
 
     private List<String> playerHelp = new ArrayList<>();
     private List<String> adminHelp = new ArrayList<>();
+
+    private List<String> infoHeaders = new ArrayList<>();
 
     private HashMap<String, Message> messages = new HashMap<>();
 
@@ -44,11 +45,12 @@ public class Lang {
     public void loadLang() {
 
         playerHelp = getHelpList("help-player");
-        adminHelp = getHelpList("admin-help");
+        adminHelp = getHelpList("help-admin");
+        infoHeaders = config.getStringList("messages.info-headers");
 
         if (!messages.isEmpty()) messages.clear();
         for (String i : config.getConfigurationSection("messages").getKeys(false)) {
-            if (i.matches("(?i)prefix|help-player|help-admin")) continue;
+            if (i.matches("(?i)prefix|help-player|help-admin|info-headers")) continue;
             messages.put(i, new Message(main, i));
         }
 
@@ -61,7 +63,7 @@ public class Lang {
     }
 
     private List<String> getHelpList(String path) {
-        if (config.isSet("messages." + path)) return config.getStringList("config." + path);
+        if (config.isSet("messages." + path)) return config.getStringList("messages." + path);
         return Collections.emptyList();
     }
 
@@ -91,6 +93,7 @@ public class Lang {
     public List<String> getAdminHelp() {
         return adminHelp;
     }
+    public List<String> getInfoHeaders() { return infoHeaders; }
     public HashMap<String, Message> getMessages() {
         return messages;
     }

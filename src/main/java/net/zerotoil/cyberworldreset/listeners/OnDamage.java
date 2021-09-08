@@ -1,6 +1,7 @@
 package net.zerotoil.cyberworldreset.listeners;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -17,12 +18,14 @@ public class OnDamage implements Listener {
 
     public OnDamage(CyberWorldReset main) {
         this.main = main;
+        Bukkit.getPluginManager().registerEvents(this, main);
         enabled = false;
     }
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        // fixes suffocation bug on 1.8
+        // fixes suffocation bug on 1.8/1.9
+        if (main.getVersion() > 9) return;
         if (!enabled) return;
         if (!(event.getEntity() instanceof Player)) return;
         if (event.getEntity().getWorld().getEnvironment() == World.Environment.NETHER) return; // fix for nether top

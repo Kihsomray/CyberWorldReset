@@ -131,7 +131,7 @@ public class TimedReset {
 
         resetTime = (intervalSeconds * 1000) + System.currentTimeMillis();
 
-        if (warningSeconds.size() > 0) {
+        if ((warningSeconds.size() > 0) && main.worlds().getWorld(world).isWarningEnabled()) {
             warningTimers.clear();
             int a = 0;
             for (long i : warningSeconds) {
@@ -143,7 +143,8 @@ public class TimedReset {
                     public void run() {
                         try {
                             main.worlds().getWorld(world).sendWarning(unformatted);
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                         warningTimers.get(0).cancel();
                         warningTimers.get(0).purge();
                     }

@@ -3,7 +3,7 @@ worlds:
     enabled: false
     last-saved: true
     settings:
-      time:
+      time: # HERE
         - '****-**-** **:** 15m' # every 15 minutes
         - '****-**-** **:00 2h' # every 2 hours at xx:00
         - '****-**-** 14:30 3d' # every 3rd day at 2:30 pm
@@ -11,33 +11,28 @@ worlds:
         - '****-08-20 13:45 12M' # every August 20, at 1:45 pm
         - '2021-08-20 17:00' # august 20, 2021, 5:00 pm
 
-      message: 'The world {world} has been reset!'
-      seed: 'default'
+      message: 'The world {world} has been reset!' # HERE
+      seed: DEFAULT
         # NOTE: will NOT work if last-saved is 'true'
         # use "random" for a random seed
         # "default" means the same seed
         # example of a custom seed:
         # seed: -2156120156 / seed: 'myppbig' >> for plain text
-      world-type: DEFAULT #NORMAL, THE_END, NETHER, DEFAULT <-- TODO - Add world types
-      # default-gamemode: survival # need to create a bypass permission for this <-- TODO - Add default gamemode
-      # Needs MultiVerse for this feature <-- TODO - add mutiverse (reset invent)
-      # reset-inventory:
-      #   inventory: true
-      #   armor: false
+      world-type: DEFAULT #NORMAL, THE_END, NETHER, DEFAULT <-- COMING SOON!
       safe-world:
         enabled: false # if disabled, it will kick all players
         world: 'world'
         delay: 5 # delay after the world has been reset to teleport back
         # -1 if no need to tp back
-        spawn: default # use '15, 52, -231' for a custom spawn
+        spawn: DEFAULT # use '15, 52, -231' for a custom spawn
       warning:
         enabled: true
-        message: 'Warning: resetting the world {world} in {time}.'
+        message: '&cWarning: resetting the world {world} in {time}.' # HERE
         time: [1800, 600, 300, 60, 5] # seconds before the reset happens
         # 30 minutes, 10 minutes, 5 minutes, 1 minute, 5 seconds
       commands:
         - '[all-players] eco give {player} 500'
-        # placeholders: {player_uuid} {player_name} {world}
+        # placeholders: {playerUUID} {playerName} {playerDisplayName} {world}
         - '[world-players] eco give {player} 25'
         - '[world-players:world_name] eco give {player} 25'
         - '[general] broadcast resetting world {world}!'

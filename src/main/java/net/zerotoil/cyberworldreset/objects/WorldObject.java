@@ -2,7 +2,9 @@ package net.zerotoil.cyberworldreset.objects;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -41,14 +43,14 @@ public class WorldObject {
     // teleport player module
     private List<Player> tpPlayers = new ArrayList<>();
 
-    private int chunkRun;
-    private int chunkRise;
     private long loadDelay;
     private ArrayList<Integer> chunkInfo;
     private int xChunk;
     private int zChunk;
     private int chunkNumber;
     private int chunkCounter;
+
+    private CommandSender console = Bukkit.getConsoleSender();
 
     public WorldObject(CyberWorldReset main, String worldName) {
 
@@ -140,8 +142,6 @@ public class WorldObject {
 
             System.out.println("regen is null");
 
-            // TODO - When players rejoin, they may spawn in mid air or in a block. find a fix for this.
-
             main.onJoin().setServerOpen(false);
             if (!Bukkit.getOnlinePlayers().isEmpty()) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
@@ -158,6 +158,8 @@ public class WorldObject {
                 getWorld().getEnderDragonBattle().getBossBar().removeAll();
             }
 
+            if (!tpPlayers.isEmpty()) tpPlayers.clear();
+
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (!player.getWorld().getName().equalsIgnoreCase(worldName)) continue;
 
@@ -173,10 +175,9 @@ public class WorldObject {
                     player.teleport(main.worldUtils().getLocationFromString(safeWorld, safeWorldSpawn));
 
                 } else {
+
                     player.teleport(Bukkit.getWorld(safeWorld).getSpawnLocation());
-                    /*
-                     * TODO - Add essentials as a soft depend & check for spawn
-                     */
+
                 }
 
                 main.lang().getMsg("teleported-safe-world").send(player, true,
@@ -187,7 +188,7 @@ public class WorldObject {
         }
     }
 
-    public boolean regenFail(String msgKey, Player player) {
+    private boolean regenFail(String msgKey, Player player) {
         if (msgKey != null) main.lang().getMsg(msgKey).send(player, true, new String[]{"world"}, new String[]{worldName});
         main.onWorldChange().removeClosedWorld(worldName);
         main.onJoin().setServerOpen(true);
@@ -201,8 +202,6 @@ public class WorldObject {
         int area = width * width;
         // int[] loadingTime = new int[width];
         Random random = new Random();
-        chunkRun = 1;
-        chunkRise = 1;
         chunkInfo = new ArrayList<>();
         // chunkInfo.add(random.nextInt(width + 1));
 
@@ -253,11 +252,6 @@ public class WorldObject {
 
 
         }).runTaskLater(main, 240L * Math.round(20 / Lag.getTPS()));
-
-
-
-
-
 
         /* new BukkitRunnable() {
             public void run() {
@@ -379,7 +373,7 @@ public class WorldObject {
                 main.onDamage().setEnabled(false);
             }
 
-        }).runTaskLater(main, 200L);
+        }).runTaskLater(main, 100L);
 
     }
 
@@ -391,6 +385,8 @@ public class WorldObject {
                 for (String i : message) player.sendMessage(main.langUtils().getColor(i.replace("{world}", worldName), true));
 
         System.out.println("regen 7");
+
+        sendCommands();
 
         if (!main.onJoin().isServerOpen()) main.onJoin().setServerOpen(true);
         if (safeWorldDelay == -1) {
@@ -417,19 +413,34 @@ public class WorldObject {
         File savedWorlds = new File(main.getDataFolder(),"saved_worlds");
         if (!savedWorlds.exists()) savedWorlds.mkdirs();
         if (saveWorld) {
-            main.onWorldSave().addWorldToBackup(worldName);
             getWorld().save();
-        } else {
-            try {
-                main.zipUtils().zip(worldName);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return true;
+            (new BukkitRunnable() {
 
+                @Override
+                public void run() {
+
+                    zipSavedWorld(player);
+
+                }
+
+            }).runTaskLater(main, 20L * Math.round(20 / Lag.getTPS()));
+            return true;
+        } else {
+            return zipSavedWorld(player);
+        }
+
+    }
+
+    private boolean zipSavedWorld(Player player) {
+        try {
+            main.zipUtils().zip(worldName);
+            main.lang().getMsg("save-success").send(player, true, new String[]{"world"}, new String[]{worldName});
+            return true;
+        } catch (Exception e) {
+            main.lang().getMsg("save-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean rollbackWorld(Player player){
@@ -453,6 +464,7 @@ public class WorldObject {
     }
 
     public void loadTimedResets() {
+        if (!enabled) return;
         if (time.isEmpty()) return;
         for (String i : time) timedResets.put(i, new TimedReset(main, worldName, i, warningTime));
     }
@@ -466,6 +478,56 @@ public class WorldObject {
             for (String i : warningMessage) player.sendMessage(main.langUtils().getColor(i.replace("{world}", worldName).replace("{time}", time), true));
         }
 
+    }
+
+    private void sendCommands() {
+        for (String cmd : commands) {
+
+            if (cmd.startsWith("[all-players]")) {
+                cmd = cmd.substring(13);
+                if (cmd.startsWith(" ")) cmd.substring(1);
+                final String newCmd = cmd;
+                Bukkit.getOnlinePlayers().forEach(player -> Bukkit.dispatchCommand(console, replaceInCmd(newCmd, player)));
+                continue;
+            }
+
+            cmd = cmd.substring(15);
+
+            if (cmd.startsWith("[world-players]")) {
+                if (cmd.startsWith(" ")) cmd.substring(1);
+                final String newCmd = cmd;
+                for (Player player : tpPlayers) {
+                    if (!player.isOnline()) continue;
+                    Bukkit.dispatchCommand(console, replaceInCmd(newCmd, player));
+                }
+                continue;
+            }
+
+            if (cmd.startsWith("[world-players:")) {
+                World world = Bukkit.getWorld(cmd.substring(0, cmd.indexOf("]")));
+                if (world == null) return; // maybe a check for that or a message
+                cmd = cmd.substring(cmd.indexOf("]") + 1);
+                if (cmd.startsWith(" ")) cmd.substring(1);
+                final String newCmd = cmd;
+                world.getPlayers().forEach(player -> Bukkit.dispatchCommand(console, replaceInCmd(newCmd, player)));
+            }
+
+            if (cmd.startsWith("[general]")) {
+                cmd = cmd.substring(9);
+                if (cmd.startsWith(" ")) cmd.substring(1);
+                Bukkit.dispatchCommand(console, replaceInCmd(cmd, null));
+            }
+        }
+    }
+
+    private String replaceInCmd(String cmd, Player player) {
+        cmd = cmd.replace("{world}", worldName);
+        if (player != null) {
+            String[] placeholders = {"{playerName}", "{playerDisplayName}", "{playerUUID}"};
+            String[] values = {player.getName(), player.getDisplayName(), player.getUniqueId().toString()};
+            cmd = StringUtils.replaceEach(cmd, placeholders, values);
+        }
+        return cmd;
     }
 
     public void cancelTimers() {

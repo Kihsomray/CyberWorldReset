@@ -4,9 +4,10 @@ import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Worlds {
 
@@ -21,17 +22,16 @@ public class Worlds {
 
     }
 
-    public void loadWorlds() {
+    public void loadWorlds(boolean newWorlds) {
 
-        if (!worlds.isEmpty()) worlds.clear();
+        if (!worlds.isEmpty() && !newWorlds) worlds.clear();
 
         if (!config.getConfigurationSection("worlds").getKeys(false).isEmpty()) {
 
-            System.out.println("Done 1");
-
             for (String worldName : config.getConfigurationSection("worlds").getKeys(false)) {
 
-                System.out.println("Done 2 - " + worldName);
+                // skips already loaded worlds
+                if (worlds.containsKey(worldName) && newWorlds) continue;
 
                 // is it an actual world?
                 if (!main.worldUtils().isWorld(worldName)) {
@@ -43,8 +43,6 @@ public class Worlds {
 
                 }
 
-                System.out.println("Done 3");
-
                 // if default world
                 if (worldName.equalsIgnoreCase(main.worldUtils().getLevelName())) {
 
@@ -55,13 +53,9 @@ public class Worlds {
 
                 }
 
-                System.out.println("Done 4");
-
                 // makes a new world object
                 WorldObject worldObject = new WorldObject(main, worldName);
                 String settings = worldName + ".settings.";
-
-                System.out.println("Done 5");
 
                 // intervals/times
                 if (isSet(settings + "time")) {
@@ -77,16 +71,12 @@ public class Worlds {
 
                 }
 
-                System.out.println("Done 6");
-
                 // reset message
                 if (isSet(settings + "message")) {
 
                     worldObject.setMessage(main.langUtils().convertList(config, "worlds." + worldName + ".settings.message"));
 
                 }
-
-                System.out.println("Done 7");
 
                 // pre-converted seed
                 if (isSet(settings + "seed")) {
@@ -98,8 +88,6 @@ public class Worlds {
                     }
 
                 }
-
-                System.out.println("Done 8");
 
                 if (isSet(settings + "safe-world.enabled")) {
 
@@ -127,8 +115,6 @@ public class Worlds {
                     }
 
                 }
-
-                System.out.println("Done 9");
 
                 if (isSet(settings + "warning.enabled")) {
 
@@ -164,10 +150,39 @@ public class Worlds {
                 worlds.put(worldName, worldObject);
                 getWorld(worldName).loadTimedResets();
 
-                System.out.println("Done - " + worldName);
-
             }
 
+        }
+
+    }
+
+    public void createWorld(String worldName, Player sender) {
+
+        ConfigurationSection cS = config.getConfigurationSection("worlds");
+        String s = worldName + ".settings.";
+        String safe = s + "safe-world.";
+        String warn = s + "warning.";
+        cS.set(worldName + ".enabled", false);
+        cS.set(worldName + ".last-saved", false);
+        cS.set(s + "time", new String[0]);
+        cS.set(s + "message", "");
+        cS.set(s + "seed", "DEFAULT");
+        cS.set(safe + "enabled", false);
+        cS.set(safe + "world", "");
+        cS.set(safe + "delay", 5);
+        cS.set(safe + "spawn", "DEFAULT");
+        cS.set(warn + "enabled", false);
+        cS.set(warn + "warning", "&cWarning: resetting the world {world} in {time}.");
+        cS.set(warn + "time", new int[]{300, 60, 30, 10, 3, 2, 1});
+        cS.set(s + "commands", new String[0]);
+        try {
+            config.set("worlds", cS);
+            main.files().get("worlds").saveConfig();
+            loadWorlds(true);
+            main.lang().getMsg("setup-created").send(sender, true, new String[]{"world"}, new String[]{worldName});
+        } catch (Exception e) {
+            e.printStackTrace();
+            main.lang().getMsg("world-create-failed").send(sender, true, new String[]{"world"}, new String[]{worldName});
         }
 
     }

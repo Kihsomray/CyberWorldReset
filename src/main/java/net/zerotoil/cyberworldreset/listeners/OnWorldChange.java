@@ -1,6 +1,7 @@
 package net.zerotoil.cyberworldreset.listeners;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,9 +16,8 @@ public class OnWorldChange implements Listener {
     private List<String> closedWorlds = new ArrayList<>();
 
     public OnWorldChange(CyberWorldReset main) {
-
         this.main = main;
-
+        Bukkit.getPluginManager().registerEvents(this, main);
     }
 
     @EventHandler (priority = EventPriority.LOWEST)
