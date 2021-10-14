@@ -2,6 +2,7 @@ package net.zerotoil.cyberworldreset.cache;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.SavedFile;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class Files {
 
     public void loadFiles() {
         if (!files.isEmpty()) files.clear();
+        Bukkit.getLogger().info("[CyberWorldReset] Loading Files...");
 
         // front end
         addFile("config");
@@ -33,6 +35,7 @@ public class Files {
 
     private void addFile(String file) {
         files.put(file, new SavedFile(main, file + ".yml"));
+        Bukkit.getLogger().info("[CyberWorldReset] Loaded file \"" + file + ".yml\".");
     }
 
     public HashMap<String, SavedFile> getFiles() {

@@ -1,11 +1,13 @@
 package net.zerotoil.cyberworldreset;
 
+import net.zerotoil.cyberworldreset.addons.Metrics;
 import net.zerotoil.cyberworldreset.cache.*;
 import net.zerotoil.cyberworldreset.commands.CWRCommand;
 import net.zerotoil.cyberworldreset.commands.CWRTabComplete;
 import net.zerotoil.cyberworldreset.listeners.*;
 import net.zerotoil.cyberworldreset.objects.Lag;
 import net.zerotoil.cyberworldreset.utilities.*;
+import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,6 +35,11 @@ public final class CyberWorldReset extends JavaPlugin {
 
     public boolean isPremium() {
         return premium;
+    }
+    public String getEdition() {
+        String edition = "Standard";
+        if (premium) edition = "Premium";
+        return edition;
     }
 
     public Files files() {
@@ -81,7 +88,10 @@ public final class CyberWorldReset extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        premium = true;
+        sendBootMSG();
+        long startTime = System.currentTimeMillis();
+
+        premium = false;
 
         // lag initialize
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Lag(), 100L, 1L);
@@ -94,6 +104,11 @@ public final class CyberWorldReset extends JavaPlugin {
         cwrCommand = new CWRCommand(this);
         cwrTabComplete = new CWRTabComplete(this);
         this.getCommand("cwr").setTabCompleter(cwrTabComplete);
+
+        // addons
+        Metrics metrics = new Metrics(this, 13007);
+
+        Bukkit.getLogger().info("[CyberWorldReset] Loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
 
     }
 
@@ -118,10 +133,28 @@ public final class CyberWorldReset extends JavaPlugin {
 
     private void loadListeners() {
         // load listeners
+        Bukkit.getLogger().info("[CyberWorldReset] Loading Listeners...");
         onJoin = new OnJoin(this);
         onWorldChange = new OnWorldChange(this);
         onDamage = new OnDamage(this);
         onWorldCreate = new OnWorldCreate(this);
+    }
+
+    public void sendBootMSG() {
+        if (!SystemUtils.OS_NAME.contains("Windows")) {
+            Bukkit.getLogger().info("╭━━━╮╱╱╱╭╮╱╱╱╱╱╱╭╮╭╮╭╮╱╱╱╱╭╮╱╱╭┳━━━╮╱╱╱╱╱╱╱╱╭╮");
+            Bukkit.getLogger().info("┃╭━╮┃╱╱╱┃┃╱╱╱╱╱╱┃┃┃┃┃┃╱╱╱╱┃┃╱╱┃┃╭━╮┃╱╱╱╱╱╱╱╭╯╰╮");
+            Bukkit.getLogger().info("┃┃╱╰╋╮╱╭┫╰━┳━━┳━┫┃┃┃┃┣━━┳━┫┃╭━╯┃╰━╯┣━━┳━━┳━┻╮╭╯");
+            Bukkit.getLogger().info("┃┃╱╭┫┃╱┃┃╭╮┃┃━┫╭┫╰╯╰╯┃╭╮┃╭┫┃┃╭╮┃╭╮╭┫┃━┫━━┫┃━┫┃");
+            Bukkit.getLogger().info("┃╰━╯┃╰━╯┃╰╯┃┃━┫┃╰╮╭╮╭┫╰╯┃┃┃╰┫╰╯┃┃┃╰┫┃━╋━━┃┃━┫╰╮");
+            Bukkit.getLogger().info("╰━━━┻━╮╭┻━━┻━━┻╯╱╰╯╰╯╰━━┻╯╰━┻━━┻╯╰━┻━━┻━━┻━━┻━╯");
+            Bukkit.getLogger().info("╱╱╱╱╭━╯┃  Authors: " + getAuthors());
+            Bukkit.getLogger().info("╱╱╱╱╰━━╯  Version: " + this.getDescription().getVersion() + "-BETA [" + getEdition() + "]");
+        }
+    }
+
+    public String getAuthors() {
+        return this.getDescription().getAuthors().toString().replace("[", "").replace("]", "");
     }
 
     @Override
@@ -129,7 +162,7 @@ public final class CyberWorldReset extends JavaPlugin {
         worlds.cancelTimers();
     }
 
-    public int getVersion() { // my name is taquito with ñ
+    public int getVersion() {
         return Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]);
     }
 

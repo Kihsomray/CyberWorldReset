@@ -152,7 +152,6 @@ public class TimedReset {
                 a++;
             }
         }
-        System.out.println(intervalSeconds);
         timer.schedule(new MyTimeTask(), intervalSeconds * 1000);
 
     }

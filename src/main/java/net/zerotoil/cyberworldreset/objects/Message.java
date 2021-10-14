@@ -5,8 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
-
 public class Message {
 
     private CyberWorldReset main;
@@ -29,7 +27,7 @@ public class Message {
         for (int i = 0; i < placeholders.length; i++) {
             editedMessage = editedMessage.replace("{" + placeholders[i] + "}", replacements[i]);
         }
-        if (player == null) {
+        if ((player == null) || !player.isOnline()) {
             Bukkit.getLogger().info(editedMessage);
             return;
         }

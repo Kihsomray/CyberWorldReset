@@ -11,23 +11,30 @@ config:
   # STANDARD - only loads in spawn chunks.
   # Not recommended, drops TPS and lags players.
 
-  # ULTRA-SAFE - loads in 5x5 chunks, over a longer period of time. <-- COMING SOON
-  # Recommended for low-end CPUS or large amounts of players. <-- COMING SOON
+  # ULTRA-SAFE - loads in chunks, over a long period of time.
+  # Recommended for low-end CPUS or large amounts of players.
 
-  # SAFE - loads in a 5x5 area of chunks at the tp location.
-  # Recommended for mid-range CPUs or medium amounts of players.
+  # SAFE - loads in chunks, over a longer period of time.
+  # Recommended for mid-end CPUS or large amounts of players.
 
-  # FAST - force loads chunks when the player teleports there.
-  # Recommended for high-end CPUs or small amounts of players.
-  loading-type: SAFE
+  # NORMAL - loads in chunks, over an 'average' period of time.
+  # Recommended for mid-end CPUS or medium amounts of players.
 
-  # radius of loading if SAFE or ULTRA-SAFE is enabled.
-  # A radius of 4 would load a 9 x 9 area.
-  loading-radius: 4
+  # FAST - loads in chunks, over a faster period of time.
+  # Recommended for high-end CPUS or small amounts of players.
+
+  # ULTRA-FAST - force loads chunks when the player teleports there.
+  # Recommended for top-notch CPUs or very small amounts of players.
+  loading-type: NORMAL
+
+  # Radius of loading if FAST, NORMAL, SAFE or ULTRA-SAFE is
+  # enabled. A radius of 4 would load a 9 x 9 area. A larger
+  # radius will load a LOT longer, try to stay between 2-5.
+  loading-radius: 3
 
   # After rebooting or timers resetting, what delay should there
   # be until timers are initialized again?
-  timer-load-delay: 10 # TODO - Add start
+  timer-load-delay: 10
 
   # How many ticks after teleporting/kicking players should
   # the world start to reset? At least 10 ticks is recommended.
@@ -36,7 +43,7 @@ config:
   # Amount of seconds between teleportation of players back to the
   # world. The higher the number, the less stress on the server.
   # Highly recommended to enable if using random teleportation.
-  recursive-teleporting: # TODO - Add recursive teleporting
+  recursive-teleporting: # COMING SOON!
     enabled: true
     milliseconds: 150
 

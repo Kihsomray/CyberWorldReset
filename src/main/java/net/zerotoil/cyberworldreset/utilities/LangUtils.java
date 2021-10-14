@@ -2,7 +2,6 @@ package net.zerotoil.cyberworldreset.utilities;
 
 import net.md_5.bungee.api.ChatColor;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -96,7 +95,7 @@ public class LangUtils {
 
         // if single string
         List<String> list = new ArrayList<>();
-        list.add(config.getString(path));
+        if (!config.getString(path).contains("[Ljava.lang.String")) list.add(config.getString(path));
         return list;
 
     }

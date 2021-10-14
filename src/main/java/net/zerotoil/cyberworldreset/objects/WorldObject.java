@@ -25,6 +25,7 @@ public class WorldObject {
     private String defaultGamemode; // not req, use default
     private World.Environment environment; // not req, use default
     private List<String> commands = new ArrayList<>(); // not req
+    private boolean resetting;
 
     // safe world module - not req
     private boolean safeWorldEnabled; // boolean defaults to false
@@ -72,12 +73,28 @@ public class WorldObject {
         message = new ArrayList<>();
         message.add("");
         loadDelay = main.config().getLoadingDelay();
+        resetting = false;
+        safeWorldSpawn = "DEFAULT";
 
     }
 
     public boolean regenWorld(Player sender) {
 
-        if (!enabled) return false;
+        if (resetting) {
+            main.lang().getMsg("already-resetting").send(sender, true, new String[]{"world"}, new String[]{worldName});
+            return true;
+        }
+        if (!enabled) {
+            main.lang().getMsg("not-enabled").send(sender, true, new String[]{"world"}, new String[]{worldName});
+            return false;
+        }
+        if (lastSaved && (main.zipUtils().getLastModified(worldName) == null)) {
+            main.lang().getMsg("no-saves").send(sender, true, new String[]{"world"}, new String[]{worldName});
+            return false;
+        }
+
+        resetting = true;
+
         tpPlayersAway();
 
         // default world check
@@ -140,8 +157,6 @@ public class WorldObject {
         // kicks or teleports player
         if (Objects.isNull(safeWorld) || safeWorld.equals(worldName) || (!safeWorldEnabled)) {
 
-            System.out.println("regen is null");
-
             main.onJoin().setServerOpen(false);
             if (!Bukkit.getOnlinePlayers().isEmpty()) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
@@ -151,8 +166,6 @@ public class WorldObject {
             }
 
         } else {
-
-            System.out.println("regen is not null");
 
             if (getWorld().getEnvironment().toString().contains("THE_END")) {
                 getWorld().getEnderDragonBattle().getBossBar().removeAll();
@@ -192,6 +205,7 @@ public class WorldObject {
         if (msgKey != null) main.lang().getMsg(msgKey).send(player, true, new String[]{"world"}, new String[]{worldName});
         main.onWorldChange().removeClosedWorld(worldName);
         main.onJoin().setServerOpen(true);
+        resetting = false;
         return false;
     }
 
@@ -206,12 +220,9 @@ public class WorldObject {
         // chunkInfo.add(random.nextInt(width + 1));
 
         int avgMsgInterval = (int) Math.round((random.nextInt(4) + 3) * (20.0 / loadDelay));
-        System.out.println(avgMsgInterval);
         long numMsg = (area - (area % avgMsgInterval)) / avgMsgInterval;
-        System.out.println(numMsg);
         for (int i = 0; i < numMsg; i++) {
             int test = (random.nextInt(avgMsgInterval) + avgMsgInterval * i);
-            System.out.println(test);
             chunkInfo.add(test);
         }
         xChunk = 0;
@@ -384,8 +395,6 @@ public class WorldObject {
             for (Player player : Bukkit.getOnlinePlayers())
                 for (String i : message) player.sendMessage(main.langUtils().getColor(i.replace("{world}", worldName), true));
 
-        System.out.println("regen 7");
-
         sendCommands();
 
         if (!main.onJoin().isServerOpen()) main.onJoin().setServerOpen(true);
@@ -402,8 +411,7 @@ public class WorldObject {
 
         getWorld().setAutoSave(true);
         getWorld().setKeepSpawnInMemory(true);
-
-        System.out.println("regen 8 - done");
+        resetting = false;
         main.lang().getMsg("regen-success").send(sender, true, new String[]{"world"}, new String[]{worldName});
     }
 
@@ -482,6 +490,11 @@ public class WorldObject {
 
     private void sendCommands() {
         for (String cmd : commands) {
+
+            if (!cmd.startsWith("[")) {
+                Bukkit.dispatchCommand(console, replaceInCmd(cmd, null));
+                continue;
+            }
 
             if (cmd.startsWith("[all-players]")) {
                 cmd = cmd.substring(13);
@@ -646,6 +659,9 @@ public class WorldObject {
     }
     public boolean isLastSaved() {
         return lastSaved;
+    }
+    public boolean isResetting() {
+        return resetting;
     }
 
 }

@@ -24,9 +24,13 @@ public class Worlds {
 
     public void loadWorlds(boolean newWorlds) {
 
+        String pluginPrefix = "[CyberWorldReset] ";
+
         if (!worlds.isEmpty() && !newWorlds) worlds.clear();
 
         if (!config.getConfigurationSection("worlds").getKeys(false).isEmpty()) {
+
+            Bukkit.getLogger().info(pluginPrefix + "Loading world configurations...");
 
             for (String worldName : config.getConfigurationSection("worlds").getKeys(false)) {
 
@@ -36,9 +40,9 @@ public class Worlds {
                 // is it an actual world?
                 if (!main.worldUtils().isWorld(worldName)) {
 
-                    Bukkit.getLogger().warning(main.langUtils().getLang("The world " + worldName + " is not an existing world! Disabling this world.",
-                            "El mundo " + worldName + " no es un mundo existente. Deshabiltando el mundo.",
-                            "Мир " + worldName + " не существует! Этот мир не будет использоваться."));
+                    Bukkit.getLogger().warning(main.langUtils().getLang(pluginPrefix + "The world \"" + worldName + "\" is not an existing world! Disabling this world.",
+                            pluginPrefix + "El mundo \"" + worldName + "\" no es un mundo existente. Deshabiltando el mundo.",
+                            pluginPrefix + "Мир \"" + worldName + "\" не существует! Этот мир не будет использоваться."));
                     continue;
 
                 }
@@ -46,9 +50,9 @@ public class Worlds {
                 // if default world
                 if (worldName.equalsIgnoreCase(main.worldUtils().getLevelName())) {
 
-                    Bukkit.getLogger().warning(main.langUtils().getLang("The world " + worldName + " is a default world! Disabling this world.",
-                            "El mundo " + worldName + " es un mundo predeterminado. Deshabiltando el mundo.",
-                            "Мир " + worldName + " - это мир по умолчанию! Этот мир не будет использоваться."));
+                    Bukkit.getLogger().warning(main.langUtils().getLang(pluginPrefix + "The world \"" + worldName + "\" is a default world! Disabling this world.",
+                             pluginPrefix + "El mundo \"" + worldName + "\" es un mundo predeterminado. Deshabiltando el mundo.",
+                            pluginPrefix + "Мир \"" + worldName + "\" - это мир по умолчанию! Этот мир не будет использоваться."));
                     continue;
 
                 }
@@ -64,9 +68,9 @@ public class Worlds {
 
                 } else {
 
-                    Bukkit.getLogger().warning(main.langUtils().getLang("The world " + worldName + " does not have any times set. Disabling this world.",
-                            "El mundo " + worldName + " no tiene tiempo establecido. Deshabiltando el mundo.",
-                            "Мир " + worldName + " не имеет времени. Этот мир не будет использоваться."));
+                    Bukkit.getLogger().warning(main.langUtils().getLang(pluginPrefix + "The world \"" + worldName + "\" does not have any times set. Disabling this world.",
+                            pluginPrefix + "El mundo \"" + worldName + "\" no tiene tiempo establecido. Deshabiltando el mundo.",
+                            pluginPrefix + "Мир \"" + worldName + "\" не имеет времени. Этот мир не будет использоваться."));
                     continue;
 
                 }
@@ -150,6 +154,8 @@ public class Worlds {
                 worlds.put(worldName, worldObject);
                 getWorld(worldName).loadTimedResets();
 
+                Bukkit.getLogger().info(pluginPrefix + "Loaded world \"" + worldName + "\".");
+
             }
 
         }
@@ -165,7 +171,7 @@ public class Worlds {
         cS.set(worldName + ".enabled", false);
         cS.set(worldName + ".last-saved", false);
         cS.set(s + "time", new String[0]);
-        cS.set(s + "message", "");
+        cS.set(s + "message", "World {world} has been reset!");
         cS.set(s + "seed", "DEFAULT");
         cS.set(safe + "enabled", false);
         cS.set(safe + "world", "");

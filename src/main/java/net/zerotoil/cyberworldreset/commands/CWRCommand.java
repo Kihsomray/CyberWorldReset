@@ -49,9 +49,8 @@ public class CWRCommand implements CommandExecutor {
 
                 if (noPlayerPerm(player, "player.about")) return true;
 
-                sender.sendMessage(main.langUtils().getColor("&b&lCyber&f&lWorldRegen &fv" + main.getDescription().getVersion() + " &7(&7<SPIGOT LINK>&7).", false));
-                sender.sendMessage(main.langUtils().getColor("&fDeveloped by &b" + main.getDescription().getAuthors().toString()
-                        .replace("[", "").replace("]", "") + "&f.", false));
+                sender.sendMessage(main.langUtils().getColor("&b&lCyber&f&lWorldReset &fv" + main.getDescription().getVersion() + " &7(&7&nhttps://bit.ly/2YSlqYq&7).", false));
+                sender.sendMessage(main.langUtils().getColor("&fDeveloped by &b" + main.getAuthors() + "&f.", false));
                 sender.sendMessage(main.langUtils().getColor("&7Easily regenerate worlds with little to no TPS drop. Simply set up a recursive", false));
                 sender.sendMessage(main.langUtils().getColor("&7timer or a specific time & date you want the world to reset, and you’re all set!", false));
                 return true;
@@ -115,34 +114,70 @@ public class CWRCommand implements CommandExecutor {
 
         if (args.length == 4) {
 
-            if (args[0].equalsIgnoreCase("edit")) {
-                if (!main.langUtils().hasParentPerm(player, "CyberWorldReset.admin")) return true;
+            if (args[0].matches("(?i)edit")) {
+                // if (!main.langUtils().hasParentPerm(player, "CyberWorldReset.admin")) return true;
                 if (noSetupsExist(player)) return true;
                 if (setupDoesNotExist(player, args[1])) return true;
 
-                if (args[2].equalsIgnoreCase("setEnabled")) return setEnabled(player, args[1], args[3]);
+                if (args[2].matches("(?i)setEnabled")) return setEnabled(player, args[1], args[3]);
 
-                if (args[2].equalsIgnoreCase("enableLastSaved")) return enabledLastSaved(player, args[1], args[3]);
+                if (args[2].matches("(?i)enableLastSaved")) return enabledLastSaved(player, args[1], args[3]);
 
-                // if (args[2].equalsIgnoreCase("addTimer")) return addTimer(player, args[1], args[3]);
-                // TODO - Message
+                if (args[2].matches("(?i)enableSafeWorld")) return enabledSafeWorld(player, args[1], args[3]);
 
-                if (args[2].equalsIgnoreCase("setSeed")) return setSeed(player, args[1], args[3]);
+                if (args[2].matches("(?i)setSeed")) return setSeed(player, args[1], args[3]);
 
-                // TODO - Safe World
+                if (args[2].matches("(?i)setSafeWorld")) return setSafeWorld(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)setSafeWorldDelay")) return setSafeWorldDelay(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)addWarningTime")) return addWarningTime(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)enableWarning")) return enableWarning(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)delCommand")) return delCommand(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)delMessage")) return delMessage(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)delTimer")) return delTimer(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)delWarningMSG")) return delWarningMessage(player, args[1], args[3]);
+
+                if (args[2].matches("(?i)delWarningTime")) return delWarningTime(player, args[1], args[3]);
 
             }
 
         }
 
-        if (args[0].equalsIgnoreCase("edit") && args[2].equalsIgnoreCase("addTimer")) {
+        if (args.length > 3 && args[0].matches("(?i)edit")) {
+            if (args[2].matches("(?i)addTimer")) {
 
-            String time = args[3];
-            if (args.length > 4) time = time + " " + args[4];
-            if (args.length == 6) time = time + " " + args[5];
-            if (args.length > 4 && args.length < 7) {
-                return addTimer(player, args[1], time);
+                String time = args[3];
+                if (args.length > 4) time = time + " " + args[4];
+                if (args.length == 6) time = time + " " + args[5];
+                if (args.length > 4 && args.length < 7) {
+                    return addTimer(player, args[1], time);
+                }
             }
+
+            if (args[2].matches("(?i)addMessage")) {
+                String message = args[3];
+                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
+                return addMessage(player, args[1], message);
+            }
+
+            if (args[2].matches("(?i)addCommand")) {
+                String command = args[3];
+                if (args.length >= 5) for (int i = 4; i < args.length; i++) command += " " + args[i];
+                return addCommand(player, args[1], command);
+            }
+
+            if (args[2].matches("(?i)addWarningMSG")) {
+                String message = args[3];
+                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
+                return addWarningMSG(player, args[1], message);
+            }
+
         }
 
         // TODO Finish commands
@@ -154,6 +189,15 @@ public class CWRCommand implements CommandExecutor {
     private boolean notBoolean(Player player, String arg) {
         try {
             Boolean.parseBoolean(arg.toLowerCase());
+            return false;
+        } catch (Exception e) {
+            main.lang().getMsg("invalid-command").send(player, true, new String[]{}, new String[]{});
+            return true;
+        }
+    }
+    private boolean notLong(Player player, String arg) {
+        try {
+            Long.parseLong(arg);
             return false;
         } catch (Exception e) {
             main.lang().getMsg("invalid-command").send(player, true, new String[]{}, new String[]{});
@@ -252,9 +296,9 @@ public class CWRCommand implements CommandExecutor {
         boolean safeWorldEnabled = getSetup(worldName).isSafeWorldEnabled();
         infoMsg(player, sw + "enabled", new String[]{"enabled"}, new String[]{safeWorldEnabled + ""});
         if (safeWorldEnabled) {
-            infoMsg(player, sw + "world", new String[]{"world"}, new String[]{getSetup(worldName).getSafeWorld()});
+            infoMsg(player, sw + "world", new String[]{"world"}, new String[]{getSetup(worldName).getSafeWorld() + ""});
             infoMsg(player, sw + "delay", new String[]{"delay"}, new String[]{getSetup(worldName).getSafeWorldDelay() + ""});
-            infoMsg(player, sw + "spawn", new String[]{"spawn"}, new String[]{getSetup(worldName).getSafeWorldSpawn()});
+            infoMsg(player, sw + "spawn", new String[]{"spawn"}, new String[]{getSetup(worldName).getSafeWorldSpawn() + ""});
         }
     }
     private void infoWarning(Player player, String worldName) {
@@ -273,7 +317,7 @@ public class CWRCommand implements CommandExecutor {
         List<String> commands = main.worlds().getWorld(worldName).getCommands();
         if (commands.isEmpty()) return;
         sendHeader(player, 6);
-        sendList(player, commands); // this should work
+        sendList(player, commands);
     }
 
 
@@ -293,6 +337,7 @@ public class CWRCommand implements CommandExecutor {
         main.files().getConfig("worlds").set("worlds." + world + "." + subPath, value);
         try {
             main.files().get("worlds").saveConfig();
+            main.lang().getMsg("setting-set-success").send(player, true, new String[]{}, new String[]{});
             return true;
         } catch (Exception e) {
             main.lang().getMsg("setting-set-failed").send(player, true, new String[]{}, new String[]{});
@@ -301,14 +346,36 @@ public class CWRCommand implements CommandExecutor {
     }
     private boolean setEnabled(Player player, String worldName, String value) {
         if (notBoolean(player, value)) return true;
-        if (worldSetting(player, worldName, "enabled", Boolean.parseBoolean(value)))
+        if (worldSetting(player, worldName, "enabled", Boolean.parseBoolean(value))) {
             main.worlds().getWorld(worldName).setEnabled(Boolean.parseBoolean(value));
+            main.worlds().getWorld(worldName).cancelTimers();
+            main.worlds().getWorld(worldName).loadTimedResets();
+        }
         return true;
     }
     private boolean enabledLastSaved(Player player, String worldName, String value) {
         if (notBoolean(player, value)) return true;
-        if (worldSetting(player, worldName, "last-saved", true))
+        if (worldSetting(player, worldName, "last-saved", Boolean.parseBoolean(value)))
             main.worlds().getWorld(worldName).setLastSaved(Boolean.parseBoolean(value));
+        return true;
+    }
+    private boolean enabledSafeWorld(Player player, String worldName, String value) {
+        if (notBoolean(player, value)) return true;
+        boolean enable = Boolean.parseBoolean(value);
+        if (enable) {
+            if (Bukkit.getWorld(main.worlds().getWorld(worldName).getSafeWorld()) == null) {
+                main.lang().getMsg("world-not-exist").send(player, true, new String[]{"world"}, new String[]{value});
+                return true;
+            }
+            if (Bukkit.getWorld(main.worlds().getWorld(worldName).getSafeWorld()) == main.worlds().getWorld(worldName).getWorld()) {
+                main.lang().getMsg("same-world-fail").send(player, true, new String[]{"world"}, new String[]{value});
+                return true;
+            }
+        }
+        if (worldSetting(player, worldName, "settings.safe-world.enabled", enable)) {
+            main.worlds().getWorld(worldName).setSafeWorldEnabled(enable);
+            infoSafeWorld(player, worldName);
+        }
         return true;
     }
     private boolean addTimer(Player player, String worldName, String value) {
@@ -318,12 +385,182 @@ public class CWRCommand implements CommandExecutor {
             main.worlds().getWorld(worldName).setTime(timers);
             main.worlds().getWorld(worldName).cancelTimers();
             main.worlds().getWorld(worldName).loadTimedResets();
+            infoTimes(player, worldName);
         }
         return true;
     }
+
+    private boolean addMessage(Player player, String worldName, String value) {
+        List<String> messages = main.worlds().getWorld(worldName).getMessage();
+        messages.add(value);
+        if (worldSetting(player, worldName, "settings.messages", messages) || worldSetting(player, worldName, "settings.message", null)) {
+            main.worlds().getWorld(worldName).setMessage(messages);
+            infoMessages(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean addWarningMSG(Player player, String worldName, String value) {
+        List<String> messages = main.worlds().getWorld(worldName).getWarningMessage();
+        messages.add(value);
+        if (worldSetting(player, worldName, "settings.warning.message", messages)) {
+            main.worlds().getWorld(worldName).setWarningMessage(messages);
+            infoWarning(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean addCommand(Player player, String worldName, String value) {
+        List<String> commands = main.worlds().getWorld(worldName).getCommands();
+        commands.add(value);
+        if (worldSetting(player, worldName, "settings.commands", commands)) {
+            main.worlds().getWorld(worldName).setCommands(commands);
+            infoCommands(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean addWarningTime(Player player, String worldName, String value) {
+        if (notLong(player, value)) return true;
+        long number = Math.max(Long.parseLong(value), 0);
+        List<Long> times = main.worlds().getWorld(worldName).getWarningTime();
+        times.add(number);
+        if (worldSetting(player, worldName, "settings.warning.time", times)) {
+            main.worlds().getWorld(worldName).setWarningTime(times);
+            infoWarning(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean enableWarning(Player player, String worldName, String value) {
+        if (notBoolean(player, value)) return true;
+        boolean bool = Boolean.parseBoolean(value);
+        if (bool && main.worlds().getWorld(worldName).getWarningMessage().size() == 0) {
+            main.lang().getMsg("no-messages-found").send(player, true, new String[]{}, new String[]{});
+            return true;
+        }
+        if (worldSetting(player, worldName, "settings.warning.enabled", bool)) {
+            main.worlds().getWorld(worldName).setWarningEnabled(bool);
+            infoWarning(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean delCommand(Player player, String worldName, String value) {
+        if (notLong(player, value)) return true;
+        int number = (int) Math.max(Long.parseLong(value), 0);
+        List<String> commands = main.worlds().getWorld(worldName).getCommands();
+        int size = commands.size();
+        if (size <= number) {
+            main.lang().getMsg("invalid-index").send(player, true, new String[]{"min", "max"}, new String[]{0 + "", (size - 1) + ""});
+            return true;
+        }
+        commands.remove(number);
+        if (worldSetting(player, worldName, "settings.commands", commands)) {
+            main.worlds().getWorld(worldName).setCommands(commands);
+            infoCommands(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean delMessage(Player player, String worldName, String value) {
+        if (notLong(player, value)) return true;
+        int number = (int) Math.max(Long.parseLong(value), 0);
+        List<String> messages = main.worlds().getWorld(worldName).getMessage();
+        int size = messages.size();
+        if (size <= number) {
+            main.lang().getMsg("invalid-index").send(player, true, new String[]{"min", "max"}, new String[]{0 + "", Math.min(size - 1, 0) + ""});
+            return true;
+        }
+        messages.remove(number);
+        if (worldSetting(player, worldName, "settings.messages", messages) || worldSetting(player, worldName, "settings.message", null)) {
+            main.worlds().getWorld(worldName).setMessage(messages);
+            infoMessages(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean delTimer(Player player, String worldName, String value) {
+        if (notLong(player, value)) return true;
+        int number = (int) Math.max(Long.parseLong(value), 0);
+        List<String> timers = main.worlds().getWorld(worldName).getTime();
+        int size = timers.size();
+        if (size <= number) {
+            main.lang().getMsg("invalid-index").send(player, true, new String[]{"min", "max"}, new String[]{0 + "", (size - 1) + ""});
+            return true;
+        }
+        timers.remove(number);
+        if (worldSetting(player, worldName, "settings.time", timers)) {
+            main.worlds().getWorld(worldName).setTime(timers);
+            infoTimes(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean delWarningMessage(Player player, String worldName, String value) {
+        if (notLong(player, value)) return true;
+        int number = (int) Math.max(Long.parseLong(value), 0);
+        List<String> messages = main.worlds().getWorld(worldName).getWarningMessage();
+        int size = messages.size();
+        if (size <= number) {
+            main.lang().getMsg("invalid-index").send(player, true, new String[]{"min", "max"}, new String[]{0 + "", (size - 1) + ""});
+            return true;
+        }
+        messages.remove(number);
+        if (worldSetting(player, worldName, "settings.warning.message", messages)) {
+            main.worlds().getWorld(worldName).setWarningMessage(messages);
+            infoWarning(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean delWarningTime(Player player, String worldName, String value) {
+        if (notLong(player, value)) return true;
+        int number = (int) Math.max(Long.parseLong(value), 0);
+        List<Long> times = main.worlds().getWorld(worldName).getWarningTime();
+        int size = times.size();
+        if (size <= number) {
+            main.lang().getMsg("invalid-index").send(player, true, new String[]{"min", "max"}, new String[]{0 + "", (size - 1) + ""});
+            return true;
+        }
+        times.remove(number);
+        if (worldSetting(player, worldName, "settings.warning.time", times)) {
+            main.worlds().getWorld(worldName).setWarningTime(times);
+            infoWarning(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean setSafeWorldDelay(Player player, String worldName, String value) {
+        long delay = 10;
+        try {
+            delay = Long.parseLong(value);
+        } catch (Exception e) {}
+        if (worldSetting(player, worldName, "settings.safe-world.delay", delay)) {
+            main.worlds().getWorld(worldName).setSafeWorldDelay(delay);
+            infoSafeWorld(player, worldName);
+        }
+        return true;
+    }
+
     private boolean setSeed(Player player, String worldName, String value) {
         if (worldSetting(player, worldName, "settings.seed", value))
             main.worlds().getWorld(worldName).setSeed(value);
+        return true;
+    }
+    private boolean setSafeWorld(Player player, String worldName, String value) {
+        if (Bukkit.getWorld(value) == null) {
+            main.lang().getMsg("world-not-exist").send(player, true, new String[]{"world"}, new String[]{value});
+            return true;
+        }
+        if (Bukkit.getWorld(value) == main.worlds().getWorld(worldName).getWorld()) {
+            main.lang().getMsg("same-world-fail").send(player, true, new String[]{"world"}, new String[]{value});
+            return true;
+        }
+        if (worldSetting(player, worldName, "settings.safe-world.world", value)) {
+            main.worlds().getWorld(worldName).setSafeWorld(value);
+            infoSafeWorld(player, worldName);
+        }
         return true;
     }
 

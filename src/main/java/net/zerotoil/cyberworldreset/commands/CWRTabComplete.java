@@ -44,6 +44,7 @@ public class CWRTabComplete implements TabCompleter {
         }
         if (player.hasPermission(aPrefix + "save")) args0.add("save");
         args0.add("edit");
+        if (player.hasPermission(aPrefix + "info")) args0.add("info");
 
         if (args.length == 1) {
             StringUtil.copyPartialMatches(args[0], args0, args0Comp);
@@ -65,7 +66,7 @@ public class CWRTabComplete implements TabCompleter {
             }
 
 
-            if (cmdReq(args[0], args0, "reset") || cmdReq(args[0], args0, "save") || cmdReq(args[0], args0, "edit")) {
+            if (cmdReq(args[0], args0, "reset") || cmdReq(args[0], args0, "save") || cmdReq(args[0], args0, "edit") || cmdReq(args[0], args0, "info")) {
                 args1.addAll(main.worlds().getWorlds().keySet());
             }
 
@@ -84,9 +85,32 @@ public class CWRTabComplete implements TabCompleter {
 
                 String editPrefix = aPrefix + "edit.";
                 if (player.hasPermission(editPrefix + "enable")) args2.add("setEnabled");
-                if (player.hasPermission(editPrefix + "lastsaved")) args2.add("enabledLastSaved");
-                if (player.hasPermission(editPrefix + "time")) args2.add("addTimer");
+                if (player.hasPermission(editPrefix + "lastsaved")) args2.add("enableLastSaved");
+                if (player.hasPermission(editPrefix + "timer")) {
+                    args2.add("addTimer");
+                    args2.add("delTimer");
+                }
                 if (player.hasPermission(editPrefix + "seed")) args2.add("setSeed");
+                if (player.hasPermission(editPrefix + "message")) {
+                    args2.add("addMessage");
+                    args2.add("delMessage");
+                }
+                if (player.hasPermission(editPrefix + "commands")){
+                    args2.add("addCommand");
+                    args2.add("delCommand");
+                }
+                if (player.hasPermission(editPrefix + "warnings")) {
+                    args2.add("enableWarning");
+                    args2.add("addWarningMSG");
+                    args2.add("delWarningMSG");
+                    args2.add("addWarningTime");
+                    args2.add("delWarningTime");
+                }
+                if (player.hasPermission(editPrefix + "safeworld")) {
+                    args2.add("enableSafeWorld");
+                    args2.add("setSafeWorld");
+                    args2.add("setSafeWorldDelay");
+                }
 
                 StringUtil.copyPartialMatches(args[2], args2, args2Comp);
                 Collections.sort(args2Comp);
@@ -99,7 +123,7 @@ public class CWRTabComplete implements TabCompleter {
                 List<String> args3 = new ArrayList<>();
                 List<String> args3Comp = new ArrayList<>();
 
-                if (args[2].matches("(?i)setEnabled|enableLastSaved")) {
+                if (args[2].matches("(?i)setEnabled|enableLastSaved|enableWarning|enableSafeWorld")) {
                     args3.add("true");
                     args3.add("false");
                     args3.add("<boolean>");
@@ -116,6 +140,21 @@ public class CWRTabComplete implements TabCompleter {
                     args3.add("RANDOM");
                     args3.add("<seed>");
                 }
+
+                if (args[2].matches("(?i)setSafeWorld")) {
+                    for (World w : Bukkit.getWorlds()) {
+                        args3.add(w.getName().toString());
+                    }
+                    args3.add("<world>");
+                }
+
+                if (args[2].matches("(?i)delTimer|delMessage|delCommand|delWarningMSG|delWarningTime")) {
+                    args3.add("<index>");
+                }
+
+                if (args[2].matches("(?i)addMessage|addWarningMSG")) args3.add("<message>");
+                if (args[2].matches("(?i)addCommand")) args3.add("<command>");
+                if (args[2].matches("(?i)addWarningTime|setSafeWorldDelay")) args3.add("<time>");
 
                 StringUtil.copyPartialMatches(args[3], args3, args3Comp);
                 Collections.sort(args3Comp);
