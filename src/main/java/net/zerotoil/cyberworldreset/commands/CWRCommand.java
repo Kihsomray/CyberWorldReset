@@ -63,6 +63,10 @@ public class CWRCommand implements CommandExecutor {
                 if (noPlayerPerm(player, "admin.reload")) return true;
 
                 main.lang().getMsg("reloading").send(player, true, new String[]{}, new String[]{});
+                if (main.worlds().isWorldResetting()) {
+                    main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
+                    return true;
+                }
                 main.worlds().cancelTimers();
                 main.loadCache();
                 main.lang().getMsg("reloaded").send(player, true, new String[]{}, new String[]{});
@@ -118,6 +122,11 @@ public class CWRCommand implements CommandExecutor {
                 // if (!main.langUtils().hasParentPerm(player, "CyberWorldReset.admin")) return true;
                 if (noSetupsExist(player)) return true;
                 if (setupDoesNotExist(player, args[1])) return true;
+
+                if (main.worlds().getWorld(args[1]).isResetting()) {
+                    main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
+                    return true;
+                }
 
                 if (args[2].matches("(?i)setEnabled")) return setEnabled(player, args[1], args[3]);
 
@@ -253,6 +262,14 @@ public class CWRCommand implements CommandExecutor {
             main.lang().getMsg("setup-already-exists").send(player, true, new String[]{"world"}, new String[]{worldName});
             return true;
         }
+        if (worldName.equalsIgnoreCase(main.worldUtils().getLevelName())) {
+            main.lang().getMsg("default-world-fail").send(player, true, new String[]{"world"}, new String[]{worldName});
+            return true;
+        }
+        if (main.worlds().getWorld(worldName).isResetting()) {
+            main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
+            return true;
+        }
         main.worlds().createWorld(worldName, player);
         return true;
     }
@@ -363,6 +380,10 @@ public class CWRCommand implements CommandExecutor {
         if (notBoolean(player, value)) return true;
         boolean enable = Boolean.parseBoolean(value);
         if (enable) {
+            if (main.worlds().getWorld(worldName).getSafeWorld() == null){
+
+            }
+
             if (Bukkit.getWorld(main.worlds().getWorld(worldName).getSafeWorld()) == null) {
                 main.lang().getMsg("world-not-exist").send(player, true, new String[]{"world"}, new String[]{value});
                 return true;

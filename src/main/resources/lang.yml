@@ -39,6 +39,9 @@ messages:
   same-world-fail: '&cYou cannot set the safe world to be the same as the world you''re resetting ("{world}")!'
   unload-failed: '&cThe world "{world}" failed to unload!'
   already-resetting: '&cThe world "{world}" is already resetting!'
+  resetting-error: '&cA world is being reset. This action cannot be completed.'
+
+
   setup-created: '&aThe world setup "{world}" has been created! Edit it using &7/cwr edit <world> <setting> <value>&a.'
   setup-already-exists: '&cThe world setup "{world}" already exists! Edit it using &a/cwr edit <world> <setting> <value>&7.'
   no-setups-found: '&cNo world setups found. Create one with &7/cwr create [<world>]&c.'

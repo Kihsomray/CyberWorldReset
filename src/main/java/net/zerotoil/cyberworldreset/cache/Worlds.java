@@ -200,6 +200,14 @@ public class Worlds {
         }
     }
 
+    public boolean isWorldResetting() {
+        if (worlds.isEmpty()) return false;
+        for (WorldObject worldObject : worlds.values()) {
+            if (worldObject.isResetting()) return true;
+        }
+        return false;
+    }
+
     private boolean isSet(String location) {
         return config.isSet("worlds." + location);
     }
