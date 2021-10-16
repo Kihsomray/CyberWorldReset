@@ -598,7 +598,7 @@ public class WorldObject {
         return warningTime;
     }
 
-    public void setEnabled(boolean enabled) { // TODO - Add enabled checker
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
     public void setWorldName(String worldName) {
@@ -623,7 +623,7 @@ public class WorldObject {
         }
 
     }
-    public void setDefaultGamemode(String defaultGamemode) { // TODO - Add default gamemode
+    public void setDefaultGamemode(String defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
     }
     public void setCommands(List<String> commands) {

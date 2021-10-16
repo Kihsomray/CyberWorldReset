@@ -59,13 +59,15 @@ public class TimedReset {
 
         Calendar cal = Calendar.getInstance();
 
-        String yearNow = new SimpleDateFormat("YYYY").format(cal.getTime());
+        String yearNow = new SimpleDateFormat("yyyy").format(cal.getTime());
         String monthNow = new SimpleDateFormat("MM").format(cal.getTime());
         String dayNow = new SimpleDateFormat("dd").format(cal.getTime());
 
-        String hourNow = new SimpleDateFormat("hh").format(cal.getTime());
+        String hourNow = new SimpleDateFormat("HH").format(cal.getTime());
         String minuteNow = new SimpleDateFormat("mm").format(cal.getTime());
         String secondNow = new SimpleDateFormat("ss").format(cal.getTime());
+
+        //System.out.println(yearNow + " " + monthNow + " " + dayNow + " " + hourNow + ":" + minuteNow);
         int secondNowInt = Integer.parseInt(secondNow);
 
         // if using current time
@@ -76,7 +78,12 @@ public class TimedReset {
         if (time[0].equals("**")) time[0] = hourNow;
         if (time[1].equals("**")) time[1] = minuteNow;
 
-        if (dateTimeInterval.length == 3) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date startDate = format.parse(yearNow + "/" + monthNow + "/" + dayNow + " " + hourNow + ":" + minuteNow + ":" + secondNow);
+        Date endDate = format.parse(date[0] + "/" + date[1] + "/" + date[2] + " " + time[0] + ":" + time[1] + ":00");
+        long difference = endDate.getTime() - startDate.getTime();
+
+        if ((dateTimeInterval.length == 3) && (endDate.getTime() < startDate.getTime())) {
             unformattedInterval = dateTimeInterval[2];
 
             int preTimeInterval = Integer.parseInt(unformattedInterval.replaceAll("[^0-9]", ""));
@@ -84,13 +91,20 @@ public class TimedReset {
 
             switch (intervalFormatter) {
                 case 'm':
-                    intervalSeconds = preTimeInterval * 60 - secondNowInt;
+
+                    intervalSeconds = (preTimeInterval * 60) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 60));
+                    //intervalSeconds = preTimeInterval * 60 - secondNowInt;
+                    //System.out.println(intervalSeconds);
                     break;
                 case 'h':
-                    intervalSeconds = preTimeInterval * 3600 - secondNowInt;
+                    intervalSeconds = (preTimeInterval * 3600) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 3600));
+                    //intervalSeconds = preTimeInterval * 3600 - secondNowInt;
+                    //System.out.println(intervalSeconds);
                     break;
                 case 'd':
-                    intervalSeconds = preTimeInterval * 86400 - secondNowInt;
+                    intervalSeconds = (preTimeInterval * 86400) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 86400));
+                    //intervalSeconds = preTimeInterval * 86400 - secondNowInt;
+                    //System.out.println(intervalSeconds);
                     break;
                 case 'M':
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy MM dd ss");
@@ -110,22 +124,21 @@ public class TimedReset {
 
                     }
 
-                    LocalDate startDate = LocalDate.parse(date[0] + " " + date[1] + " " + date[2] + " " + secondNow, dtf);
-                    LocalDate endDate = LocalDate.parse(endDateString + " 00", dtf);
-                    intervalSeconds = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay()).toDays() * 86400;
+                    LocalDate startDate2 = LocalDate.parse(date[0] + " " + date[1] + " " + date[2] + " " + secondNow, dtf);
+                    LocalDate endDate2 = LocalDate.parse(endDateString + " 00", dtf);
+                    intervalSeconds = Duration.between(startDate2.atStartOfDay(), endDate2.atStartOfDay()).toDays() * 86400;
+                    //System.out.println(intervalSeconds);
                     break;
 
             }
 
         } else {
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-            Date startDate = format.parse(yearNow + "/" + monthNow + "/" + dayNow + " " + hourNow + ":" + minuteNow + ":" + secondNow);
-            Date endDate = format.parse(date[0] + "/" + date[1] + "/" + date[2] + " " + time[0] + ":" + time[1] + ":00");
-            intervalSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
+            intervalSeconds = difference / 1000;
 
         }
+
+        //System.out.println(time[0]);
 
         if (intervalSeconds <= 0) return;
 
@@ -144,6 +157,7 @@ public class TimedReset {
                         try {
                             main.worlds().getWorld(world).sendWarning(unformatted);
                         } catch (Exception e) {
+                            // nothing
                         }
                         warningTimers.get(0).cancel();
                         warningTimers.get(0).purge();
@@ -182,7 +196,7 @@ public class TimedReset {
                     }
                 }
 
-            }).runTaskLater(main, 20L * 10); // TODO - Add delay option to config
+            }).runTaskLater(main, 20L * 10);
 
         }
 
@@ -220,7 +234,6 @@ public class TimedReset {
 
     }
 
-    // TODO - Add to PlaceholderAPI
     public long timeToReset() {
         return (long) (resetTime / 1000 - (Math.floor(System.currentTimeMillis() / 1000.0)));
     }
