@@ -3,6 +3,7 @@ package net.zerotoil.cyberworldreset.commands;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -43,120 +44,9 @@ public class CWRCommand implements CommandExecutor {
             uuid = player.getUniqueId().toString();
         }
 
-        if (args.length == 1) {
+        if (args.length == 1) return argsLen1(sender, player, args);
 
-            if (args[0].matches("(?i)about|version")) {
-
-                if (noPlayerPerm(player, "player.about")) return true;
-
-                sender.sendMessage(main.langUtils().getColor("&b&lCyber&f&lWorldReset &fv" + main.getDescription().getVersion() + " &7(&7&nhttps://bit.ly/2YSlqYq&7).", false));
-                sender.sendMessage(main.langUtils().getColor("&fDeveloped by &b" + main.getAuthors() + "&f.", false));
-                sender.sendMessage(main.langUtils().getColor("&7Easily regenerate worlds with little to no TPS drop. Simply set up a recursive", false));
-                sender.sendMessage(main.langUtils().getColor("&7timer or a specific time & date you want the world to reset, and you’re all set!", false));
-                return true;
-
-            }
-
-            // reload the plugin
-            if (args[0].matches("(?i)reload")) {
-
-                if (noPlayerPerm(player, "admin.reload")) return true;
-
-                main.lang().getMsg("reloading").send(player, true, new String[]{}, new String[]{});
-                if (main.worlds().isWorldResetting()) {
-                    main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
-                    return true;
-                }
-                main.worlds().cancelTimers();
-                main.loadCache();
-                main.lang().getMsg("reloaded").send(player, true, new String[]{}, new String[]{});
-                return true;
-
-            }
-
-            // confirm regeneration of world
-            if (args[0].matches("(?i)confirm")) {
-                if (confirmation.containsKey(player)) {
-                    main.worlds().getWorld(confirmation.get(player)).regenWorld(player);
-                    confirmation.remove(player);
-                } else {
-                    main.lang().getMsg("confirmation-not-required").send(player, true, new String[]{}, new String[]{});
-                }
-                return true;
-            }
-
-            // regenerate current world
-            if (args[0].matches("(?i)regen|regenerate|reset")) return regenWorld(player, player.getWorld().getName());
-
-            // save current world
-            if (args[0].matches("(?i)save|backup")) return saveWorld(player, player.getWorld().getName());
-
-            // create a new setup for current world
-            if (args[0].matches("(?i)create|setup")) return createSetup(player, player.getWorld().getName());
-
-            // send the info of the current world
-            if (args[0].matches("(?i)info")) return sendInfo(player, player.getWorld().getName());
-
-        }
-
-        if (args.length == 2) {
-
-
-            // regenerate specific world
-            if (args[0].matches("(?i)regen|regenerate|reset")) return regenWorld(player, args[1]);
-
-            // save specific world
-            if (args[0].matches("(?i)save|backup")) return saveWorld(player, args[1]);
-
-            // create a new setup for specific world
-            if (args[0].matches("(?i)create|setup")) return createSetup(player, args[1]);
-
-            // send the info of specific world
-            if (args[0].matches("(?i)info")) return sendInfo(player, args[1]);
-
-        }
-
-        if (args.length == 4) {
-
-            if (args[0].matches("(?i)edit")) {
-                // if (!main.langUtils().hasParentPerm(player, "CyberWorldReset.admin")) return true;
-                if (noSetupsExist(player)) return true;
-                if (setupDoesNotExist(player, args[1])) return true;
-
-                if (main.worlds().getWorld(args[1]).isResetting()) {
-                    main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
-                    return true;
-                }
-
-                if (args[2].matches("(?i)setEnabled")) return setEnabled(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)enableLastSaved")) return enabledLastSaved(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)enableSafeWorld")) return enabledSafeWorld(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)setSeed")) return setSeed(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)setSafeWorld")) return setSafeWorld(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)setSafeWorldDelay")) return setSafeWorldDelay(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)addWarningTime")) return addWarningTime(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)enableWarning")) return enableWarning(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)delCommand")) return delCommand(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)delMessage")) return delMessage(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)delTimer")) return delTimer(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)delWarningMSG")) return delWarningMessage(player, args[1], args[3]);
-
-                if (args[2].matches("(?i)delWarningTime")) return delWarningTime(player, args[1], args[3]);
-
-            }
-
-        }
+        if (args.length == 2) return argsLen2(sender, player, args);
 
         if (args.length > 3 && args[0].matches("(?i)edit")) {
             if (args[2].matches("(?i)addTimer")) {
@@ -189,7 +79,129 @@ public class CWRCommand implements CommandExecutor {
 
         }
 
-        // TODO Finish commands
+        if (args.length == 4) return argsLen4(sender, player, args);
+
+        return main.langUtils().sendHelpMSG(player);
+
+    }
+
+    private boolean argsLen1(CommandSender sender, Player player, String[] args) {
+        if (args[0].matches("(?i)about|version")) {
+
+            if (noPlayerPerm(player, "player.about")) return true;
+
+            sender.sendMessage(main.langUtils().getColor("&b&lCyber&f&lWorldReset &fv" + main.getDescription().getVersion() + " &7(&7&nhttps://bit.ly/2YSlqYq&7).", false));
+            sender.sendMessage(main.langUtils().getColor("&fDeveloped by &b" + main.getAuthors() + "&f.", false));
+            sender.sendMessage(main.langUtils().getColor("&7Easily regenerate worlds with little to no TPS drop. Simply set up a recursive", false));
+            sender.sendMessage(main.langUtils().getColor("&7timer or a specific time & date you want the world to reset, and you’re all set!", false));
+            return true;
+
+        }
+
+        // reload the plugin
+        if (args[0].matches("(?i)reload")) {
+
+            if (noPlayerPerm(player, "admin.reload")) return true;
+
+            main.lang().getMsg("reloading").send(player, true, new String[]{}, new String[]{});
+            if (main.worlds().isWorldResetting()) {
+                main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
+                return true;
+            }
+            main.worlds().cancelTimers();
+            main.loadCache();
+            main.lang().getMsg("reloaded").send(player, true, new String[]{}, new String[]{});
+            return true;
+
+        }
+
+        // confirm regeneration of world
+        if (args[0].matches("(?i)confirm")) {
+            if (confirmation.containsKey(player)) {
+                main.worlds().getWorld(confirmation.get(player)).regenWorld(player);
+                confirmation.remove(player);
+            } else {
+                main.lang().getMsg("confirmation-not-required").send(player, true, new String[]{}, new String[]{});
+            }
+            return true;
+        }
+
+        String playerWorld = player.getWorld().getName();
+
+        // regenerate current world
+        if (args[0].matches("(?i)regen|regenerate|reset")) return regenWorld(player, playerWorld);
+
+        // save current world
+        if (args[0].matches("(?i)save|backup")) return saveWorld(player, playerWorld);
+
+        // create a new setup for current world
+        if (args[0].matches("(?i)create|setup")) return createSetup(player, playerWorld);
+
+        // send the info of the current world
+        if (args[0].matches("(?i)info")) return sendInfo(player, playerWorld);
+
+        return main.langUtils().sendHelpMSG(player);
+
+    }
+
+    private boolean argsLen2(CommandSender sender, Player player, String[] args) {
+        // regenerate specific world
+        if (args[0].matches("(?i)regen|regenerate|reset")) return regenWorld(player, args[1]);
+
+        // save specific world
+        if (args[0].matches("(?i)save|backup")) return saveWorld(player, args[1]);
+
+        // create a new setup for specific world
+        if (args[0].matches("(?i)create|setup")) return createSetup(player, args[1]);
+
+        // send the info of specific world
+        if (args[0].matches("(?i)info")) return sendInfo(player, args[1]);
+
+        return main.langUtils().sendHelpMSG(player);
+
+    }
+
+    private boolean argsLen4(CommandSender sender, Player player, String[] args) {
+
+        if (args[0].matches("(?i)edit")) {
+            // if (!main.langUtils().hasParentPerm(player, "CyberWorldReset.admin")) return true;
+            if (noSetupsExist(player)) return true;
+            if (setupDoesNotExist(player, args[1])) return true;
+
+            if (main.worlds().getWorld(args[1]).isResetting()) {
+                main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
+                return true;
+            }
+
+            if (args[2].matches("(?i)setEnabled")) return setEnabled(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)enableLastSaved")) return enabledLastSaved(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)enableSafeWorld")) return enabledSafeWorld(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)setSeed")) return setSeed(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)setSafeWorld")) return setSafeWorld(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)setSafeWorldDelay")) return setSafeWorldDelay(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)addWarningTime")) return addWarningTime(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)enableWarning")) return enableWarning(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)delCommand")) return delCommand(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)delMessage")) return delMessage(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)delTimer")) return delTimer(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)delWarningMSG")) return delWarningMessage(player, args[1], args[3]);
+
+            if (args[2].matches("(?i)delWarningTime")) return delWarningTime(player, args[1], args[3]);
+
+            return main.langUtils().sendHelpMSG(player);
+
+        }
 
         return main.langUtils().sendHelpMSG(player);
 
@@ -251,7 +263,10 @@ public class CWRCommand implements CommandExecutor {
         if (noPlayerPerm(player, "admin.save")) return true;
         if (noSetupsExist(player)) return true;
         if (setupDoesNotExist(player, worldName)) return true;
-
+        if (main.worlds().getWorld(worldName).isResetting()) {
+            main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
+            return true;
+        }
         main.worlds().getWorld(worldName).saveWorld(player, true);
         return true;
     }
@@ -264,10 +279,6 @@ public class CWRCommand implements CommandExecutor {
         }
         if (worldName.equalsIgnoreCase(main.worldUtils().getLevelName())) {
             main.lang().getMsg("default-world-fail").send(player, true, new String[]{"world"}, new String[]{worldName});
-            return true;
-        }
-        if (main.worlds().getWorld(worldName).isResetting()) {
-            main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
             return true;
         }
         main.worlds().createWorld(worldName, player);
@@ -381,15 +392,16 @@ public class CWRCommand implements CommandExecutor {
         boolean enable = Boolean.parseBoolean(value);
         if (enable) {
             if (main.worlds().getWorld(worldName).getSafeWorld() == null){
-
+                main.lang().getMsg("safeworld-not-set").send(player, true, new String[]{"world"}, new String[]{worldName});
+                return true;
             }
 
             if (Bukkit.getWorld(main.worlds().getWorld(worldName).getSafeWorld()) == null) {
-                main.lang().getMsg("world-not-exist").send(player, true, new String[]{"world"}, new String[]{value});
+                main.lang().getMsg("world-not-exist").send(player, true, new String[]{"world"}, new String[]{worldName});
                 return true;
             }
             if (Bukkit.getWorld(main.worlds().getWorld(worldName).getSafeWorld()) == main.worlds().getWorld(worldName).getWorld()) {
-                main.lang().getMsg("same-world-fail").send(player, true, new String[]{"world"}, new String[]{value});
+                main.lang().getMsg("same-world-fail").send(player, true, new String[]{"world"}, new String[]{worldName});
                 return true;
             }
         }
@@ -448,6 +460,8 @@ public class CWRCommand implements CommandExecutor {
         times.add(number);
         if (worldSetting(player, worldName, "settings.warning.time", times)) {
             main.worlds().getWorld(worldName).setWarningTime(times);
+            main.worlds().getWorld(worldName).cancelTimers();
+            main.worlds().getWorld(worldName).loadTimedResets();
             infoWarning(player, worldName);
         }
         return true;
@@ -553,10 +567,12 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean setSafeWorldDelay(Player player, String worldName, String value) {
-        long delay = 10;
+        long delay;
         try {
             delay = Long.parseLong(value);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            delay = 10;
+        }
         if (worldSetting(player, worldName, "settings.safe-world.delay", delay)) {
             main.worlds().getWorld(worldName).setSafeWorldDelay(delay);
             infoSafeWorld(player, worldName);

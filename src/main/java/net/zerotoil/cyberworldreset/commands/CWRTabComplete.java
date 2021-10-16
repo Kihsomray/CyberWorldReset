@@ -188,6 +188,4 @@ public class CWRTabComplete implements TabCompleter {
         return (arg0.equalsIgnoreCase(command) && args0.contains(command));
     }
 
-    // TODO - Add tab complete
-
 }

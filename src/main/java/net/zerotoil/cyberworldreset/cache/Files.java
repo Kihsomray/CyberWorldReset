@@ -2,15 +2,16 @@ package net.zerotoil.cyberworldreset.cache;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.SavedFile;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class Files {
 
     private CyberWorldReset main;
     private HashMap<String, SavedFile> files = new HashMap<>();
+    private int ymls = 0;
 
     public Files(CyberWorldReset main) {
 
@@ -20,7 +21,8 @@ public class Files {
 
     public void loadFiles() {
         if (!files.isEmpty()) files.clear();
-        Bukkit.getLogger().info("[CyberWorldReset] Loading Files...");
+        main.logger("&bLoading YAML files...");
+        long startTime = System.currentTimeMillis();
 
         // front end
         addFile("config");
@@ -28,14 +30,17 @@ public class Files {
         addFile("worlds");
 
         // back end
-        java.io.File savedWorlds = new java.io.File(main.getDataFolder(),"saved_worlds");
+        File savedWorlds = new File(main.getDataFolder(),"saved_worlds");
         if (!savedWorlds.exists()) savedWorlds.mkdirs();
 
+        main.logger("&7Loaded &e" + ymls + "&7 files in &a" + (System.currentTimeMillis() - startTime) + "ms&7.");
+        main.logger("");
     }
 
     private void addFile(String file) {
+        ymls++;
         files.put(file, new SavedFile(main, file + ".yml"));
-        Bukkit.getLogger().info("[CyberWorldReset] Loaded file \"" + file + ".yml\".");
+        main.logger("&7Loaded file &e" + file + ".yml&7.");
     }
 
     public HashMap<String, SavedFile> getFiles() {

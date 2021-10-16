@@ -9,6 +9,7 @@ import net.zerotoil.cyberworldreset.objects.Lag;
 import net.zerotoil.cyberworldreset.utilities.*;
 import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CyberWorldReset extends JavaPlugin {
@@ -36,6 +37,7 @@ public final class CyberWorldReset extends JavaPlugin {
     public boolean isPremium() {
         return premium;
     }
+    public int events = 0;
     public String getEdition() {
         String edition = "Standard";
         if (premium) edition = "Premium";
@@ -106,10 +108,16 @@ public final class CyberWorldReset extends JavaPlugin {
         this.getCommand("cwr").setTabCompleter(cwrTabComplete);
 
         // addons
-        Metrics metrics = new Metrics(this, 13007);
+        new Metrics(this, 13007);
 
-        Bukkit.getLogger().info("[CyberWorldReset] Loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        logger("&7Loaded &bCWR v" + getDescription().getVersion() + "&7 in &a" +
+                (System.currentTimeMillis() - startTime) + "ms&7.");
+        logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");
+    }
 
+    public void logger(String msg) {
+        msg = ChatColor.translateAlternateColorCodes('&', msg);
+        getLogger().info(msg);
     }
 
     private void loadUtilities() {
@@ -133,24 +141,30 @@ public final class CyberWorldReset extends JavaPlugin {
 
     private void loadListeners() {
         // load listeners
-        Bukkit.getLogger().info("[CyberWorldReset] Loading Listeners...");
+        logger("&bLoading Listeners...");
+        long startTime = System.currentTimeMillis();
         onJoin = new OnJoin(this);
         onWorldChange = new OnWorldChange(this);
         onDamage = new OnDamage(this);
         onWorldCreate = new OnWorldCreate(this);
+        logger("&7Loaded listeners in &a" + (System.currentTimeMillis() - startTime) + "ms&7.");
+        logger("");
     }
 
     public void sendBootMSG() {
         if (!SystemUtils.OS_NAME.contains("Windows")) {
-            Bukkit.getLogger().info("╭━━━╮╱╱╱╭╮╱╱╱╱╱╱╭╮╭╮╭╮╱╱╱╱╭╮╱╱╭┳━━━╮╱╱╱╱╱╱╱╱╭╮");
-            Bukkit.getLogger().info("┃╭━╮┃╱╱╱┃┃╱╱╱╱╱╱┃┃┃┃┃┃╱╱╱╱┃┃╱╱┃┃╭━╮┃╱╱╱╱╱╱╱╭╯╰╮");
-            Bukkit.getLogger().info("┃┃╱╰╋╮╱╭┫╰━┳━━┳━┫┃┃┃┃┣━━┳━┫┃╭━╯┃╰━╯┣━━┳━━┳━┻╮╭╯");
-            Bukkit.getLogger().info("┃┃╱╭┫┃╱┃┃╭╮┃┃━┫╭┫╰╯╰╯┃╭╮┃╭┫┃┃╭╮┃╭╮╭┫┃━┫━━┫┃━┫┃");
-            Bukkit.getLogger().info("┃╰━╯┃╰━╯┃╰╯┃┃━┫┃╰╮╭╮╭┫╰╯┃┃┃╰┫╰╯┃┃┃╰┫┃━╋━━┃┃━┫╰╮");
-            Bukkit.getLogger().info("╰━━━┻━╮╭┻━━┻━━┻╯╱╰╯╰╯╰━━┻╯╰━┻━━┻╯╰━┻━━┻━━┻━━┻━╯");
-            Bukkit.getLogger().info("╱╱╱╱╭━╯┃  Authors: " + getAuthors());
-            Bukkit.getLogger().info("╱╱╱╱╰━━╯  Version: " + this.getDescription().getVersion() + "-BETA [" + getEdition() + "]");
+            logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");
+            logger("&b╭━━━╮&7╱╱╱&b╭╮&7╱╱╱╱╱╱&b╭╮╭╮╭╮&7╱╱╱╱&b╭╮&7╱╱&b╭┳━━━╮&7╱╱╱╱╱╱╱╱&b╭╮");
+            logger("&b┃╭━╮┃&7╱╱╱&b┃┃&7╱╱╱╱╱╱&b┃┃┃┃┃┃&7╱╱╱╱&b┃┃&7╱╱&b┃┃╭━╮┃&7╱╱╱╱╱╱╱&b╭╯╰╮");
+            logger("&b┃┃&7╱&b╰╋╮&7╱&b╭┫╰━┳━━┳━┫┃┃┃┃┣━━┳━┫┃╭━╯┃╰━╯┣━━┳━━┳━┻╮╭╯");
+            logger("&b┃┃&7╱&b╭┫┃&7╱&b┃┃╭╮┃┃━┫╭┫╰╯╰╯┃╭╮┃╭┫┃┃╭╮┃╭╮╭┫┃━┫━━┫┃━┫┃");
+            logger("&b┃╰━╯┃╰━╯┃╰╯┃┃━┫┃╰╮╭╮╭┫╰╯┃┃┃╰┫╰╯┃┃┃╰┫┃━╋━━┃┃━┫╰╮");
+            logger("&b╰━━━┻━╮╭┻━━┻━━┻╯&7╱&b╰╯╰╯╰━━┻╯╰━┻━━┻╯╰━┻━━┻━━┻━━┻━╯");
+            logger("&7╱╱╱╱&b╭━╯┃  &7Authors: &f" + getAuthors());
+            logger("&7╱╱╱╱&b╰━━╯  &7Version: &f" + this.getDescription().getVersion() + "-BETA [" + getEdition() + "]");
         }
+        logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");
+        logger("");
     }
 
     public String getAuthors() {

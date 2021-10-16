@@ -14,6 +14,7 @@ public class OnWorldCreate implements Listener {
     public OnWorldCreate(CyberWorldReset main) {
         this.main = main;
         Bukkit.getPluginManager().registerEvents(this, main);
+        main.events++;
     }
 
 
