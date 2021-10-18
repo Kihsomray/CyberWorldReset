@@ -4,7 +4,7 @@ import net.zerotoil.cyberworldreset.addons.Metrics;
 import net.zerotoil.cyberworldreset.cache.*;
 import net.zerotoil.cyberworldreset.commands.CWRCommand;
 import net.zerotoil.cyberworldreset.commands.CWRTabComplete;
-import net.zerotoil.cyberworldreset.listeners.*;
+import net.zerotoil.cyberworldreset.events.*;
 import net.zerotoil.cyberworldreset.objects.Lag;
 import net.zerotoil.cyberworldreset.utilities.*;
 import org.apache.commons.lang.SystemUtils;
@@ -100,7 +100,7 @@ public final class CyberWorldReset extends JavaPlugin {
 
         loadUtilities();
         loadCache();
-        loadListeners();
+        loadEvents();
 
         // commands
         cwrCommand = new CWRCommand(this);
@@ -139,15 +139,15 @@ public final class CyberWorldReset extends JavaPlugin {
         worlds.loadWorlds(false);
     }
 
-    private void loadListeners() {
+    private void loadEvents() {
         // load listeners
-        logger("&bLoading Listeners...");
+        logger("&bLoading events...");
         long startTime = System.currentTimeMillis();
         onJoin = new OnJoin(this);
         onWorldChange = new OnWorldChange(this);
         onDamage = new OnDamage(this);
         onWorldCreate = new OnWorldCreate(this);
-        logger("&7Loaded listeners in &a" + (System.currentTimeMillis() - startTime) + "ms&7.");
+        logger("&7Loaded events in &a" + (System.currentTimeMillis() - startTime) + "ms&7.");
         logger("");
     }
 

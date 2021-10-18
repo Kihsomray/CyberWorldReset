@@ -3,7 +3,6 @@ package net.zerotoil.cyberworldreset.commands;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -373,6 +372,8 @@ public class CWRCommand implements CommandExecutor {
         }
     }
     private boolean setEnabled(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.enable")) return true;
+
         if (notBoolean(player, value)) return true;
         if (worldSetting(player, worldName, "enabled", Boolean.parseBoolean(value))) {
             main.worlds().getWorld(worldName).setEnabled(Boolean.parseBoolean(value));
@@ -382,12 +383,16 @@ public class CWRCommand implements CommandExecutor {
         return true;
     }
     private boolean enabledLastSaved(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.lastsaved")) return true;
+
         if (notBoolean(player, value)) return true;
         if (worldSetting(player, worldName, "last-saved", Boolean.parseBoolean(value)))
             main.worlds().getWorld(worldName).setLastSaved(Boolean.parseBoolean(value));
         return true;
     }
     private boolean enabledSafeWorld(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.safeworld")) return true;
+
         if (notBoolean(player, value)) return true;
         boolean enable = Boolean.parseBoolean(value);
         if (enable) {
@@ -412,6 +417,10 @@ public class CWRCommand implements CommandExecutor {
         return true;
     }
     private boolean addTimer(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.timer")) return true;
+        if (noSetupsExist(player)) return true;
+        if (setupDoesNotExist(player, worldName)) return true;
+
         List<String> timers = main.worlds().getWorld(worldName).getTime();
         timers.add(value);
         if (worldSetting(player, worldName, "settings.time", timers)) {
@@ -424,6 +433,10 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean addMessage(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.message")) return true;
+        if (noSetupsExist(player)) return true;
+        if (setupDoesNotExist(player, worldName)) return true;
+
         List<String> messages = main.worlds().getWorld(worldName).getMessage();
         messages.add(value);
         if (worldSetting(player, worldName, "settings.messages", messages) || worldSetting(player, worldName, "settings.message", null)) {
@@ -434,6 +447,10 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean addWarningMSG(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.warnings")) return true;
+        if (noSetupsExist(player)) return true;
+        if (setupDoesNotExist(player, worldName)) return true;
+
         List<String> messages = main.worlds().getWorld(worldName).getWarningMessage();
         messages.add(value);
         if (worldSetting(player, worldName, "settings.warning.message", messages)) {
@@ -444,6 +461,10 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean addCommand(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.commands")) return true;
+        if (noSetupsExist(player)) return true;
+        if (setupDoesNotExist(player, worldName)) return true;
+
         List<String> commands = main.worlds().getWorld(worldName).getCommands();
         commands.add(value);
         if (worldSetting(player, worldName, "settings.commands", commands)) {
@@ -454,6 +475,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean addWarningTime(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.warnings")) return true;
+
         if (notLong(player, value)) return true;
         long number = Math.max(Long.parseLong(value), 0);
         List<Long> times = main.worlds().getWorld(worldName).getWarningTime();
@@ -468,6 +491,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean enableWarning(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.warnings")) return true;
+
         if (notBoolean(player, value)) return true;
         boolean bool = Boolean.parseBoolean(value);
         if (bool && main.worlds().getWorld(worldName).getWarningMessage().size() == 0) {
@@ -482,6 +507,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean delCommand(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.commands")) return true;
+
         if (notLong(player, value)) return true;
         int number = (int) Math.max(Long.parseLong(value), 0);
         List<String> commands = main.worlds().getWorld(worldName).getCommands();
@@ -499,6 +526,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean delMessage(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.message")) return true;
+
         if (notLong(player, value)) return true;
         int number = (int) Math.max(Long.parseLong(value), 0);
         List<String> messages = main.worlds().getWorld(worldName).getMessage();
@@ -516,6 +545,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean delTimer(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.timer")) return true;
+
         if (notLong(player, value)) return true;
         int number = (int) Math.max(Long.parseLong(value), 0);
         List<String> timers = main.worlds().getWorld(worldName).getTime();
@@ -533,6 +564,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean delWarningMessage(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.warnings")) return true;
+
         if (notLong(player, value)) return true;
         int number = (int) Math.max(Long.parseLong(value), 0);
         List<String> messages = main.worlds().getWorld(worldName).getWarningMessage();
@@ -550,6 +583,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean delWarningTime(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.warnings")) return true;
+
         if (notLong(player, value)) return true;
         int number = (int) Math.max(Long.parseLong(value), 0);
         List<Long> times = main.worlds().getWorld(worldName).getWarningTime();
@@ -567,6 +602,8 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean setSafeWorldDelay(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.safeworld")) return true;
+
         long delay;
         try {
             delay = Long.parseLong(value);
@@ -581,11 +618,16 @@ public class CWRCommand implements CommandExecutor {
     }
 
     private boolean setSeed(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.seed")) return true;
+
         if (worldSetting(player, worldName, "settings.seed", value))
             main.worlds().getWorld(worldName).setSeed(value);
         return true;
     }
+
     private boolean setSafeWorld(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.safeworld")) return true;
+
         if (Bukkit.getWorld(value) == null) {
             main.lang().getMsg("world-not-exist").send(player, true, new String[]{"world"}, new String[]{value});
             return true;

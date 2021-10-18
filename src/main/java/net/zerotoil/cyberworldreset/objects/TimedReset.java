@@ -92,22 +92,26 @@ public class TimedReset {
             switch (intervalFormatter) {
                 case 'm':
 
-                    intervalSeconds = (preTimeInterval * 60) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 60));
+                    intervalSeconds = (preTimeInterval * 60L) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 60L));
                     //intervalSeconds = preTimeInterval * 60 - secondNowInt;
                     //System.out.println(intervalSeconds);
                     break;
                 case 'h':
-                    intervalSeconds = (preTimeInterval * 3600) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 3600));
+                    intervalSeconds = (preTimeInterval * 3600L) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 3600L));
                     //intervalSeconds = preTimeInterval * 3600 - secondNowInt;
                     //System.out.println(intervalSeconds);
                     break;
                 case 'd':
-                    intervalSeconds = (preTimeInterval * 86400) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 86400));
+                    intervalSeconds = (preTimeInterval * 86400L) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 86400L));
                     //intervalSeconds = preTimeInterval * 86400 - secondNowInt;
                     //System.out.println(intervalSeconds);
                     break;
                 case 'M':
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy MM dd ss");
+
+                    // current time
+                    // interval
+
 
                     String endDay = date[2];
                     if (Month.of(checkZero((Integer.parseInt(date[1]) + preTimeInterval) % 12)).length(false) < Integer.parseInt(date[2])) {

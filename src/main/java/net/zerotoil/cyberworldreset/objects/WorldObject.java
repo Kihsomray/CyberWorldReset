@@ -44,12 +44,15 @@ public class WorldObject {
     // teleport player module
     private List<Player> tpPlayers = new ArrayList<>();
 
+    private boolean recursiveLoading;
     private long loadDelay;
     private ArrayList<Integer> chunkInfo;
     private int xChunk;
     private int zChunk;
     private int chunkNumber;
     private int chunkCounter;
+
+    private Map<Long, List<Integer>> chunks;
 
     private CommandSender console = Bukkit.getConsoleSender();
 
@@ -75,6 +78,8 @@ public class WorldObject {
         loadDelay = main.config().getLoadingDelay();
         resetting = false;
         safeWorldSpawn = "DEFAULT";
+        recursiveLoading = false;
+        if (main.isPremium()) recursiveLoading = true;
 
     }
 
@@ -142,7 +147,10 @@ public class WorldObject {
                 if (main.config().getLoadingType().matches("(?i)ULTRA-FAST")) getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
 
                 // fast, normal, safe, ultra-safe chunk loading
-                if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE")) safeLoadChunks(main.config().getLoadRadius(), sender);
+                if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE")) {
+                    if (recursiveLoading) loadSafeChunksRecursive(main.config().getLoadRadius(), sender);
+                    else safeLoadChunks(main.config().getLoadRadius(), sender);
+                }
                 else finishRegen(sender);
 
             }
@@ -230,7 +238,7 @@ public class WorldObject {
         chunkNumber = 0;
         chunkNumber++;
         chunkCounter = 2;
-        Bukkit.getLogger().info("The world is being created, please wait!");
+        main.logger("&eThe world is being loaded, please wait!");
 
         (new BukkitRunnable() {
 
@@ -238,8 +246,6 @@ public class WorldObject {
             public void run() {
                 printChunkInfo(width);
                 getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
-
-
                 for (int i = 1; i <= radius; i++) {
                     xChunk++;
                     loadChunk(width, sender);
@@ -257,12 +263,12 @@ public class WorldObject {
                         }
                     }
                 }
-
-
             }
-
-
         }).runTaskLater(main, 240L * Math.round(20 / Lag.getTPS()));
+
+        // 20, 40, 60, 80, 100
+
+
 
         /* new BukkitRunnable() {
             public void run() {
@@ -321,9 +327,82 @@ public class WorldObject {
         }*/
     }
 
+    private void loadSafeChunksRecursive(int radius, Player sender) {
+        int width = radius * 2 + 1;
+        int area = width * width;
+        Random random = new Random();
+        chunkInfo = new ArrayList<>();
+
+        int avgMsgInterval = (int) Math.round((random.nextInt(4) + 3) * (20.0 / loadDelay));
+        long numMsg = (area - (area % avgMsgInterval)) / avgMsgInterval;
+        for (int i = 0; i < numMsg; i++) {
+            int test = (random.nextInt(avgMsgInterval) + avgMsgInterval * i);
+            chunkInfo.add(test);
+        }
+        xChunk = 0;
+        zChunk = 0;
+        chunkNumber = 0;
+        chunkNumber++;
+        chunkCounter = 2;
+        Bukkit.getLogger().info("The world is being loaded, please wait!");
+        chunks = new HashMap<>();
+
+
+        (new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                printChunkInfo(width);
+                getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
+
+                int z = 1;
+                for (int i = 1; i <= radius; i++) {
+                    xChunk++;
+                    z++;
+                    chunks.put((long) z, Arrays.asList(xChunk, zChunk));
+                    for (int a = 1; a <= ((i * 2) - 1); a++) {
+                        zChunk--;
+                        z++;
+                        chunks.put((long) z, Arrays.asList(xChunk, zChunk));
+                    }
+                    int w = i * 2;
+                    for (int a = 1; a <= 3; a++) {
+                        for (int b = w; b > 0; b--) {
+                            if (a == 1) xChunk--;
+                            else if (a == 2) zChunk++;
+                            else xChunk++;
+                            z++;
+                            chunks.put((long) z, Arrays.asList(xChunk, zChunk));
+                        }
+                    }
+                }
+                loadChunk(width, sender);
+
+            }
+
+
+        }).runTaskLater(main, 240L * Math.round(20 / Lag.getTPS()));
+
+    }
+
     private void loadChunk(int width, Player sender) {
         Location location = getWorld().getSpawnLocation();
         // System.out.println("Chunk init: " + chunkCounter + ", X: " + xChunk + ", Z: " + zChunk);
+        long delay = 15 + Math.round(loadDelay * chunkCounter);
+        if (recursiveLoading) {
+            xChunk = chunks.get(chunkNumber + 1L).get(0);
+            zChunk = chunks.get(chunkNumber + 1L).get(1);
+
+            if (Lag.getTPS() < 12) {
+                main.logger("Your computer cannot handle this many chunks at this speed.");
+                main.logger("TPS has dropped lower than 12 so the loading of chunks has stopped.");
+                regenFail(null, sender);
+                return;
+            }
+
+            delay = Math.round(100 - (Lag.getTPS() - 10) * (Lag.getTPS() - 10) + loadDelay);
+
+        }
         final int xChunk = this.xChunk;
         final int zChunk = this.zChunk;
 
@@ -332,17 +411,28 @@ public class WorldObject {
             @Override
             public void run() {
                 chunkNumber++;
-                // System.out.println("Chunk: " + chunkNumber + ", X: " + xChunk + ", Z: " + zChunk);
+                System.out.println("Chunk: " + chunkNumber + ", X: " + xChunk + ", Z: " + zChunk);
                 if (chunkInfo.contains(chunkNumber)) printChunkInfo(width);
                 getWorld().loadChunk(location.getBlockX() + xChunk * 16, location.getBlockZ() + zChunk * 16);
                 if (chunkNumber == width * width) {
+
                     printChunkInfo(width);
                     finishRegen(sender);
+
+                } else if (recursiveLoading) {
+
+                    Bukkit.getScheduler().runTask(main, () -> {
+                        loadChunk(width, sender);
+                        this.cancel();
+                    });
+
                 }
+                this.cancel();
+
             }
 
 
-        }).runTaskLater(main, 15L + Math.round(chunkCounter * loadDelay));
+        }).runTaskLater(main, delay);
         chunkCounter++;
 
     }

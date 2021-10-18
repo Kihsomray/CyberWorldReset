@@ -66,7 +66,8 @@ public class CWRTabComplete implements TabCompleter {
             }
 
 
-            if (cmdReq(args[0], args0, "reset") || cmdReq(args[0], args0, "save") || cmdReq(args[0], args0, "edit") || cmdReq(args[0], args0, "info")) {
+            if (cmdReq(args[0], args0, "reset") || cmdReq(args[0], args0, "save") || cmdReq(args[0], args0, "edit")
+                    || cmdReq(args[0], args0, "info") || cmdReq(args[0], args0, "regen")) {
                 args1.addAll(main.worlds().getWorlds().keySet());
             }
 

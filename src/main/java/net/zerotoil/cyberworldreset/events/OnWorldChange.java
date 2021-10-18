@@ -1,4 +1,4 @@
-package net.zerotoil.cyberworldreset.listeners;
+package net.zerotoil.cyberworldreset.events;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import org.bukkit.Bukkit;

@@ -2,6 +2,12 @@ package net.zerotoil.cyberworldreset.utilities;
 
 import net.md_5.bungee.api.ChatColor;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
+import net.zerotoil.cyberworldreset.handlers.ActionBarLegacy;
+import net.zerotoil.cyberworldreset.handlers.ActionBarObject;
+import net.zerotoil.cyberworldreset.handlers.TitleLegacy;
+import net.zerotoil.cyberworldreset.handlers.TitleObject;
+import net.zerotoil.cyberworldreset.interfaces.ActionBar;
+import net.zerotoil.cyberworldreset.interfaces.Title;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -13,12 +19,17 @@ import java.util.regex.Pattern;
 
 public class LangUtils {
 
-    private CyberWorldReset main;
+    private final CyberWorldReset main;
+
+    private final ActionBar actionBar;
+    private final Title title;
 
     private final Pattern HEX_PATTERN = Pattern.compile("\\{#([A-Fa-f0-9]{6})}");
 
     public LangUtils(CyberWorldReset main) {
         this.main = main;
+        this.actionBar = main.getVersion() < 11 ? new ActionBarLegacy() : new ActionBarObject();
+        this.title = main.getVersion() < 10 ? new TitleLegacy() : new TitleObject();
     }
 
     private String getHex(String msg) {
@@ -43,6 +54,17 @@ public class LangUtils {
     public String getColor(String msg, boolean addPrefix){
         msg = addPrefix ? main.lang().getPrefix() + msg : msg;
         return main.getVersion() < 16 ? oldColor(msg) : getHex(msg);
+    }
+
+    public void sendActionBar(Player player, String message) {
+        message = getColor(message, false);
+        actionBar.send(player, message);
+    }
+
+    public void sendTitle(Player player, String[] array, String[] times) {
+        if (array.length == 0 || array.length > 2) return;
+        String subtitle = array.length == 1 ? "" : array[1];
+        title.send(player, array[0], subtitle, Integer.parseInt(times[0]), Integer.parseInt(times[1]), Integer.parseInt(times[2]));
     }
 
     // does player have a permission?
