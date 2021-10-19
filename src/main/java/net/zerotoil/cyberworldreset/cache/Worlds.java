@@ -133,7 +133,11 @@ public class Worlds {
 
                         if (isSet(settings + "warning.time")) worldObject.setWarningTime(config.getLongList("worlds." + settings + "warning.time"));
 
+                        if (isSet(settings + "warning.title.title")) worldObject.setWarningTitle(config.getString("worlds." + settings + "warning.title.title"));
 
+                        if (isSet(settings + "warning.title.sub-title")) worldObject.setWarningSubtitle(config.getString("worlds." + settings + "warning.title.sub-title"));
+
+                        if (isSet(settings + "warning.title.fade")) worldObject.setWarningTitleFade(config.getIntegerList("worlds." + settings + "warning.title.fade"));
                     }
 
                 }

@@ -26,10 +26,6 @@ public class Lag implements Runnable {
 
     public static long getElapsed(int tickID)
     {
-        if (TICK_COUNT - tickID >= TICKS.length) {
-
-        }
-
         long time = TICKS[(tickID % TICKS.length)];
         return System.currentTimeMillis() - time;
     }

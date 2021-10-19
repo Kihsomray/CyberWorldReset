@@ -18,7 +18,7 @@ public class TitleLegacy implements Title, Reflection {
             Object e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get(null);
             Object chatMessage = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + message + "\"}");
             Constructor<?> subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
-            Object titlePacket = subtitleConstructor.newInstance(e, chatMessage, in * 20, stay * 20, out * 20);
+            Object titlePacket = subtitleConstructor.newInstance(e, chatMessage, in, stay, out);
 
             sendPacket(player, titlePacket);
 
@@ -27,7 +27,7 @@ public class TitleLegacy implements Title, Reflection {
             subtitleConstructor = isTitle ?
                     getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent")) :
                     getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
-            titlePacket = isTitle ? subtitleConstructor.newInstance(e, chatMessage) : subtitleConstructor.newInstance(e, chatMessage, in, stay, out);
+            titlePacket = isTitle ? subtitleConstructor.newInstance(e, chatMessage) : subtitleConstructor.newInstance(e, chatMessage, in/20, stay/20, out/20);
 
             sendPacket(player, titlePacket);
         } catch (Exception e) {

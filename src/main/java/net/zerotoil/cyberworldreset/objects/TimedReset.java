@@ -134,6 +134,8 @@ public class TimedReset {
                     //System.out.println(intervalSeconds);
                     break;
 
+                default:
+                    break;
             }
 
         } else {

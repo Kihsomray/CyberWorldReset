@@ -33,7 +33,8 @@ public class LangUtils {
     }
 
     private String getHex(String msg) {
-        String translation = msg; Matcher matcher = HEX_PATTERN.matcher(translation);
+        String translation = msg;
+        Matcher matcher = HEX_PATTERN.matcher(translation);
         while (matcher.find()) {
             String hexString = matcher.group();
             hexString = "#" + hexString.substring(2, hexString.length()-1);
@@ -61,10 +62,9 @@ public class LangUtils {
         actionBar.send(player, message);
     }
 
-    public void sendTitle(Player player, String[] array, String[] times) {
-        if (array.length == 0 || array.length > 2) return;
-        String subtitle = array.length == 1 ? "" : array[1];
-        title.send(player, array[0], subtitle, Integer.parseInt(times[0]), Integer.parseInt(times[1]), Integer.parseInt(times[2]));
+    public void sendTitle(Player player, String theTitle, String subtitle, List<Integer> times) {
+        if (theTitle == null || theTitle.equals("")) return;
+        title.send(player, theTitle, subtitle, times.get(0), times.get(1), times.get(2));
     }
 
     // does player have a permission?

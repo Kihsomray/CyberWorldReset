@@ -37,6 +37,9 @@ public class WorldObject {
     private boolean warningEnabled; // boolean defaults to false
     private List<String> warningMessage = new ArrayList<>();
     private ArrayList<Long> warningTime = new ArrayList<>();
+    private String warningTitle;
+    private String warningSubtitle;
+    private List<Integer> warningTitleFade = new ArrayList<>();
 
     // timed resets module
     private HashMap<String, TimedReset> timedResets= new HashMap<>();
@@ -73,6 +76,11 @@ public class WorldObject {
         warningEnabled = false;
         warningMessage.add("Warning: resetting the world {world} in {time}.");
         warningTime.add(10L);
+
+        warningTitle = null;
+        warningSubtitle = null;
+        warningTitleFade = Arrays.asList(20, 60, 20);
+
         message = new ArrayList<>();
         message.add("");
         loadDelay = main.config().getLoadingDelay();
@@ -411,7 +419,7 @@ public class WorldObject {
             @Override
             public void run() {
                 chunkNumber++;
-                System.out.println("Chunk: " + chunkNumber + ", X: " + xChunk + ", Z: " + zChunk);
+                // System.out.println("Chunk: " + chunkNumber + ", X: " + xChunk + ", Z: " + zChunk);
                 if (chunkInfo.contains(chunkNumber)) printChunkInfo(width);
                 getWorld().loadChunk(location.getBlockX() + xChunk * 16, location.getBlockZ() + zChunk * 16);
                 if (chunkNumber == width * width) {
@@ -573,7 +581,15 @@ public class WorldObject {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld() != getWorld()) continue;
+
             for (String i : warningMessage) player.sendMessage(main.langUtils().getColor(i.replace("{world}", worldName).replace("{time}", time), true));
+
+            // 63 --> 1 minute 3 seconds
+            if (warningTitle == null) continue;
+            String title = main.langUtils().getColor(warningTitle.replace("{world}", worldName).replace("{time}", time), false);
+            String subtitle = main.langUtils().getColor(warningSubtitle.replace("{world}", worldName).replace("{time}", time), false);
+            main.langUtils().sendTitle(player, title, subtitle, warningTitleFade);
+
         }
 
     }
@@ -687,6 +703,21 @@ public class WorldObject {
     public List<Long> getWarningTime() {
         return warningTime;
     }
+    public String getWarningTitle() {
+        return warningTitle;
+    }
+    public String getWarningSubtitle() {
+        return warningSubtitle;
+    }
+    public List<Integer> getWarningTitleFade() {
+        return warningTitleFade;
+    }
+    public boolean isLastSaved() {
+        return lastSaved;
+    }
+    public boolean isResetting() {
+        return resetting;
+    }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -744,14 +775,17 @@ public class WorldObject {
     public void setWarningTime(List<Long> warningTime) {
         this.warningTime = (ArrayList<Long>) warningTime;
     }
+    public void setWarningTitle(String warningTitle) {
+        this.warningTitle = warningTitle;
+    }
+    public void setWarningSubtitle(String warningSubtitle) {
+        this.warningSubtitle = warningSubtitle;
+    }
+    public void setWarningTitleFade(List<Integer> warningTitleFade) {
+        this.warningTitleFade = warningTitleFade;
+    }
     public void setLastSaved(boolean lastSaved) {
         this.lastSaved = lastSaved;
-    }
-    public boolean isLastSaved() {
-        return lastSaved;
-    }
-    public boolean isResetting() {
-        return resetting;
     }
 
 }
