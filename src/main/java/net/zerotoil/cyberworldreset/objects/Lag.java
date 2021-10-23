@@ -32,6 +32,8 @@ public class Lag implements Runnable {
 
     public static double getNewTPS() {
 
+        if (!Bukkit.getServer().getVersion().contains("1.16.5")) return getTPS();
+
         String name1 = Bukkit.getServer().getClass().getPackage().getName();
         String version = name1.substring(name1.lastIndexOf('.') + 1);
 
