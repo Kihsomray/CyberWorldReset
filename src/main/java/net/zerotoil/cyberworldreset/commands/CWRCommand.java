@@ -1,6 +1,7 @@
 package net.zerotoil.cyberworldreset.commands;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
+import net.zerotoil.cyberworldreset.objects.Lag;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -95,6 +96,11 @@ public class CWRCommand implements CommandExecutor {
             sender.sendMessage(main.langUtils().getColor("&7timer or a specific time & date you want the world to reset, and you’re all set!", false));
             return true;
 
+        }
+
+        if (args[0].matches("(?i)tps")) {
+            sender.sendMessage(Lag.getNewTPS() + "");
+            return true;
         }
 
         // reload the plugin

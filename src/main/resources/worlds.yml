@@ -26,13 +26,13 @@ worlds:
         spawn: DEFAULT # use '15, 52, -231' for a custom spawn
       warning:
         enabled: true
-        message: '&cWarning: resetting the world {world} in {time}.' # HERE
-        time: [1800, 600, 300, 60, 5, 3, 2, 1] # seconds before the reset happens
+        message: '&cWarning: resetting the world {world} in {time}.'
+        time: [1800, 600, 300, 60, 5] # seconds before the reset happens
         # 30 minutes, 10 minutes, 5 minutes, 1 minute, 5 seconds
         title:
           title: 'Warning'
           sub-title: 'resetting in {time}!'
-          fade: [1, 3, 1]
+          fade: [20, 60, 20] # fade in, stay, fade out - in ticks
       commands:
         - '[all-players] eco give {player} 500'
         # placeholders: {playerUUID} {playerName} {playerDisplayName} {world}

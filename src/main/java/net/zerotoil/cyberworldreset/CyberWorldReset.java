@@ -1,5 +1,6 @@
 package net.zerotoil.cyberworldreset;
 
+import com.onarandombox.MultiverseCore.MultiverseCore;
 import net.zerotoil.cyberworldreset.addons.Metrics;
 import net.zerotoil.cyberworldreset.cache.*;
 import net.zerotoil.cyberworldreset.commands.CWRCommand;
@@ -32,6 +33,9 @@ public final class CyberWorldReset extends JavaPlugin {
     private OnWorldChange onWorldChange;
     private OnDamage onDamage;
     private OnWorldCreate onWorldCreate;
+
+    private boolean multiverseEnabled;
+    private MultiverseCore multiverseCore;
 
 
     public boolean isPremium() {
@@ -87,6 +91,13 @@ public final class CyberWorldReset extends JavaPlugin {
         return onWorldCreate;
     }
 
+    public boolean isMultiverseEnabled() {
+        return multiverseEnabled;
+    }
+    public MultiverseCore multiverse() {
+        return multiverseCore;
+    }
+
     @Override
     public void onEnable() {
 
@@ -110,6 +121,15 @@ public final class CyberWorldReset extends JavaPlugin {
         // addons
         new Metrics(this, 13007);
 
+        // multiverse
+        multiverseEnabled = getServer().getPluginManager().isPluginEnabled("Multiverse-Core");
+        if (multiverseEnabled) {
+            multiverseCore = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
+            logger("&7CWR recognizes Multiverse is &aENABLED.");
+            logger("");
+        }
+
+        // final message
         logger("&7Loaded &bCWR v" + getDescription().getVersion() + "&7 in &a" +
                 (System.currentTimeMillis() - startTime) + "ms&7.");
         logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");

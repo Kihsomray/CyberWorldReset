@@ -28,7 +28,7 @@ public class OnWorldCreate implements Listener {
         if (main.onJoin().isServerOpen() && !main.onWorldChange().getClosedWorlds().contains(event.getWorld().getName())) return;
         boolean loadSpawn = false;
         if (main.config().getLoadingType().matches("(?i)STANDARD")) loadSpawn = true;
-        System.out.println(loadSpawn);
+        // System.out.println(loadSpawn);
         event.getWorld().setKeepSpawnInMemory(loadSpawn);
         event.getWorld().setAutoSave(loadSpawn);
     }

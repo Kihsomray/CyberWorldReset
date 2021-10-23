@@ -28,8 +28,8 @@ config:
   loading-type: NORMAL
 
   # Radius of loading if FAST, NORMAL, SAFE or ULTRA-SAFE is
-  # enabled. A radius of 4 would load a 9 x 9 area. A larger
-  # radius will load a LOT longer, try to stay between 2-5.
+  # enabled. If larger than server view/render distance in
+  # server.properties, then will override.
   loading-radius: 3
 
   # After rebooting or timers resetting, what delay should there
@@ -47,6 +47,9 @@ config:
     enabled: true
     milliseconds: 150
 
+  # Sends a detailed, spaced out message during chunk loading.
+  detailed-messages: true
+
   # updates the config every time you update. Prior strings will
   # remain the same! NOTE: disabling this will leave new settings
   # as default and new lang string won't send.
@@ -54,5 +57,5 @@ config:
     config: true
     lang: true
 
-  # lang: 'en'
+  lang: 'en'
   # en = english (default), es = español, ru = русский.

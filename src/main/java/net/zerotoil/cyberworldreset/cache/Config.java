@@ -26,6 +26,8 @@ public class Config {
     private boolean recursiveTeleportEnabled;
     private long recursiveTeleportMilliseconds;
 
+    private boolean detailedMessages;
+
     private boolean confirmationEnabled;
     private long confirmationSeconds;
 
@@ -36,7 +38,7 @@ public class Config {
         config = main.files().get("config").getConfig();
         // internal language module
         if (isSet("lang")) {
-            lang = config.getString("lang");
+            lang = config.getString("config.lang");
             if (!lang.matches("(?i)en|es|ru")) lang = "en";
         }
 
@@ -53,16 +55,18 @@ public class Config {
 
         saveWorldBeforeReset = getBoolean("save-world-before-reset", false);
         loadingType = getString("loading-type", "SAFE", new ArrayList<>(Arrays.asList("STANDARD", "NORMAL", "SAFE", "ULTRA-SAFE", "FAST", "ULTRA-FAST")));
-        loadingDelay = 12;
-        if (loadingType.matches("(?i)FAST")) loadingDelay = 5;
-        if (loadingType.matches("(?i)SAFE")) loadingDelay = 30;
-        if (loadingType.matches("(?i)ULTRA-SAFE")) loadingDelay = 50;
+        loadingDelay = 6;
+        if (loadingType.matches("(?i)FAST")) loadingDelay = 3;
+        if (loadingType.matches("(?i)SAFE")) loadingDelay = 10;
+        if (loadingType.matches("(?i)ULTRA-SAFE")) loadingDelay = 20;
         timerLoadDelay = getLong("timer-load-delay", 10);
         worldResetDelay = getLong("world-reset-delay", 750);
-        loadRadius = getInt("loading-radius", 5);
+        loadRadius = Math.max(Math.max(Math.min(getInt("loading-radius", 5), 32), 1), main.getServer().getViewDistance());
 
         recursiveTeleportEnabled = getBoolean("recursive-teleporting.enabled", true);
         if (recursiveTeleportEnabled) recursiveTeleportMilliseconds = getLong("recursive-teleporting.milliseconds", 10);
+
+        detailedMessages = getBoolean("detailed-messages", true);
 
     }
 
@@ -126,6 +130,9 @@ public class Config {
     }
     public long getRecursiveTeleportMilliseconds() {
         return recursiveTeleportMilliseconds;
+    }
+    public boolean isDetailedMessages() {
+        return detailedMessages;
     }
     public long getWorldResetDelay() {
         return worldResetDelay;
