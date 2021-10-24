@@ -2,6 +2,7 @@ package net.zerotoil.cyberworldreset;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import net.zerotoil.cyberworldreset.addons.Metrics;
+import net.zerotoil.cyberworldreset.addons.PlaceholderAPI;
 import net.zerotoil.cyberworldreset.cache.*;
 import net.zerotoil.cyberworldreset.commands.CWRCommand;
 import net.zerotoil.cyberworldreset.commands.CWRTabComplete;
@@ -128,6 +129,8 @@ public final class CyberWorldReset extends JavaPlugin {
             logger("&7CWR recognizes Multiverse is &aENABLED.");
             logger("");
         }
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) new PlaceholderAPI(this).register();
 
         // final message
         logger("&7Loaded &bCWR v" + getDescription().getVersion() + "&7 in &a" +

@@ -30,6 +30,14 @@ public class Lang {
     private String timeSecondsFormat;
     private String timeSplitterFormat;
 
+    private String papiCountdown;
+    private String papiNoTimers;
+    private String papiInitializing;
+    private String papiStarting;
+    private String papiProgress;
+    private String papiFinishing;
+    private String papiInvalidWorld;
+
     public Lang(CyberWorldReset main) {
 
         this.main = main;
@@ -60,6 +68,21 @@ public class Lang {
         timeSecondsFormat = getTime("seconds", "&a{time} Second(s)");
         timeSplitterFormat = getTime("splitter", "&a, ");
 
+        String ph = "reset-status";
+        papiCountdown = getPapiValue(ph, "countdown", "&aReset in: {formattedTime}");
+        papiNoTimers = getPapiValue(ph, "no-running-timers", "&cNo running timers");
+        papiInitializing = getPapiValue(ph, "initializing", "&6Initializing...");
+        papiStarting = getPapiValue(ph, "starting", "&eStarting...");
+        papiProgress = getPapiValue(ph, "progress", "&aETA: {formattedTime}");
+        papiFinishing = getPapiValue(ph, "finishing", "&aFinishing...");
+        papiInvalidWorld = getPapiValue(ph, "invalid-world", "&cInvalid world");
+
+    }
+
+    private String getPapiValue(String placeholder, String key, String defaultValue) {
+        if (config.isSet("placeholder-api." + placeholder + "." + key))
+            return getColor(config.getString("placeholder-api." + placeholder + "." + key));
+        else return getColor(defaultValue);
     }
 
     private List<String> getHelpList(String path) {
@@ -111,6 +134,28 @@ public class Lang {
     }
     public String getTimeSplitterFormat() {
         return timeSplitterFormat;
+    }
+
+    public String getPapiCountdown() {
+        return papiCountdown;
+    }
+    public String getPapiNoTimers() {
+        return papiNoTimers;
+    }
+    public String getPapiInitializing() {
+        return papiInitializing;
+    }
+    public String getPapiStarting() {
+        return papiStarting;
+    }
+    public String getPapiProgress() {
+        return papiProgress;
+    }
+    public String getPapiFinishing() {
+        return papiFinishing;
+    }
+    public String getPapiInvalidWorld() {
+        return papiInvalidWorld;
     }
 
     public Message getMsg(String msgKey) {

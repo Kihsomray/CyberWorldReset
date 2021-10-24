@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -126,6 +127,15 @@ public class LangUtils {
         for (PermissionAttachmentInfo permissionNode : player.getEffectivePermissions())
             if (permissionNode.getPermission().startsWith(permission)) return true;
         return false;
+    }
+
+    public String formatPapiString(String placeholder, String world, List<String> placeholders, List<String> replacements) {
+        placeholder.replace("{world}", world);
+        for (int i = 0; i < placeholders.size(); i++) {
+            placeholder = placeholder.replace("{" + placeholders.get(i) + "}", replacements.get(i));
+        }
+        return placeholder;
+
     }
 
 

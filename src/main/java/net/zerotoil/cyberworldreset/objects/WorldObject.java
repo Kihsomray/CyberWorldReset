@@ -54,6 +54,8 @@ public class WorldObject {
     private int chunkNumber;
     private int chunkCounter;
 
+    private boolean startingReset;
+
     private Map<Long, List<Integer>> chunks;
 
     private CommandSender console = Bukkit.getConsoleSender();
@@ -85,6 +87,8 @@ public class WorldObject {
         loadDelay = main.config().getLoadingDelay();
         resetting = false;
         safeWorldSpawn = "DEFAULT";
+        chunkCounter = -2;
+        startingReset = false;
 
     }
 
@@ -246,7 +250,7 @@ public class WorldObject {
         chunks = new HashMap<>();
         getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
         //main.logger(main.multiverse().getMVWorldManager().getMVWorld(getWorld()).isKeepingSpawnInMemory() + "");
-
+        startingReset = true;
         (new BukkitRunnable() {
 
             @Override
@@ -275,6 +279,7 @@ public class WorldObject {
                         }
                     }
                 }
+                startingReset = false;
                 newChunkLoading(sender);
                 //System.out.println(chunks.size());
 
@@ -325,7 +330,7 @@ public class WorldObject {
     }
 
     private void printChunkInfo(int width) {
-        double tps = Lag.getTPS();
+        final double tps = Lag.getNewTPS();
         String loading = "Loading";
         if (main.config().getLang().equalsIgnoreCase("es")) loading = "Cargando";
         else if (main.config().getLang().equalsIgnoreCase("ru")) loading = "Загрузка";
@@ -333,6 +338,28 @@ public class WorldObject {
             System.out.printf(loading + " [%s]: %3d%% | Chunk: %5d/%d | ETA: %-10s | TPS %.2f%n", worldName, Math.round((chunkNumber + 0.0) / (width * width) * 100), chunkNumber,
                 width * width, ChatColor.stripColor(main.langUtils().formatTime(Math.round((((width * width) - chunkNumber) * (loadDelay / 20.0) * (20.0 / tps)) / 3))), tps);
         else main.logger(loading + " [" + worldName + "]: " + Math.round((chunkNumber + 0.0) / (width * width) * 100) + "%");
+    }
+
+    public long getTimeRemaining() {
+        final int width = main.config().getLoadRadius() * 2 + 1;
+        final double tps = Lag.getNewTPS();
+        return Math.round((((width * width) - chunkNumber) * (loadDelay / 20.0) * (20.0 / tps)) / 3.0);
+    }
+
+    public long getTimeUntilReset() {
+        if (isResetting()) return 0;
+        long currentTime = Math.round(System.currentTimeMillis() / 1000L);
+        long time = currentTime;
+        for (TimedReset t : timedResets.values()) {
+            if ((t.timeToReset() < time) && !(t.timeToReset() < 1)) time = t.timeToReset();
+        }
+        if (currentTime == time) return 0;
+        return time;
+    }
+
+    public long getPercentRemaining() {
+        final int width = main.config().getLoadRadius() * 2 + 1;
+        return Math.round((chunkNumber + 0.0) / (width * width) * 100);
     }
 
     private void tpPlayersBack() {
@@ -372,6 +399,8 @@ public class WorldObject {
 
     private void finishRegen(Player sender) {
 
+        chunkCounter = -1;
+
         if (main.isMultiverseEnabled()) main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setSpawnLocation(getWorld().getSpawnLocation());
 
         // sends successful regen to all players
@@ -396,6 +425,7 @@ public class WorldObject {
         getWorld().setAutoSave(true);
         getWorld().setKeepSpawnInMemory(true);
         resetting = false;
+        chunkCounter = -2;
         main.lang().getMsg("regen-success").send(sender, true, new String[]{"world"}, new String[]{worldName});
     }
 
@@ -603,6 +633,15 @@ public class WorldObject {
     }
     public boolean isResetting() {
         return resetting;
+    }
+    public HashMap<String, TimedReset> getTimedResets() {
+        return timedResets;
+    }
+    public int getChunkCounter() {
+        return chunkCounter;
+    }
+    public boolean isStartingReset() {
+        return startingReset;
     }
 
     public void setEnabled(boolean enabled) {

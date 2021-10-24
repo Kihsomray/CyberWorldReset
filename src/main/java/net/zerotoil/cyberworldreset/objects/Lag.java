@@ -60,7 +60,11 @@ public class Lag implements Runnable {
         try {
             tps = ((double[]) tpsField.get(si));
 
-        } catch (IllegalArgumentException e) { e.printStackTrace(); } catch (IllegalAccessException e) { e.printStackTrace();}
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         if (tps[0] > 20) return 20;
         return tps[0];

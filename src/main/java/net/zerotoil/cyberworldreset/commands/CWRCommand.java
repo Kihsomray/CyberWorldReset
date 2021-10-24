@@ -552,7 +552,10 @@ public class CWRCommand implements CommandExecutor {
 
     private boolean delTimer(Player player, String worldName, String value) {
         if (noPlayerPerm(player, "admin.edit.timer")) return true;
-
+        if (main.worlds().isWorldResetting()) {
+            main.lang().getMsg("resetting-error").send(player, true, new String[]{}, new String[]{});
+            return true;
+        }
         if (notLong(player, value)) return true;
         int number = (int) Math.max(Long.parseLong(value), 0);
         List<String> timers = main.worlds().getWorld(worldName).getTime();
@@ -563,7 +566,8 @@ public class CWRCommand implements CommandExecutor {
         }
         timers.remove(number);
         if (worldSetting(player, worldName, "settings.time", timers)) {
-            main.worlds().getWorld(worldName).setTime(timers);
+            main.worlds().cancelTimers();
+            main.loadCache();
             infoTimes(player, worldName);
         }
         return true;

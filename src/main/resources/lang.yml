@@ -95,3 +95,13 @@ time:
   minutes: '&a{time} Minute(s)'
   seconds: '&a{time} Second(s)'
   splitter: '&a, '
+
+placeholder-api:
+  reset-status:
+    countdown: '&aReset in: {formattedTime}' # {seconds} {formattedTime} {world}
+    no-running-timers: '&cNo running timers' # {world}
+    initializing: '&6Initializing...' # {world}
+    starting: '&eStarting...' # {world}
+    progress: '&aETA: {formattedTime} ({chunkNumber}/{chunkTotal}) [{percent}%]' # {seconds} {formattedTime} {percent} {tps} {chunkNumber} {chunkTotal} {world}
+    finishing: '&aFinishing...' # {world}
+    invalid-world: '&cInvalid world' # {world}
