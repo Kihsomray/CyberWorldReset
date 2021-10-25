@@ -98,11 +98,6 @@ public class CWRCommand implements CommandExecutor {
 
         }
 
-        if (args[0].matches("(?i)tps")) {
-            sender.sendMessage(Lag.getNewTPS() + "");
-            return true;
-        }
-
         // reload the plugin
         if (args[0].matches("(?i)reload")) {
 
@@ -144,6 +139,9 @@ public class CWRCommand implements CommandExecutor {
 
         // send the info of the current world
         if (args[0].matches("(?i)info")) return sendInfo(player, playerWorld);
+
+        // send the info of the current world
+        if (args[0].matches("(?i)list")) return sendWorldList(player);
 
         return main.langUtils().sendHelpMSG(player);
 
@@ -306,6 +304,18 @@ public class CWRCommand implements CommandExecutor {
         infoWarning(player, worldName);
         infoCommands(player, worldName);
         infoMsg(player, "footer", new String[]{}, new String[]{});
+        return true;
+    }
+
+    private boolean sendWorldList(Player player) {
+        if (noPlayerPerm(player, "admin.list")) return true;
+        if (noSetupsExist(player)) return true;
+
+        main.lang().getMsg("list-header").send(player, false, new String[]{}, new String[]{});
+        for (String world : main.worlds().getWorlds().keySet()) {
+            main.lang().getMsg("list-info").send(player, false, new String[]{"world", "enabled"}, new String[]{world, main.worlds().getWorld(world).isEnabled() + ""});
+        }
+        main.lang().getMsg("list-footer").send(player, false, new String[]{}, new String[]{});
         return true;
     }
 

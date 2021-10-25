@@ -15,6 +15,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,8 +125,10 @@ public class LangUtils {
     }
 
     public boolean hasParentPerm(Player player, String permission) {
-        for (PermissionAttachmentInfo permissionNode : player.getEffectivePermissions())
-            if (permissionNode.getPermission().startsWith(permission)) return true;
+        for (PermissionAttachmentInfo permissionNode : player.getEffectivePermissions()) {
+            player.sendMessage(permissionNode.getPermission());
+            if (permissionNode.getPermission().toLowerCase().startsWith(permission.toLowerCase())) return true;
+        }
         return false;
     }
 

@@ -88,6 +88,11 @@ messages:
   info-warning: '&f  Enabled: &7{enabled}'
   info-footer: '&8&m―――――――――――――――――――――――――'
 
+  # world list strings
+  list-header: '&8&m―――――&8<&b&l Worlds &8>&8&m―――――'
+  list-info: '&8➼ &b{world} &7- Enabled: &f{enabled}'
+  list-footer: '&8&m―――――――――――――――――――――――――'
+
 time:
   # time formats
   days: '&a{time} Day(s)'
@@ -98,10 +103,12 @@ time:
 
 placeholder-api:
   reset-status:
-    countdown: '&aReset in: {formattedTime}' # {seconds} {formattedTime} {world}
+    countdown: '&aReset in: {formattedTime}'
+    # internal placeholders: {seconds} {formattedTime} {world}
     no-running-timers: '&cNo running timers' # {world}
     initializing: '&6Initializing...' # {world}
     starting: '&eStarting...' # {world}
-    progress: '&aETA: {formattedTime} ({chunkNumber}/{chunkTotal}) [{percent}%]' # {seconds} {formattedTime} {percent} {tps} {chunkNumber} {chunkTotal} {world}
+    progress: '&aETA: {formattedTime} ({chunkNumber}/{chunkTotal}) [{percent}%]'
+    # internal placeholders: {seconds} {formattedTime} {percent} {tps} {chunkNumber} {chunkTotal} {world}
     finishing: '&aFinishing...' # {world}
     invalid-world: '&cInvalid world' # {world}

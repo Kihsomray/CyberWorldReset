@@ -9,13 +9,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,6 +21,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import javax.net.ssl.HttpsURLConnection;
+
+import net.zerotoil.cyberworldreset.CyberWorldReset;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -36,6 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Metrics {
 
     private final Plugin plugin;
+    private final CyberWorldReset main;
 
     private final MetricsBase metricsBase;
 
@@ -46,8 +44,9 @@ public class Metrics {
      * @param serviceId The id of the service. It can be found at <a
      *     href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
-    public Metrics(JavaPlugin plugin, int serviceId) {
+    public Metrics(JavaPlugin plugin, int serviceId, CyberWorldReset main) {
         this.plugin = plugin;
+        this.main = main;
         // Get the config file
         File bStatsFolder = new File(plugin.getDataFolder().getParentFile(), "bStats");
         File configFile = new File(bStatsFolder, "config.yml");
@@ -94,6 +93,15 @@ public class Metrics {
                         logErrors,
                         logSentData,
                         logResponseStatusText);
+
+        addCustomChart(new DrilldownPie("chunkLoadingType", () -> {
+            Map<String, Map<String, Integer>> map = new HashMap<>();
+            String loadingRadius = main.config().getLoadRadius() + " radius";
+            Map<String, Integer> entry = new HashMap<>();
+            entry.put(loadingRadius, 1);
+            map.put(WordUtils.capitalize(main.config().getLoadingType().replace("-", "").toLowerCase()), entry);
+            return map;
+        }));
     }
 
     /**

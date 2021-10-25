@@ -120,7 +120,7 @@ public final class CyberWorldReset extends JavaPlugin {
         this.getCommand("cwr").setTabCompleter(cwrTabComplete);
 
         // addons
-        new Metrics(this, 13007);
+        new Metrics(this, 13007, this);
 
         // multiverse
         multiverseEnabled = getServer().getPluginManager().isPluginEnabled("Multiverse-Core");
@@ -140,6 +140,10 @@ public final class CyberWorldReset extends JavaPlugin {
 
     public void logger(String msg) {
         msg = ChatColor.translateAlternateColorCodes('&', msg);
+        if (SystemUtils.OS_NAME.contains("Windows")) {
+            msg = ChatColor.stripColor(msg);
+            msg = msg.replace("―", "-");
+        }
         getLogger().info(msg);
     }
 
@@ -174,17 +178,30 @@ public final class CyberWorldReset extends JavaPlugin {
         logger("");
     }
 
+    // needs to be sent before langUtils, therefore
+    // I cannot relocate it to there (yet).
     public void sendBootMSG() {
+        logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");
+        String author = "&7Authors: &f" + getAuthors();
+        String version = "&7Version: &f" + this.getDescription().getVersion() + "-BETA [" + getEdition() + "]";
         if (!SystemUtils.OS_NAME.contains("Windows")) {
-            logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");
             logger("&b╭━━━╮&7╱╱╱&b╭╮&7╱╱╱╱╱╱&b╭╮╭╮╭╮&7╱╱╱╱&b╭╮&7╱╱&b╭┳━━━╮&7╱╱╱╱╱╱╱╱&b╭╮");
             logger("&b┃╭━╮┃&7╱╱╱&b┃┃&7╱╱╱╱╱╱&b┃┃┃┃┃┃&7╱╱╱╱&b┃┃&7╱╱&b┃┃╭━╮┃&7╱╱╱╱╱╱╱&b╭╯╰╮");
             logger("&b┃┃&7╱&b╰╋╮&7╱&b╭┫╰━┳━━┳━┫┃┃┃┃┣━━┳━┫┃╭━╯┃╰━╯┣━━┳━━┳━┻╮╭╯");
             logger("&b┃┃&7╱&b╭┫┃&7╱&b┃┃╭╮┃┃━┫╭┫╰╯╰╯┃╭╮┃╭┫┃┃╭╮┃╭╮╭┫┃━┫━━┫┃━┫┃");
             logger("&b┃╰━╯┃╰━╯┃╰╯┃┃━┫┃╰╮╭╮╭┫╰╯┃┃┃╰┫╰╯┃┃┃╰┫┃━╋━━┃┃━┫╰╮");
             logger("&b╰━━━┻━╮╭┻━━┻━━┻╯&7╱&b╰╯╰╯╰━━┻╯╰━┻━━┻╯╰━┻━━┻━━┻━━┻━╯");
-            logger("&7╱╱╱╱&b╭━╯┃  &7Authors: &f" + getAuthors());
-            logger("&7╱╱╱╱&b╰━━╯  &7Version: &f" + this.getDescription().getVersion() + "-BETA [" + getEdition() + "]");
+            logger("&7╱╱╱╱&b╭━╯┃  " + author);
+            logger("&7╱╱╱╱&b╰━━╯  " + version);
+        } else {
+            logger("_________  __      ____________ ");
+            logger("\\_   ___ \\/  \\    /  \\______   \\");
+            logger("/    \\  \\/\\   \\/\\/   /|       _/");
+            logger("\\     \\____\\        / |    |   \\");
+            logger(" \\______  / \\__/\\  /  |____|_  /");
+            logger("        \\/       \\/          \\/ ");
+            logger(ChatColor.stripColor(author));
+            logger(ChatColor.stripColor(version));
         }
         logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");
         logger("");
