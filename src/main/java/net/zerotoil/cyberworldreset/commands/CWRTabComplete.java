@@ -43,7 +43,7 @@ public class CWRTabComplete implements TabCompleter {
             args0.add("regen");
         }
         if (player.hasPermission(aPrefix + "save")) args0.add("save");
-        if (main.langUtils().hasParentPerm(player, aPrefix + "edit") || player.isOp()) args0.add("edit");
+        if (main.langUtils().hasParentPerm(player, aPrefix + "edit")) args0.add("edit");
         if (player.hasPermission(aPrefix + "info")) args0.add("info");
         if (player.hasPermission(aPrefix + "list")) args0.add("list");
 

@@ -310,7 +310,8 @@ public class WorldObject {
             xChunk = chunks.get((long) chunkCounter).get(0) + spawnX;
             zChunk = chunks.get((long) chunkCounter).get(1) + spawnZ;
             //main.logger("pre: " + main.multiverse().getMVWorldManager().getMVWorld(getWorld()).isKeepingSpawnInMemory());
-            getWorld().getChunkAt(xChunk, zChunk).addPluginChunkTicket(main);
+            if (main.getVersion() > 14) getWorld().getChunkAt(xChunk, zChunk).addPluginChunkTicket(main);
+            else getWorld().loadChunk(xChunk, zChunk);
             //if (chunkCounter == 1) getWorld().setSpawnLocation(0, getWorld().getHighestBlockYAt(0, 0), 0);
             chunkCounter++;
         }
@@ -334,7 +335,7 @@ public class WorldObject {
         String loading = "Loading";
         if (main.config().getLang().equalsIgnoreCase("es")) loading = "Cargando";
         else if (main.config().getLang().equalsIgnoreCase("ru")) loading = "Загрузка";
-        if (main.config().isDetailedMessages())
+        if (main.config().isDetailedMessages() && main.getVersion() > 12)
             System.out.printf(loading + " [%s]: %3d%% | Chunk: %5d/%d | ETA: %-10s | TPS %.2f%n", worldName, Math.round((chunkNumber + 0.0) / (width * width) * 100), chunkNumber,
                 width * width, ChatColor.stripColor(main.langUtils().formatTime(Math.round((((width * width) - chunkNumber) * (loadDelay / 20.0) * (20.0 / tps)) / 3))), tps);
         else main.logger(loading + " [" + worldName + "]: " + Math.round((chunkNumber + 0.0) / (width * width) * 100) + "%");

@@ -48,7 +48,12 @@ config:
     milliseconds: 150
 
   # Sends a detailed, spaced out message during chunk loading.
+  # NOTE: not supported on LEGACY versions.
   detailed-messages: true
+
+  # Fixes glitch in legacy versions 1.8 and 1.9 where a player
+  # suffocates in a block when teleported to the world.
+  fix-suffocation-teleport-1_8-1_9: true
 
   # updates the config every time you update. Prior strings will
   # remain the same! NOTE: disabling this will leave new settings

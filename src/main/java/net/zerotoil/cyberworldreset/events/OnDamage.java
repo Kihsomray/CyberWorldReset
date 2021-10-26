@@ -27,9 +27,10 @@ public class OnDamage implements Listener {
     public void onDamage(EntityDamageEvent event) {
         // fixes suffocation bug on 1.8/1.9
         if (main.getVersion() > 9) return;
+        if (!main.config().isSuffocationFix()) return;
         if (!enabled) return;
         if (!(event.getEntity() instanceof Player)) return;
-        if (event.getEntity().getWorld().getEnvironment() == World.Environment.NETHER) return; // fix for nether top
+        if (event.getEntity().getWorld().getEnvironment() == World.Environment.NETHER) return; // ignore nether top
         if ((event.getCause() != SUFFOCATION) && (event.getCause() != LAVA) && (event.getCause() != FIRE) && (event.getCause() != FIRE_TICK)) return;
         Player player = (Player) event.getEntity();
         Location location = player.getWorld().getSpawnLocation();

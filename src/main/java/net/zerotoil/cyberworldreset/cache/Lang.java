@@ -44,6 +44,7 @@ public class Lang {
         config = main.files().getConfig("lang");
         updateLang = main.config().isUpdateLang();
         if (updateLang) main.files().get("lang").updateConfig();
+        config = main.files().getConfig("lang");
         prefix = "";
         if (!config.getString("messages.prefix").equalsIgnoreCase("")) prefix = getColor(config.getString("messages.prefix") + " ");
 

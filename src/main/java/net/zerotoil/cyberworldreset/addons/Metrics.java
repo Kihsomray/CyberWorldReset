@@ -99,7 +99,7 @@ public class Metrics {
             String loadingRadius = main.config().getLoadRadius() + " radius";
             Map<String, Integer> entry = new HashMap<>();
             entry.put(loadingRadius, 1);
-            map.put(WordUtils.capitalize(main.config().getLoadingType().replace("-", "").toLowerCase()), entry);
+            map.put(WordUtils.capitalize(main.config().getLoadingType().replace("-", " ").toLowerCase()), entry);
             return map;
         }));
     }

@@ -1,7 +1,7 @@
 package net.zerotoil.cyberworldreset.objects;
 
-import com.tchristofferson.configupdater.ConfigUpdater;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
+import net.zerotoil.cyberworldreset.addons.configupdater.ConfigUpdater;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -41,6 +41,7 @@ public class SavedFile {
     public void updateConfig() {
         try {
             ConfigUpdater.update(main, location, getFile(), Collections.emptyList());
+            if (main.getVersion() < 13) ConfigUpdater.update(main, location, getFile(), Collections.emptyList());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -31,6 +31,8 @@ public class Config {
     private boolean confirmationEnabled;
     private long confirmationSeconds;
 
+    private boolean suffocationFix;
+
     public Config(CyberWorldReset main) {
 
         this.main = main;
@@ -61,12 +63,14 @@ public class Config {
         if (loadingType.matches("(?i)ULTRA-SAFE")) loadingDelay = 15;
         timerLoadDelay = getLong("timer-load-delay", 10);
         worldResetDelay = getLong("world-reset-delay", 750);
-        loadRadius = Math.max(Math.max(Math.min(getInt("loading-radius", 5), 32), 1), main.getServer().getViewDistance());
+        loadRadius = Math.max(Math.max(Math.min(getInt("loading-radius", 5), 64), 1), main.getServer().getViewDistance());
 
         recursiveTeleportEnabled = getBoolean("recursive-teleporting.enabled", true);
         if (recursiveTeleportEnabled) recursiveTeleportMilliseconds = getLong("recursive-teleporting.milliseconds", 10);
 
         detailedMessages = getBoolean("detailed-messages", true);
+
+        suffocationFix = getBoolean("fix-suffocation-teleport-1_8-1_9", true);
 
     }
 
@@ -142,6 +146,9 @@ public class Config {
     }
     public long getLoadingDelay() {
         return loadingDelay;
+    }
+    public boolean isSuffocationFix() {
+        return suffocationFix;
     }
 
 }

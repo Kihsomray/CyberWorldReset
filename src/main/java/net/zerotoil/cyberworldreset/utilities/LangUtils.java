@@ -125,8 +125,8 @@ public class LangUtils {
     }
 
     public boolean hasParentPerm(Player player, String permission) {
+        if (player.isOp()) return true;
         for (PermissionAttachmentInfo permissionNode : player.getEffectivePermissions()) {
-            player.sendMessage(permissionNode.getPermission());
             if (permissionNode.getPermission().toLowerCase().startsWith(permission.toLowerCase())) return true;
         }
         return false;
