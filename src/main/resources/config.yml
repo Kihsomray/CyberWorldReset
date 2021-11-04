@@ -15,7 +15,7 @@ config:
   # Recommended for low-end CPUS or large amounts of players.
 
   # SAFE - loads in chunks, over a longer period of time.
-  # Recommended for mid-end CPUS or large amounts of players.
+  # Recommended for low/mid-end CPUS or large amounts of players.
 
   # NORMAL - loads in chunks, over an 'average' period of time.
   # Recommended for mid-end CPUS or medium amounts of players.

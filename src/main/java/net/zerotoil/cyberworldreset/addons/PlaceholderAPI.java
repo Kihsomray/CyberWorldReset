@@ -2,6 +2,7 @@ package net.zerotoil.cyberworldreset.addons;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
+import net.zerotoil.cyberworldreset.objects.Lag;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
@@ -55,8 +56,8 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                 long seconds = main.worlds().getWorld(world).getTimeRemaining();
                 String formatted = ChatColor.stripColor(main.langUtils().formatTime(seconds));
                 long percent = main.worlds().getWorld(world).getPercentRemaining();
-                String tps = (new DecimalFormat() + "");
-                if (tps.length() > 5) tps.substring(0, 5);
+                String tps = Lag.getLowerTPS() + "0";
+                if (tps.length() > 5) tps = tps.substring(0, 5);
                 long width = main.config().getLoadRadius() * 2L + 1;
                 return main.langUtils().formatPapiString(main.lang().getPapiProgress(), world, Arrays.asList("seconds", "formattedTime", "percent", "tps", "chunkNumber", "chunkTotal"),
                         Arrays.asList(seconds + "", formatted, percent + "", tps, main.worlds().getWorld(world).getChunkCounter() + "", (width * width) + ""));

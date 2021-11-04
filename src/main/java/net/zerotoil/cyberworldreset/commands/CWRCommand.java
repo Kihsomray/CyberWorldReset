@@ -4,6 +4,7 @@ import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.Lag;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -75,6 +76,16 @@ public class CWRCommand implements CommandExecutor {
                 String message = args[3];
                 if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
                 return addWarningMSG(player, args[1], message);
+            }
+
+            if (args[2].matches("(?i)setSafeWorldSpawn")) {
+                String message = args[3];
+                if (!message.contains(",")) message += ",";
+                if (args.length >= 5) for (int i = 4; i < args.length; i++){
+                    message += " " + args[i];
+                    if (!args[i].contains(",")) message += ",";
+                }
+                return setSafeWorldSpawn(player, args[1], message.substring(0, message.length() - 1));
             }
 
         }
@@ -176,7 +187,31 @@ public class CWRCommand implements CommandExecutor {
                 return true;
             }
 
-            if (args[2].matches("(?i)setEnabled")) return setEnabled(player, args[1], args[3]);
+            switch (args[2].toLowerCase()){
+
+                case "setenabled": return setEnabled(player, args[1], args[3]);
+                case "enablelastsaved": return enabledLastSaved(player, args[1], args[3]);
+                case "enablesafeworld": return enabledSafeWorld(player, args[1], args[3]);
+                case "setseed": return setSeed(player, args[1], args[3]);
+                case "setsafeworld": return setSafeWorld(player, args[1], args[3]);
+                case "setsafeworlddelay": return setSafeWorldDelay(player, args[1], args[3]);
+                case "addwarningtime": return addWarningTime(player, args[1], args[3]);
+                case "enablewarning": return enableWarning(player, args[1], args[3]);
+                case "delcommand": return delCommand(player, args[1], args[3]);
+                case "delmessage": return delMessage(player, args[1], args[3]);
+                case "deltimer": return delTimer(player, args[1], args[3]);
+                case "delwarningmsg": return delWarningMessage(player, args[1], args[3]);
+                case "delwarningtime": return delWarningTime(player, args[1], args[3]);
+                //case "setsafeworldspawn": return setSafeWorldSpawn(player, args[1], args[3]);
+
+
+
+                default: return main.langUtils().sendHelpMSG(player);
+
+            }
+
+
+            /*if (args[2].matches("(?i)setEnabled")) return setEnabled(player, args[1], args[3]);
 
             if (args[2].matches("(?i)enableLastSaved")) return enabledLastSaved(player, args[1], args[3]);
 
@@ -202,7 +237,7 @@ public class CWRCommand implements CommandExecutor {
 
             if (args[2].matches("(?i)delWarningTime")) return delWarningTime(player, args[1], args[3]);
 
-            return main.langUtils().sendHelpMSG(player);
+            return main.langUtils().sendHelpMSG(player);*/
 
         }
 
@@ -663,9 +698,29 @@ public class CWRCommand implements CommandExecutor {
         return true;
     }
 
+    private boolean setSafeWorldSpawn(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.safeworld")) return true;
+        String finalValue = "DEFAULT";
+        if (main.worldUtils().areCoordinates(value)) {
+            Location loc = main.worldUtils().getLocationFromString(main.worlds().getWorld(worldName).getSafeWorld(), value);
+            finalValue = loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ();
+        } else if (!value.equalsIgnoreCase("default")) {
+            main.lang().getMsg("invalid-command").send(player);
+            return true;
+        }
+        if (worldSetting(player, worldName, "settings.safe-world.spawn", finalValue)) {
+            main.worlds().getWorld(worldName).setSafeWorldSpawn(finalValue);
+            infoSafeWorld(player, worldName);
+        }
+
+        return true;
+
+
+    }
+
     private boolean noSetupsExist(Player player) {
         if (main.worlds().getWorlds().isEmpty()) {
-            main.lang().getMsg("no-setups-found").send(player, true, new String[]{}, new String[]{});
+            main.lang().getMsg("no-setups-found").send(player);
             return true;
         }
         return false;

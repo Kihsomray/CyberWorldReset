@@ -112,6 +112,7 @@ public class CWRTabComplete implements TabCompleter {
                     args2.add("enableSafeWorld");
                     args2.add("setSafeWorld");
                     args2.add("setSafeWorldDelay");
+                    args2.add("setSafeWorldSpawn");
                 }
 
                 StringUtil.copyPartialMatches(args[2], args2, args2Comp);
@@ -145,9 +146,14 @@ public class CWRTabComplete implements TabCompleter {
 
                 if (args[2].matches("(?i)setSafeWorld")) {
                     for (World w : Bukkit.getWorlds()) {
-                        args3.add(w.getName().toString());
+                        args3.add(w.getName());
                     }
                     args3.add("<world>");
+                }
+
+                if (args[2].matches("(?i)setSafeWorldSpawn")) {
+                    args3.add("<x>, <y>, <z>");
+                    args3.add("DEFAULT");
                 }
 
                 if (args[2].matches("(?i)delTimer|delMessage|delCommand|delWarningMSG|delWarningTime")) {
@@ -174,9 +180,28 @@ public class CWRTabComplete implements TabCompleter {
                     args4.add(args[4] + format.substring(args[4].length()));
                 }
 
+                if (args[2].matches("(?i)setSafeWorldSpawn")) {
+                    args4.add("<y>, <z>");
+                }
+
                 StringUtil.copyPartialMatches(args[4], args4, args4Comp);
                 Collections.sort(args4Comp);
                 return args4Comp;
+
+            }
+
+            if (args.length == 6) {
+
+                List<String> args5 = new ArrayList<>();
+                List<String> args5Comp = new ArrayList<>();
+
+                if (args[2].matches("(?i)setSafeWorldSpawn")) {
+                    args5.add("<z>");
+                }
+
+                StringUtil.copyPartialMatches(args[5], args5, args5Comp);
+                Collections.sort(args5Comp);
+                return args5Comp;
 
             }
 

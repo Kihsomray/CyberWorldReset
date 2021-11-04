@@ -21,11 +21,21 @@ public class Message {
 
     }
 
+    public void send(Player player) {
+        send(player, true);
+    }
+
+    public void send(Player player, boolean addPrefix) {
+        send(player, addPrefix, null, null);
+    }
+
     public void send(Player player, boolean addPrefix, String[] placeholders, String[] replacements) {
         if (message.equalsIgnoreCase("")) return;
         String editedMessage = message;
-        for (int i = 0; i < placeholders.length; i++) {
-            editedMessage = editedMessage.replace("{" + placeholders[i] + "}", replacements[i]);
+        if (placeholders != null) {
+            for (int i = 0; i < placeholders.length; i++) {
+                editedMessage = editedMessage.replace("{" + placeholders[i] + "}", replacements[i]);
+            }
         }
         if ((player == null) || !player.isOnline()) {
             Bukkit.getLogger().info(editedMessage);

@@ -44,5 +44,16 @@ public class WorldUtils {
         return Arrays.stream(locationString.split(", ")).mapToDouble(Double::parseDouble).toArray();
     }
 
+    public boolean areCoordinates(String string) {
+        try {
+            double[] coords = coordinateStringToDouble(string);
+            if (coords.length != 3) return false;
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+
+    }
+
 
 }
