@@ -1,5 +1,8 @@
 package net.zerotoil.cyberworldreset.objects;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -348,6 +351,7 @@ public class WorldObject {
     }
 
     public long getTimeUntilReset() {
+        if (!enabled) return 0;
         if (isResetting()) return 0;
         long currentTime = Math.round(System.currentTimeMillis() / 1000L);
         long time = currentTime;
@@ -373,18 +377,16 @@ public class WorldObject {
         for (int i = 0; i < tempTpPlayers.size(); i++) {
 
             Player player = tempTpPlayers.get(i);
-            if (!player.isOnline()) {
-                tpPlayers.remove(player);
-                continue;
-            }
+            if (!player.isOnline()) continue;
             main.lang().getMsg("teleporting-back").send(player, true, new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
 
             player.teleport(new Location(getWorld(), spawnPoint.getX(), getWorld().getHighestBlockYAt(spawnPoint.getBlockX(), spawnPoint.getBlockZ()), spawnPoint.getZ()));
-            tpPlayers.remove(player);
 
             main.lang().getMsg("teleported-back").send(player, true, new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
 
         }
+
+        tpPlayers.clear();
 
         // disables onDamage 1.8 fixer
         (new BukkitRunnable() {
@@ -403,6 +405,8 @@ public class WorldObject {
         chunkCounter = -1;
 
         if (main.isMultiverseEnabled()) main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setSpawnLocation(getWorld().getSpawnLocation());
+
+        deleteWGRegions();
 
         // sends successful regen to all players
         if ((message.size() != 1) || !message.get(0).equalsIgnoreCase(""))
@@ -428,6 +432,24 @@ public class WorldObject {
         resetting = false;
         chunkCounter = -2;
         main.lang().getMsg("regen-success").send(sender, true, new String[]{"world"}, new String[]{worldName});
+    }
+
+    public void deleteWGRegions() {
+        if (main.getVersion() < 13) return;
+
+        if (main.config().isWorldGuardDelete() && main.worldGuard() != null) {
+
+            RegionContainer regionContainer = main.worldGuard().getPlatform().getRegionContainer();
+            com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(getWorld());
+
+            try {
+                for (ProtectedRegion region : regionContainer.get(weWorld).getRegions().values())
+                    regionContainer.get(weWorld).removeRegion(region.getId());
+            } catch (Exception e) {
+                main.logger("&cSomething went wrong deleting WorldGuard regions.");
+            }
+
+        }
     }
 
     public boolean saveWorld(Player player, boolean saveWorld) {

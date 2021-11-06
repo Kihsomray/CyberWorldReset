@@ -86,6 +86,8 @@ messages:
   info-safe-world-delay: '&f  Delay: &7{delay}'
   info-safe-world-spawn: '&f  Spawn: &7{spawn}'
   info-warning: '&f  Enabled: &7{enabled}'
+  info-title: '&f  Title: &7{title}'
+  info-subtitle: '&f  Subtitle: &7{subtitle}'
   info-footer: '&8&m―――――――――――――――――――――――――'
 
   # world list strings

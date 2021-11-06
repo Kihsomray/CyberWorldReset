@@ -1,6 +1,7 @@
 package net.zerotoil.cyberworldreset;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.sk89q.worldguard.WorldGuard;
 import net.zerotoil.cyberworldreset.addons.Metrics;
 import net.zerotoil.cyberworldreset.addons.PlaceholderAPI;
 import net.zerotoil.cyberworldreset.cache.*;
@@ -37,6 +38,7 @@ public final class CyberWorldReset extends JavaPlugin {
 
     private boolean multiverseEnabled;
     private MultiverseCore multiverseCore;
+    private WorldGuard worldGuard;
 
 
     public boolean isPremium() {
@@ -98,6 +100,9 @@ public final class CyberWorldReset extends JavaPlugin {
     public MultiverseCore multiverse() {
         return multiverseCore;
     }
+    public WorldGuard worldGuard() {
+        return worldGuard;
+    }
 
     @Override
     public void onEnable() {
@@ -131,6 +136,7 @@ public final class CyberWorldReset extends JavaPlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) new PlaceholderAPI(this).register();
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null && (getVersion() > 12)) worldGuard = WorldGuard.getInstance();
 
         // final message
         logger("&7Loaded &bCWR v" + getDescription().getVersion() + "&7 in &a" +

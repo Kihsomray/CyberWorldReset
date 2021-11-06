@@ -55,6 +55,10 @@ config:
   # suffocates in a block when teleported to the world.
   fix-suffocation-teleport-1_8-1_9: true
 
+  hooks:
+    # If enabled, when a world is reset, all regions will be deleted.
+    world-guard-delete: false
+
   # updates the config every time you update. Prior strings will
   # remain the same! NOTE: disabling this will leave new settings
   # as default and new lang string won't send.

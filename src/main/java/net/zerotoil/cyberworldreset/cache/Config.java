@@ -33,6 +33,9 @@ public class Config {
 
     private boolean suffocationFix;
 
+    private boolean worldGuardDelete;
+
+
     public Config(CyberWorldReset main) {
 
         this.main = main;
@@ -71,6 +74,8 @@ public class Config {
         detailedMessages = getBoolean("detailed-messages", true);
 
         suffocationFix = getBoolean("fix-suffocation-teleport-1_8-1_9", true);
+
+        worldGuardDelete = getBoolean("hooks.world-guard-delete", false);
 
     }
 
@@ -149,6 +154,9 @@ public class Config {
     }
     public boolean isSuffocationFix() {
         return suffocationFix;
+    }
+    public boolean isWorldGuardDelete() {
+        return worldGuardDelete;
     }
 
 }

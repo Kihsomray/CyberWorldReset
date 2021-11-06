@@ -6,7 +6,7 @@
 
     <groupId>net.zerotoil</groupId>
     <artifactId>CyberWorldReset</artifactId>
-    <version>0.4.1.11</version>
+    <version>0.4.2.28</version>
     <packaging>jar</packaging>
 
     <name>CyberWorldReset</name>
@@ -71,6 +71,10 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -111,6 +115,12 @@
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>2.10.10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>7.0.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

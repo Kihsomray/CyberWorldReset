@@ -107,6 +107,8 @@ public class CWRTabComplete implements TabCompleter {
                     args2.add("delWarningMSG");
                     args2.add("addWarningTime");
                     args2.add("delWarningTime");
+                    args2.add("setWarningTitle");
+                    args2.add("setWarningSubtitle");
                 }
                 if (player.hasPermission(editPrefix + "safeworld")) {
                     args2.add("enableSafeWorld");
@@ -160,7 +162,7 @@ public class CWRTabComplete implements TabCompleter {
                     args3.add("<index>");
                 }
 
-                if (args[2].matches("(?i)addMessage|addWarningMSG")) args3.add("<message>");
+                if (args[2].matches("(?i)addMessage|addWarningMSG|setWarningTitle|setWarningSubtitle")) args3.add("<message>");
                 if (args[2].matches("(?i)addCommand")) args3.add("<command>");
                 if (args[2].matches("(?i)addWarningTime|setSafeWorldDelay")) args3.add("<time>");
 

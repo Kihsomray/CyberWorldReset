@@ -88,6 +88,18 @@ public class CWRCommand implements CommandExecutor {
                 return setSafeWorldSpawn(player, args[1], message.substring(0, message.length() - 1));
             }
 
+            if (args[2].matches("(?i)setWarningTitle")) {
+                String message = args[3];
+                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
+                return setWarningTitle(player, args[1], message);
+            }
+
+            if (args[2].matches("(?i)setWarningSubtitle")) {
+                String message = args[3];
+                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
+                return setWarningSubtitle(player, args[1], message);
+            }
+
         }
 
         if (args.length == 4) return argsLen4(sender, player, args);
@@ -390,6 +402,9 @@ public class CWRCommand implements CommandExecutor {
         if (warningTime.isEmpty()) return;
         sendHeader(player, 5);
         sendList(player, warningTime);
+
+        infoMsg(player, "title", new String[]{"title"}, new String[]{main.worlds().getWorld(worldName).getWarningTitle()});
+        infoMsg(player, "subtitle", new String[]{"subtitle"}, new String[]{main.worlds().getWorld(worldName).getWarningSubtitle()});
     }
     private void infoCommands(Player player, String worldName) {
         List<String> commands = main.worlds().getWorld(worldName).getCommands();
@@ -506,6 +521,30 @@ public class CWRCommand implements CommandExecutor {
         messages.add(value);
         if (worldSetting(player, worldName, "settings.warning.message", messages)) {
             main.worlds().getWorld(worldName).setWarningMessage(messages);
+            infoWarning(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean setWarningTitle(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.warnings")) return true;
+        if (noSetupsExist(player)) return true;
+        if (setupDoesNotExist(player, worldName)) return true;
+
+        if (worldSetting(player, worldName, "settings.warning.title.title", value)) {
+            main.worlds().getWorld(worldName).setWarningTitle(value);
+            infoWarning(player, worldName);
+        }
+        return true;
+    }
+
+    private boolean setWarningSubtitle(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.warnings")) return true;
+        if (noSetupsExist(player)) return true;
+        if (setupDoesNotExist(player, worldName)) return true;
+
+        if (worldSetting(player, worldName, "settings.warning.title.sub-title", value)) {
+            main.worlds().getWorld(worldName).setWarningSubtitle(value);
             infoWarning(player, worldName);
         }
         return true;
