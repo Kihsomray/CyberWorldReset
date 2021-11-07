@@ -13,9 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +25,11 @@ public class LangUtils {
     private final Title title;
 
     private final Pattern HEX_PATTERN = Pattern.compile("\\{#([A-Fa-f0-9]{6})}");
+
+    // fields needed for time formatter
+    private String PLURAL_REGEX = "\\s*\\([^\\)]*\\)\\s*";
+    private char START_DELIMITER = '(';
+    private char END_DELIMITER = ')';
 
     public LangUtils(CyberWorldReset main) {
         this.main = main;
@@ -134,96 +137,58 @@ public class LangUtils {
 
     public String formatPapiString(String placeholder, String world, List<String> placeholders, List<String> replacements) {
         placeholder.replace("{world}", world);
-        for (int i = 0; i < placeholders.size(); i++) {
-            placeholder = placeholder.replace("{" + placeholders.get(i) + "}", replacements.get(i));
-        }
+        if (placeholders != null)
+            for (int i = 0; i < placeholders.size(); i++)
+                placeholder = placeholder.replace("{" + placeholders.get(i) + "}", replacements.get(i));
+
         return placeholder;
 
     }
 
-
     public String formatTime(long seconds) {
 
+        if (seconds <= 0) return getColor(checkPluralFormat(0, main.lang().getTimeSecondsFormat()), false);
+
         String formattedTime = "";
+        long daysTotal, hoursTotal, minutesTotal;
 
-        String daysString = main.lang().getTimeDaysFormat();
-        String hoursString = main.lang().getTimeHoursFormat();
-        String minutesString = main.lang().getTimeMinutesFormat();
-        String secondsString = main.lang().getTimeSecondsFormat();
-        String splitter = main.lang().getTimeSplitterFormat();
+        // gets day time
+        daysTotal = getFixedTime(seconds, 86400);
+        seconds = seconds - (daysTotal * 86400);
+        if (daysTotal > 0) formattedTime += (checkPluralFormat(daysTotal, main.lang().getTimeDaysFormat()) + main.lang().getTimeSplitterFormat());
 
-        if (seconds <= 0) return getColor(secondsString.replace("(", "").replace(")", "").replace("{time}", "0"), false);
+        // gets hour time
+        hoursTotal = getFixedTime(seconds, 3600);
+        seconds = seconds - (hoursTotal * 3600);
+        if (hoursTotal > 0) formattedTime += checkPluralFormat(hoursTotal, main.lang().getTimeHoursFormat()) + main.lang().getTimeSplitterFormat();
 
-        long daySeconds = seconds;
-        if (seconds != 0) daySeconds = seconds % 86400;
-        long days = (seconds - daySeconds) / 86400;
+        // gets minute time
+        minutesTotal = getFixedTime(seconds, 60);
+        seconds = seconds - (minutesTotal * 60);
+        if (minutesTotal > 0) formattedTime += checkPluralFormat(minutesTotal, main.lang().getTimeMinutesFormat()) + main.lang().getTimeSplitterFormat();
 
-        long hourSeconds = daySeconds;
-        if (daySeconds != 0) hourSeconds = daySeconds % 3600;
-        long hours = (daySeconds - hourSeconds) / 3600;
+        // gets second time
+        if (seconds > 0) formattedTime += checkPluralFormat(seconds, main.lang().getTimeSecondsFormat()) + main.lang().getTimeSplitterFormat();
 
-        long minuteSeconds = hourSeconds;
-        if (hourSeconds != 0) minuteSeconds = hourSeconds % 60;
-        long minutes = (hourSeconds - minuteSeconds) / 60;
+        // returns final string
+        return getColor(formattedTime.substring(0, formattedTime.length() - main.lang().getTimeSplitterFormat().length()), false);
 
-        // day formatting
-        daysString = daysString.replace("{time}", days + "");
-        if (days == 1) {
-            daysString = daysString.replaceAll("\\s*\\([^\\)]*\\)\\s*", "");
-        } else {
-            daysString = daysString.replace("(", "").replace(")", "");
-        }
-        if (days != 0) {
-            if ((hours == 0) && (minutes == 0) && (minuteSeconds == 0)) {
-                formattedTime = daysString;
-            } else {
-                formattedTime = daysString + splitter;
-            }
-        }
+    }
 
+    // gets proper time for a time format
+    private long getFixedTime(long seconds, long formatter) {
 
-        // hour formatting
-        hoursString = hoursString.replace("{time}", hours + "");
-        if (hours == 1) {
-            hoursString = hoursString.replaceAll("\\s*\\([^\\)]*\\)\\s*", "");
-        } else {
-            hoursString = hoursString.replace("(", "").replace(")", "");
-        }
-        if (hours != 0) {
-            if ((minutes == 0) && (minuteSeconds == 0)) {
-                formattedTime = formattedTime + hoursString;
-            } else {
-                formattedTime = formattedTime + hoursString + splitter;
-            }
-        }
+        long tempSeconds = seconds % formatter;
+        return (seconds - tempSeconds) / formatter;
 
+    }
 
-        // minute formatting
-        minutesString = minutesString.replace("{time}", minutes + "");
-        if (minutes == 1) {
-            minutesString = minutesString.replaceAll("\\s*\\([^\\)]*\\)\\s*", "");
-        } else {
-            minutesString = minutesString.replace("(", "").replace(")", "");
-        }
-        if (minutes != 0) {
-            if (minuteSeconds == 0) {
-                formattedTime = formattedTime + minutesString;
-            } else {
-                formattedTime = formattedTime + minutesString + splitter;
-            }
-        }
+    // checks plural formatting and applies it
+    private String checkPluralFormat(long value, String string) {
 
-
-        // second formatting
-        secondsString = secondsString.replace("{time}", minuteSeconds + "");
-        if (minuteSeconds == 1) {
-            secondsString = secondsString.replaceAll("\\s*\\([^\\)]*\\)\\s*", "");
-        } else {
-            secondsString = secondsString.replace("(", "").replace(")", "");
-        }
-        if (minuteSeconds != 0) formattedTime = formattedTime + secondsString;
-
-        return getColor(formattedTime, false);
+        string = string.replace("{time}", value + "");
+        if (value == 1) return string.replaceAll(PLURAL_REGEX, "");
+        else return string.replace(START_DELIMITER + "", "").replace(END_DELIMITER + "", "");
 
     }
 

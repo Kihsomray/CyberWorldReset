@@ -1,5 +1,7 @@
 package net.zerotoil.cyberworldreset.objects;
 
+import com.onarandombox.MultiverseCore.MVWorld;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -154,7 +156,14 @@ public class WorldObject {
                     }
                 }
                 finalWorld.createWorld();
-                if (main.isMultiverseEnabled()) main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
+
+                if (main.isMultiverseEnabled()) {
+                    try {
+                        main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
+                    } catch (Exception e) {
+                        main.logger("&cFailed to prevent Mutliverse from loading spawn chunks.");
+                    }
+                }
 
                 // ultra fast chunk loading
                 // if (main.config().getLoadingType().matches("(?i)ULTRA-FAST")) getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
