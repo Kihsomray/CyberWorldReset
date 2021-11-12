@@ -7,7 +7,6 @@ import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,10 +66,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                     soonestWorld = worldObject.getWorldName();
                 }
                 if (worldObject.isResetting()) return getWorldStatus(worldObject.getWorldName());
-
-
             }
-
             return getWorldStatus(soonestWorld);
 
         }
@@ -88,6 +84,40 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         }
         if (identifier.equalsIgnoreCase("chunk_area")) {
             return ((loadRadius * 2 + 1) * (loadRadius * 2 + 1)) + "";
+        }
+        if (identifier.startsWith("remaining_time_") || identifier.startsWith("remaining_seconds_")) {
+            String world = identifier.substring(15); // replace with world papi
+            if (identifier.startsWith("remaining_s")) world = identifier.substring(18);
+            List<String> eL = Collections.emptyList();
+            if (!main.worlds().getWorlds().containsKey(world)) return main.langUtils().formatPapiString(main.lang().getPapiInvalidWorld(), world, eL, eL);
+            long timeLeft = main.worlds().getWorld(world).getTimeUntilReset();
+            if (timeLeft == 0) return main.langUtils().formatPapiString(main.lang().getPapiNoTimers(), world, eL, eL);
+            if (identifier.startsWith("remaining_t")) return ChatColor.stripColor(main.langUtils().formatTime(timeLeft));
+            else return timeLeft + "";
+        }
+
+        if (identifier.startsWith("loaded_chunks_") || identifier.startsWith("remaining_chunks_")) {
+            String world = identifier.substring(14); // replace with world papi
+            if (identifier.startsWith("r")) world = identifier.substring(17);
+            List<String> eL = Collections.emptyList();
+            if (!main.worlds().getWorlds().containsKey(world)) return main.langUtils().formatPapiString(main.lang().getPapiInvalidWorld(), world, eL, eL);
+            long chunksLeft = main.worlds().getWorld(world).getChunkCounter();
+            long area = ((loadRadius * 2L + 1) * (loadRadius * 2L + 1));
+            if (identifier.startsWith("r")) {
+                if (chunksLeft == -2) return area + "";
+                if (chunksLeft == -1) return "0";
+                return Math.max(area - chunksLeft, 0) + "";
+            }
+            if (chunksLeft == -2) return "0";
+            if (chunksLeft == -1) return area + "";
+            return chunksLeft + "";
+        }
+
+        if (identifier.startsWith("reset_percent_")) {
+            String world = identifier.substring(14); // replace with world papi
+            List<String> eL = Collections.emptyList();
+            if (!main.worlds().getWorlds().containsKey(world)) return main.langUtils().formatPapiString(main.lang().getPapiInvalidWorld(), world, eL, eL);
+            return main.worlds().getWorld(world).getPercentRemaining() + "";
         }
 
         return null;

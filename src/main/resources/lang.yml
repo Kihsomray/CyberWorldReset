@@ -65,12 +65,15 @@ messages:
   invalid-command: '&cIncorrect use of arguments!'
   setting-set-failed: '&cFailed to write the setting to the world config.'
   setting-set-success: '&aThe setting has been updated successfully.'
+  custom-generator-warning: '&6Please make sure to add this generator to bukkit.yml, otherwise chunks can get messy after a reboot.'
 
   # info strings
   info-header: '&8&m―――――&8<&b&l {world} &8>&8&m―――――'
   info-enabled: 'Enabled: {boolean}'
   info-last-saved: 'Last Saved: {boolean}'
   info-seed: 'Seed: {seed}'
+  info-generator: 'Generator: {generator}'
+  info-environment: 'Environment: {environment}'
   info-headers:
     - 'Basic Info'
     - 'Timers'

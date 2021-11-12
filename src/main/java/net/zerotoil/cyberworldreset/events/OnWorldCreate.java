@@ -17,7 +17,6 @@ public class OnWorldCreate implements Listener {
         main.events++;
     }
 
-
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onWorldCreate(WorldInitEvent event) {
         if (!main.worlds().getWorlds().containsKey(event.getWorld().getName())) {

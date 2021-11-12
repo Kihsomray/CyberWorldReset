@@ -102,6 +102,13 @@ public class Metrics {
             map.put(WordUtils.capitalize(main.config().getLoadingType().replace("-", " ").toLowerCase()), entry);
             return map;
         }));
+
+        addCustomChart(new SimplePie("chunkRadius", () -> main.config().getLoadRadius() + ""));
+
+        addCustomChart(new SimplePie("edition", () -> {
+            if (main.isPremium()) return "Premium";
+            else return "Standard";
+        }));
     }
 
     /**

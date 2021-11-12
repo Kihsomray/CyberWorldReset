@@ -1,5 +1,6 @@
 package net.zerotoil.cyberworldreset.objects;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,6 +43,8 @@ public class Message {
             return;
         }
         if (addPrefix) editedMessage = main.lang().getPrefix() + editedMessage;
+        if (main.isPlaceholderAPIEnabled()) editedMessage = PlaceholderAPI.setPlaceholders(player, editedMessage);
+
         player.sendMessage(editedMessage);
     }
 

@@ -1,7 +1,6 @@
 package net.zerotoil.cyberworldreset.commands;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
-import net.zerotoil.cyberworldreset.objects.Lag;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,21 +60,15 @@ public class CWRCommand implements CommandExecutor {
             }
 
             if (args[2].matches("(?i)addMessage")) {
-                String message = args[3];
-                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
-                return addMessage(player, args[1], message);
+                return addMessage(player, args[1], convertToString(args));
             }
 
             if (args[2].matches("(?i)addCommand")) {
-                String command = args[3];
-                if (args.length >= 5) for (int i = 4; i < args.length; i++) command += " " + args[i];
-                return addCommand(player, args[1], command);
+                return addCommand(player, args[1], convertToString(args));
             }
 
             if (args[2].matches("(?i)addWarningMSG")) {
-                String message = args[3];
-                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
-                return addWarningMSG(player, args[1], message);
+                return addWarningMSG(player, args[1], convertToString(args));
             }
 
             if (args[2].matches("(?i)setSafeWorldSpawn")) {
@@ -89,15 +82,15 @@ public class CWRCommand implements CommandExecutor {
             }
 
             if (args[2].matches("(?i)setWarningTitle")) {
-                String message = args[3];
-                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
-                return setWarningTitle(player, args[1], message);
+                return setWarningTitle(player, args[1], convertToString(args));
             }
 
             if (args[2].matches("(?i)setWarningSubtitle")) {
-                String message = args[3];
-                if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
-                return setWarningSubtitle(player, args[1], message);
+                return setWarningSubtitle(player, args[1], convertToString(args));
+            }
+
+            if (args[2].matches("(?i)setGenerator")) {
+                return setGenerator(player, args[1], convertToString(args));
             }
 
         }
@@ -106,6 +99,12 @@ public class CWRCommand implements CommandExecutor {
 
         return main.langUtils().sendHelpMSG(player);
 
+    }
+
+    private String convertToString(String[] args) {
+        String message = args[3];
+        if (args.length >= 5) for (int i = 4; i < args.length; i++) message += " " + args[i];
+        return message;
     }
 
     private boolean argsLen1(CommandSender sender, Player player, String[] args) {
@@ -214,6 +213,7 @@ public class CWRCommand implements CommandExecutor {
                 case "deltimer": return delTimer(player, args[1], args[3]);
                 case "delwarningmsg": return delWarningMessage(player, args[1], args[3]);
                 case "delwarningtime": return delWarningTime(player, args[1], args[3]);
+                case "setenvironment": return setEnvironment(player, args[1], args[3]);
                 //case "setsafeworldspawn": return setSafeWorldSpawn(player, args[1], args[3]);
 
 
@@ -221,35 +221,6 @@ public class CWRCommand implements CommandExecutor {
                 default: return main.langUtils().sendHelpMSG(player);
 
             }
-
-
-            /*if (args[2].matches("(?i)setEnabled")) return setEnabled(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)enableLastSaved")) return enabledLastSaved(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)enableSafeWorld")) return enabledSafeWorld(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)setSeed")) return setSeed(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)setSafeWorld")) return setSafeWorld(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)setSafeWorldDelay")) return setSafeWorldDelay(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)addWarningTime")) return addWarningTime(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)enableWarning")) return enableWarning(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)delCommand")) return delCommand(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)delMessage")) return delMessage(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)delTimer")) return delTimer(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)delWarningMSG")) return delWarningMessage(player, args[1], args[3]);
-
-            if (args[2].matches("(?i)delWarningTime")) return delWarningTime(player, args[1], args[3]);
-
-            return main.langUtils().sendHelpMSG(player);*/
 
         }
 
@@ -345,6 +316,9 @@ public class CWRCommand implements CommandExecutor {
         infoMsg(player, "enabled", new String[]{"boolean"}, new String[]{main.worlds().getWorld(worldName).isEnabled() + ""});
         infoMsg(player, "last-saved", new String[]{"boolean"}, new String[]{main.worlds().getWorld(worldName).isLastSaved() + ""});
         infoMsg(player, "seed", new String[]{"seed"}, new String[]{main.worlds().getWorld(worldName).getSeed() + ""});
+        infoMsg(player, "generator", new String[]{"generator"}, new String[]{main.worlds().getWorld(worldName).getGenerator()});
+        infoMsg(player, "environment", new String[]{"environment"}, new String[]{main.worlds().getWorld(worldName).getEnvironment()});
+
         infoTimes(player, worldName);
         infoMessages(player, worldName);
         infoSafeWorld(player, worldName);
@@ -403,8 +377,10 @@ public class CWRCommand implements CommandExecutor {
         sendHeader(player, 5);
         sendList(player, warningTime);
 
-        infoMsg(player, "title", new String[]{"title"}, new String[]{main.worlds().getWorld(worldName).getWarningTitle()});
-        infoMsg(player, "subtitle", new String[]{"subtitle"}, new String[]{main.worlds().getWorld(worldName).getWarningSubtitle()});
+        if (main.worlds().getWorld(worldName).getWarningTitle() != null)
+            infoMsg(player, "title", new String[]{"title"}, new String[]{main.worlds().getWorld(worldName).getWarningTitle()});
+        if (main.worlds().getWorld(worldName).getWarningSubtitle() != null)
+            infoMsg(player, "subtitle", new String[]{"subtitle"}, new String[]{main.worlds().getWorld(worldName).getWarningSubtitle()});
     }
     private void infoCommands(Player player, String worldName) {
         List<String> commands = main.worlds().getWorld(worldName).getCommands();
@@ -716,6 +692,30 @@ public class CWRCommand implements CommandExecutor {
 
         if (worldSetting(player, worldName, "settings.seed", value))
             main.worlds().getWorld(worldName).setSeed(value);
+        return true;
+    }
+
+    private boolean setEnvironment(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.environment")) return true;
+        if (!value.matches("(?i)end|the_end|ender|nether|the_nether|hell|overworld|world|normal|earth|default")) {
+            main.lang().getMsg("invalid-command").send(player);
+            return true;
+        }
+
+        if (worldSetting(player, worldName, "settings.environment", value))
+            main.worlds().getWorld(worldName).setEnvironment(value);
+        return true;
+    }
+
+    private boolean setGenerator(Player player, String worldName, String value) {
+        if (noPlayerPerm(player, "admin.edit.generator")) return true;
+        if (noSetupsExist(player)) return true;
+        if (setupDoesNotExist(player, worldName)) return true;
+
+        if (!value.equalsIgnoreCase("default")) main.lang().getMsg("custom-generator-warning").send(player, true);
+
+        if (worldSetting(player, worldName, "settings.generator", value))
+            main.worlds().getWorld(worldName).setGenerator(value);
         return true;
     }
 

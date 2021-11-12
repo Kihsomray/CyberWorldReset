@@ -68,15 +68,13 @@ public class Worlds {
 
                     worldObject.setTime(config.getStringList("worlds." + settings + "time"));
 
-                } else {
+                }
 
-                    main.logger(main.langUtils().getLang(
+                    /* main.logger(main.langUtils().getLang(
                             "&cThe world &7'" + worldName + "'&c does not have any times set. Disabling this world.",
                             "&cEl mundo &7'" + worldName + "'&c no tiene tiempo establecido. Deshabiltando el mundo.",
-                            "&cМир &7'" + worldName + "'&c не имеет времени. Этот мир не будет использоваться."));
-                    continue;
-
-                }
+                            "&cМир &7'" + worldName + "'&c не имеет времени. Этот мир не будет использоваться.")); */
+                    //continue;
 
                 // reset message
                 if (isSet(settings + "message")) {
@@ -93,7 +91,16 @@ public class Worlds {
                     } else {
                         worldObject.setSeed(config.getString(path));
                     }
+                }
 
+                // generator
+                if (isSet(settings + "generator")) {
+                    worldObject.setGenerator(config.getString("worlds." + settings + "generator"));
+                }
+
+                // environment (world type)
+                if (isSet(settings + "environment")) {
+                    worldObject.setEnvironment(config.getString("worlds." + settings + "environment"));
                 }
 
                 if (isSet(settings + "safe-world.enabled")) {

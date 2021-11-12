@@ -36,6 +36,7 @@ public final class CyberWorldReset extends JavaPlugin {
     private OnDamage onDamage;
     private OnWorldCreate onWorldCreate;
 
+    private boolean placeholderAPIEnabled;
     private boolean multiverseEnabled;
     private MultiverseCore multiverseCore;
     private WorldGuard worldGuard;
@@ -94,6 +95,9 @@ public final class CyberWorldReset extends JavaPlugin {
         return onWorldCreate;
     }
 
+    public boolean isPlaceholderAPIEnabled() {
+        return placeholderAPIEnabled;
+    }
     public boolean isMultiverseEnabled() {
         return multiverseEnabled;
     }
@@ -106,6 +110,15 @@ public final class CyberWorldReset extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        if (getVersion() > 17) {
+            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support 1.18 and newer. Please update!");
+            return;
+        }
+        if (getVersion() < 8) {
+            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support 1.7.10 and older (yet)!");
+            return;
+        }
 
         sendBootMSG();
         long startTime = System.currentTimeMillis();
@@ -135,7 +148,11 @@ public final class CyberWorldReset extends JavaPlugin {
             logger("");
         }
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) new PlaceholderAPI(this).register();
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            placeholderAPIEnabled = true;
+            new PlaceholderAPI(this).register();
+        } else placeholderAPIEnabled = false;
+
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null && (getVersion() > 12)) worldGuard = WorldGuard.getInstance();
 
         // final message

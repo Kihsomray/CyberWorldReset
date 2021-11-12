@@ -24,7 +24,7 @@ public class CWRTabComplete implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         Player player = (Player) sender;
-        String uuid = player.getUniqueId().toString();
+        //String uuid = player.getUniqueId().toString();
 
         List<String> args0 = new ArrayList<>();
         List<String> args0Comp = new ArrayList<>();
@@ -93,6 +93,8 @@ public class CWRTabComplete implements TabCompleter {
                     args2.add("delTimer");
                 }
                 if (player.hasPermission(editPrefix + "seed")) args2.add("setSeed");
+                if (player.hasPermission(editPrefix + "generator")) args2.add("setGenerator");
+                if (player.hasPermission(editPrefix + "environment")) args2.add("setEnvironment");
                 if (player.hasPermission(editPrefix + "message")) {
                     args2.add("addMessage");
                     args2.add("delMessage");
@@ -138,6 +140,19 @@ public class CWRTabComplete implements TabCompleter {
                     String format = "yyyy-MM-dd HH:mm";
                     args3.add(args[3] + format.substring(args[3].length()));
                     args3.add("<time format>");
+                }
+
+                if (args[2].matches("(?i)setEnvironment")) {
+                    args3.add("NORMAL");
+                    args3.add("NETHER");
+                    args3.add("THE_END");
+                    args3.add("DEFAULT");
+                    args3.add("<environment>");
+                }
+
+                if (args[2].matches("(?i)setGenerator")) {
+                    args3.add("DEFAULT");
+                    args3.add("<generator>");
                 }
 
                 if (args[2].matches("(?i)setSeed")) {

@@ -40,6 +40,7 @@ public class Files {
     private void addFile(String file) {
         ymls++;
         files.put(file, new SavedFile(main, file + ".yml"));
+        files.get(file).reloadConfig();
         main.logger("&7Loaded file &e" + file + ".yml&7.");
     }
 

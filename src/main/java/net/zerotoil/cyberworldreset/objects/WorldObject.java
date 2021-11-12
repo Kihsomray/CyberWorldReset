@@ -1,7 +1,5 @@
 package net.zerotoil.cyberworldreset.objects;
 
-import com.onarandombox.MultiverseCore.MVWorld;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -29,6 +27,7 @@ public class WorldObject {
     private boolean randomSeed;
     private String defaultGamemode; // not req, use default
     private World.Environment environment; // not req, use default
+    private String generator;
     private List<String> commands = new ArrayList<>(); // not req
     private boolean resetting;
 
@@ -95,6 +94,12 @@ public class WorldObject {
         chunkCounter = -2;
         startingReset = false;
 
+        try {
+            generator = world.getGenerator().toString();
+        } catch (Exception e) {
+            generator = null;
+        }
+
     }
 
     public boolean regenWorld(Player sender) {
@@ -155,25 +160,33 @@ public class WorldObject {
                         return;
                     }
                 }
+
+                // generator settings
+                if (generator != null) {
+                    try {
+                        finalWorld.generator(generator);
+                    } catch (Exception e) {
+                        main.logger("&cFailed to set the generator " + generator + ". Please check the name. Using default generator.");
+                    }
+                }
                 finalWorld.createWorld();
 
                 if (main.isMultiverseEnabled()) {
                     try {
                         main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
                     } catch (Exception e) {
-                        main.logger("&cFailed to prevent Mutliverse from loading spawn chunks.");
+                        main.logger("&cFailed to prevent Mutliverse from loading spawn chunks. Please check your generator name.");
                     }
                 }
 
                 // ultra fast chunk loading
-                // if (main.config().getLoadingType().matches("(?i)ULTRA-FAST")) getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
+                if (main.config().getLoadingType().matches("(?i)ULTRA-FAST")) getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
 
                 // fast, normal, safe, ultra-safe chunk loading
                 if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE")) {
                     newProperLoading(sender);
                     // else safeLoadChunks(main.config().getLoadRadius(), sender);
                 } else {
-                    main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
                     finishRegen(sender);
                 }
 
@@ -373,7 +386,7 @@ public class WorldObject {
 
     public long getPercentRemaining() {
         final int width = main.config().getLoadRadius() * 2 + 1;
-        return Math.round((chunkNumber + 0.0) / (width * width) * 100);
+        return Math.max(Math.round((chunkNumber + 0.0) / (width * width) * 100), 0);
     }
 
     private void tpPlayersBack() {
@@ -413,7 +426,11 @@ public class WorldObject {
 
         chunkCounter = -1;
 
-        if (main.isMultiverseEnabled()) main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setSpawnLocation(getWorld().getSpawnLocation());
+        try {
+            if (main.isMultiverseEnabled()) main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setSpawnLocation(getWorld().getSpawnLocation());
+        } catch (Exception e) {
+            main.logger("&cFailed to set spawn location for " + worldName + " in Multiverse.");
+        }
 
         deleteWGRegions();
 
@@ -441,6 +458,7 @@ public class WorldObject {
         resetting = false;
         chunkCounter = -2;
         main.lang().getMsg("regen-success").send(sender, true, new String[]{"world"}, new String[]{worldName});
+        chunkNumber = 0;
     }
 
     public void deleteWGRegions() {
@@ -602,10 +620,6 @@ public class WorldObject {
         for (TimedReset timedReset : timedResets.values()) timedReset.cancelAllTimers();
     }
 
-
-    private World.Environment getEnvironment() {
-        return Bukkit.getWorld(worldName).getEnvironment();
-    }
     public World getWorld() {
         return Bukkit.getWorld(worldName);
     }
@@ -624,6 +638,15 @@ public class WorldObject {
     public long getSeed() {
         return seed;
     }
+    public String getGenerator() {
+        if (generator == null) return "DEFAULT";
+        if (generator.contains("BukkitChunkGeneratorWrapper@")) return generator.substring(0, generator.length() - 36);
+        return generator;
+    }
+    public String getEnvironment() {
+        return environment.toString();
+    }
+
     public String getDefaultGamemode() {
         return defaultGamemode;
     }
@@ -701,6 +724,33 @@ public class WorldObject {
         }
 
     }
+
+    public void setEnvironment(String environment) {
+        if (environment == null) return;
+        if (environment.matches("(?i)end|the_end|ender")) {
+            this.environment = World.Environment.THE_END;
+        } else if (environment.matches("(?i)nether|the_nether|hell")) {
+            this.environment = World.Environment.NETHER;
+        } else if (environment.matches("(?i)overworld|world|normal|earth")) {
+            this.environment = World.Environment.NORMAL;
+        } else {
+            this.environment = getWorld().getEnvironment();
+        }
+    }
+    public void setGenerator(String generator) {
+        if (generator == null) return;
+        if (generator.equalsIgnoreCase("default")) {
+            try {
+                this.generator = getWorld().getGenerator().toString();
+            } catch (Exception e) {
+                this.generator = null;
+            }
+        } else {
+            if (generator.equalsIgnoreCase("terra")) generator = "Terra:DEFAULT";
+            this.generator = generator;
+        }
+    }
+
     public void setDefaultGamemode(String defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
     }

@@ -17,7 +17,12 @@ worlds:
         # "default" means the same seed
         # example of a custom seed:
         # seed: -2156120156 / seed: 'myppbig' >> for plain text
-      world-type: DEFAULT #NORMAL, THE_END, NETHER, DEFAULT <-- COMING SOON!
+      environment: DEFAULT
+        # NORMAL, THE_END, NETHER, DEFAULT
+      generator: DEFAULT
+        # Add it inside bukkit.yml and reboot before adding it here.
+        # Set the generator here- typically the name of the plugin. Please
+        # review the WIKI on their side. DEFAULT for the same generator.
       safe-world:
         enabled: false # if disabled, it will kick all players
         world: 'world'

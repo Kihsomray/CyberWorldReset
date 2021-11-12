@@ -93,18 +93,12 @@ public class TimedReset {
                 case 'm':
 
                     intervalSeconds = (preTimeInterval * 60L) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 60L));
-                    //intervalSeconds = preTimeInterval * 60 - secondNowInt;
-                    //System.out.println(intervalSeconds);
                     break;
                 case 'h':
                     intervalSeconds = (preTimeInterval * 3600L) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 3600L));
-                    //intervalSeconds = preTimeInterval * 3600 - secondNowInt;
-                    //System.out.println(intervalSeconds);
                     break;
                 case 'd':
                     intervalSeconds = (preTimeInterval * 86400L) - Math.abs(Math.round(difference / 1000.0) % (preTimeInterval * 86400L));
-                    //intervalSeconds = preTimeInterval * 86400 - secondNowInt;
-                    //System.out.println(intervalSeconds);
                     break;
                 case 'M':
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy MM dd ss");
