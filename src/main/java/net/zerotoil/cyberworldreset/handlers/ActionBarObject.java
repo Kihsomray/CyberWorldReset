@@ -11,4 +11,5 @@ public class ActionBarObject implements ActionBar {
     public void send(Player player, String message) {
        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
     }
+
 }

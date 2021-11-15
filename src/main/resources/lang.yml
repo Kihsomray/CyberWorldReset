@@ -13,7 +13,7 @@ messages:
     - '&8➼ &b/cwr reload &fReload the plugin.'
     - '&8➼ &b/cwr confirm &fConfirm an action.'
     - '&8➼ &b/cwr reset [<world>] &fRegenerate a world.'
-    - '&8➼ &b/cwr save [<save>] &fBackup a world.'
+    - '&8➼ &b/cwr save [<world>] &fBackup a world.'
     - '&8➼ &b/cwr create [<world>] &fCreate a world setup.'
     - '&8➼ &b/cwr info [<world>] &fInfo about world setup.'
     - '&8&m―――――――――――――――――――――――――――――――――'

@@ -394,7 +394,6 @@ public class WorldObject {
 
         Location spawnPoint = getWorld().getSpawnLocation();
         main.onDamage().setEnabled(true);
-        main.onWorldChange().removeClosedWorld(worldName);
         List<Player> tempTpPlayers = tpPlayers;
         for (int i = 0; i < tempTpPlayers.size(); i++) {
 
@@ -441,6 +440,7 @@ public class WorldObject {
 
         sendCommands();
 
+        main.onWorldChange().removeClosedWorld(worldName);
         if (!main.onJoin().isServerOpen()) main.onJoin().setServerOpen(true);
         if (safeWorldDelay == -1) {
             // nothing

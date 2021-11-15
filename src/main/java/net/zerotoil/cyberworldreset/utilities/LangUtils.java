@@ -136,7 +136,7 @@ public class LangUtils {
     }
 
     public String formatPapiString(String placeholder, String world, List<String> placeholders, List<String> replacements) {
-        placeholder.replace("{world}", world);
+        placeholder = placeholder.replace("{world}", world);
         if (placeholders != null)
             for (int i = 0; i < placeholders.size(); i++)
                 placeholder = placeholder.replace("{" + placeholders.get(i) + "}", replacements.get(i));

@@ -43,4 +43,5 @@ public class TitleLegacy implements Title, Reflection {
         titleSubtitle(player, title, true);
         titleSubtitle(player, subtitle, false);
     }
+
 }
