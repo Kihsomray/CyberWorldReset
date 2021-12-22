@@ -1,5 +1,6 @@
 package net.zerotoil.cyberworldreset.objects;
 
+import com.Zrips.CMI.CMI;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -29,6 +30,7 @@ public class WorldObject {
     private World.Environment environment; // not req, use default
     private String generator;
     private List<String> commands = new ArrayList<>(); // not req
+    private List<String> initialCommands = new ArrayList<>();
     private boolean resetting;
 
     // safe world module - not req
@@ -62,7 +64,7 @@ public class WorldObject {
 
     private Map<Long, List<Integer>> chunks;
 
-    private CommandSender console = Bukkit.getConsoleSender();
+    protected CommandSender console = Bukkit.getConsoleSender();
 
     public WorldObject(CyberWorldReset main, String worldName) {
 
@@ -108,17 +110,19 @@ public class WorldObject {
             main.lang().getMsg("already-resetting").send(sender, true, new String[]{"world"}, new String[]{worldName});
             return true;
         }
+
         if (!enabled) {
             main.lang().getMsg("not-enabled").send(sender, true, new String[]{"world"}, new String[]{worldName});
             return false;
         }
+
         if (lastSaved && (main.zipUtils().getLastModified(worldName) == null)) {
             main.lang().getMsg("no-saves").send(sender, true, new String[]{"world"}, new String[]{worldName});
             return false;
         }
 
         resetting = true;
-
+        sendCommands(true);
         tpPlayersAway();
 
         // default world check
@@ -128,7 +132,7 @@ public class WorldObject {
         if (!Bukkit.unloadWorld(worldName, false)) return regenFail("unload-failed", sender);
 
         // save before reset
-        if (main.config().isSaveWorldBeforeReset())if (!saveWorld(null, false)) regenFail(null, null);
+        if (main.config().isSaveWorldBeforeReset() && !saveWorld(null, false)) regenFail(null, null);
 
         // deletes old world files
         try {
@@ -147,14 +151,15 @@ public class WorldObject {
             public void run() {
 
                 // should spawn chunks load?
-
                 // creates world
                 WorldCreator finalWorld = new WorldCreator(worldName);
+                finalWorld.environment(environment);
+
                 if (!lastSaved) {
-                    finalWorld.environment(environment);
                     if (randomSeed) seed = new Random().nextLong();
                     finalWorld.seed(seed);
-                } else {
+                }
+                else {
                     if (!rollbackWorld(sender)) {
                         regenFail(null, sender);
                         return;
@@ -175,7 +180,7 @@ public class WorldObject {
                     try {
                         main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
                     } catch (Exception e) {
-                        main.logger("&cFailed to prevent Mutliverse from loading spawn chunks. Please check your generator name.");
+                        main.logger("&cFailed to prevent Multiverse from loading spawn chunks. Please check your generator name.");
                     }
                 }
 
@@ -183,38 +188,28 @@ public class WorldObject {
                 if (main.config().getLoadingType().matches("(?i)ULTRA-FAST")) getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
 
                 // fast, normal, safe, ultra-safe chunk loading
-                if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE")) {
+                if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE"))
                     newProperLoading(sender);
-                    // else safeLoadChunks(main.config().getLoadRadius(), sender);
-                } else {
-                    finishRegen(sender);
-                }
-
+                // else safeLoadChunks(main.config().getLoadRadius(), sender);
+                else finishRegen(sender);
             }
-
         }).runTaskLater(main, resetDelay);
-
         return true;
-
     }
 
     private void tpPlayersAway() {
         // kicks or teleports player
         if (Objects.isNull(safeWorld) || safeWorld.equals(worldName) || (!safeWorldEnabled)) {
-
             main.onJoin().setServerOpen(false);
-            if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            if (!Bukkit.getOnlinePlayers().isEmpty())
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (!player.getWorld().getName().equalsIgnoreCase(worldName)) continue;
                     player.kickPlayer(main.lang().getMsg("kick-reason").toString(false).replace("{world}", worldName));
                 }
-            }
-
-        } else {
-
-            if (getWorld().getEnvironment().toString().contains("THE_END")) {
+        }
+        else {
+            if (getWorld().getEnvironment().toString().contains("THE_END"))
                 getWorld().getEnderDragonBattle().getBossBar().removeAll();
-            }
 
             if (!tpPlayers.isEmpty()) tpPlayers.clear();
 
@@ -224,23 +219,15 @@ public class WorldObject {
                 if (player.isDead()) player.kickPlayer(main.lang().getMsg("kick-reason").toString(false).replace("{world}", worldName));
 
                 tpPlayers.add(player);
-
                 main.lang().getMsg("teleporting-safe-world").send(player, true,
                         new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
 
-                if (!safeWorldSpawn.equalsIgnoreCase("default")) {
-
+                if (!safeWorldSpawn.equalsIgnoreCase("default"))
                     player.teleport(main.worldUtils().getLocationFromString(safeWorld, safeWorldSpawn));
-
-                } else {
-
-                    player.teleport(Bukkit.getWorld(safeWorld).getSpawnLocation());
-
-                }
+                else player.teleport(Bukkit.getWorld(safeWorld).getSpawnLocation());
 
                 main.lang().getMsg("teleported-safe-world").send(player, true,
                         new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
-
             }
             main.onWorldChange().addClosedWorld(worldName);
         }
@@ -350,7 +337,6 @@ public class WorldObject {
 
             }
 
-
         }).runTaskLater(main, loadDelay * Math.round(20/Lag.getLowerTPS()));
 
     }
@@ -395,16 +381,13 @@ public class WorldObject {
         Location spawnPoint = getWorld().getSpawnLocation();
         main.onDamage().setEnabled(true);
         List<Player> tempTpPlayers = tpPlayers;
-        for (int i = 0; i < tempTpPlayers.size(); i++) {
 
-            Player player = tempTpPlayers.get(i);
+        for (Player player : tempTpPlayers) {
             if (!player.isOnline()) continue;
             main.lang().getMsg("teleporting-back").send(player, true, new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
 
-            player.teleport(new Location(getWorld(), spawnPoint.getX(), getWorld().getHighestBlockYAt(spawnPoint.getBlockX(), spawnPoint.getBlockZ()), spawnPoint.getZ()));
-
+            player.teleport(spawnPoint);
             main.lang().getMsg("teleported-back").send(player, true, new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
-
         }
 
         tpPlayers.clear();
@@ -426,7 +409,8 @@ public class WorldObject {
         chunkCounter = -1;
 
         try {
-            if (main.isMultiverseEnabled()) main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setSpawnLocation(getWorld().getSpawnLocation());
+            if (main.isMultiverseEnabled())
+                main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setSpawnLocation(getWorld().getSpawnLocation());
         } catch (Exception e) {
             main.logger("&cFailed to set spawn location for " + worldName + " in Multiverse.");
         }
@@ -438,7 +422,7 @@ public class WorldObject {
             for (Player player : Bukkit.getOnlinePlayers())
                 for (String i : message) player.sendMessage(main.langUtils().getColor(i.replace("{world}", worldName), true));
 
-        sendCommands();
+        sendCommands(false);
 
         main.onWorldChange().removeClosedWorld(worldName);
         if (!main.onJoin().isServerOpen()) main.onJoin().setServerOpen(true);
@@ -457,6 +441,10 @@ public class WorldObject {
         getWorld().setKeepSpawnInMemory(true);
         resetting = false;
         chunkCounter = -2;
+
+        if (Bukkit.getPluginManager().isPluginEnabled("CMI") && main.config().isCmiWarpSave())
+            CMI.getInstance().getWarpManager().load();
+
         main.lang().getMsg("regen-success").send(sender, true, new String[]{"world"}, new String[]{worldName});
         chunkNumber = 0;
     }
@@ -487,20 +475,14 @@ public class WorldObject {
         if (saveWorld) {
             getWorld().save();
             (new BukkitRunnable() {
-
                 @Override
                 public void run() {
-
                     zipSavedWorld(player);
-
                 }
-
             }).runTaskLater(main, 20L * Math.round(20 / Lag.getTPS()));
             return true;
-        } else {
-            return zipSavedWorld(player);
         }
-
+        else return zipSavedWorld(player);
     }
 
     private boolean zipSavedWorld(Player player) {
@@ -518,14 +500,15 @@ public class WorldObject {
     public boolean rollbackWorld(Player player){
 
         main.lang().getMsg("rolling-back-world").send(player, true, new String[]{"world"}, new String[]{worldName});
-
         File worldSave = main.zipUtils().getLastModified(worldName);
+
         if (worldSave == null) {
             main.lang().getMsg("rollback-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
             return false;
         }
+
         try {
-            main.zipUtils().unZip(worldSave.getName());
+            main.zipUtils().unZip(worldSave);
             main.lang().getMsg("rollback-success").send(player, true, new String[]{"world"}, new String[]{worldName});
             return true;
         } catch (IOException e) {
@@ -547,69 +530,84 @@ public class WorldObject {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld() != getWorld()) continue;
-
-            for (String i : warningMessage) player.sendMessage(main.langUtils().getColor(i.replace("{world}", worldName).replace("{time}", time), true));
+            for (String i : warningMessage)
+                player.sendMessage(main.langUtils().getColor(i.replace("{world}", worldName).replace("{time}", time), true));
 
             // 63 --> 1 minute 3 seconds
             if (warningTitle == null) continue;
             String title = main.langUtils().getColor(warningTitle.replace("{world}", worldName).replace("{time}", time), false);
             String subtitle = main.langUtils().getColor(warningSubtitle.replace("{world}", worldName).replace("{time}", time), false);
             main.langUtils().sendTitle(player, title, subtitle, warningTitleFade);
-
         }
-
     }
 
-    private void sendCommands() {
+    private void sendCommands(boolean initial) {
+
+        String iS = "";
+        List<String> commands = this.commands;
+        int subStringInt = -8;
+        if (initial) {
+            iS = "initial:";
+            commands = initialCommands;
+            subStringInt = 0;
+        }
+
         for (String cmd : commands) {
 
+            while (cmd.charAt(0) == ' ') cmd = cmd.substring(1);
+            if (cmd.startsWith("[initial") && !initial) continue;
+
             if (!cmd.startsWith("[")) {
-                Bukkit.dispatchCommand(console, replaceInCmd(cmd, null));
+                Bukkit.dispatchCommand(console, cmd.replace("{world}", worldName));
                 continue;
             }
 
-            if (cmd.startsWith("[all-players]")) {
-                cmd = cmd.substring(13);
-                if (cmd.startsWith(" ")) cmd.substring(1);
+            if (cmd.toLowerCase().startsWith("[general]")) {
+                cmd = cmd.substring(9);
+                while (cmd.charAt(0) == ' ') cmd = cmd.substring(1);
+                Bukkit.dispatchCommand(console, cmd.replace("{world}", worldName));
+                continue;
+            }
+
+            if (cmd.toLowerCase().startsWith("[" + iS + "all-players]")) {
+                cmd = cmd.substring(21 + subStringInt);
+                while (cmd.charAt(0) == ' ') cmd = cmd.substring(1);
                 final String newCmd = cmd;
                 Bukkit.getOnlinePlayers().forEach(player -> Bukkit.dispatchCommand(console, replaceInCmd(newCmd, player)));
                 continue;
             }
 
-            cmd = cmd.substring(15);
-
-            if (cmd.startsWith("[world-players]")) {
-                if (cmd.startsWith(" ")) cmd.substring(1);
+            if (cmd.toLowerCase().startsWith("[" + iS + "world-players]")) {
+                cmd = cmd.substring(23 + subStringInt);
+                while (cmd.charAt(0) == ' ') cmd = cmd.substring(1);
                 final String newCmd = cmd;
-                for (Player player : tpPlayers) {
+                List<Player> players = tpPlayers;
+                if (!resetting) players = getWorld().getPlayers();
+                for (Player player : players) {
                     if (!player.isOnline()) continue;
                     Bukkit.dispatchCommand(console, replaceInCmd(newCmd, player));
                 }
                 continue;
             }
 
-            if (cmd.startsWith("[world-players:")) {
+            if (cmd.toLowerCase().startsWith("[" + iS + "world-players:")) {
+                cmd = cmd.substring(23 + subStringInt);
                 World world = Bukkit.getWorld(cmd.substring(0, cmd.indexOf("]")));
-                if (world == null) return; // maybe a check for that or a message
+                if (world == null) continue;
                 cmd = cmd.substring(cmd.indexOf("]") + 1);
-                if (cmd.startsWith(" ")) cmd.substring(1);
+                while (cmd.charAt(0) == ' ') cmd = cmd.substring(1);
                 final String newCmd = cmd;
                 world.getPlayers().forEach(player -> Bukkit.dispatchCommand(console, replaceInCmd(newCmd, player)));
             }
 
-            if (cmd.startsWith("[general]")) {
-                cmd = cmd.substring(9);
-                if (cmd.startsWith(" ")) cmd.substring(1);
-                Bukkit.dispatchCommand(console, replaceInCmd(cmd, null));
-            }
         }
     }
 
     private String replaceInCmd(String cmd, Player player) {
         cmd = cmd.replace("{world}", worldName);
         if (player != null) {
-            String[] placeholders = {"{playerName}", "{playerDisplayName}", "{playerUUID}"};
-            String[] values = {player.getName(), player.getDisplayName(), player.getUniqueId().toString()};
+            String[] placeholders = {"{playerName}", "{player}", "{playerDisplayName}", "{playerUUID}"};
+            String[] values = {player.getName(), player.getName(), player.getDisplayName(), player.getUniqueId().toString()};
             cmd = StringUtils.replaceEach(cmd, placeholders, values);
         }
         return cmd;
@@ -756,6 +754,9 @@ public class WorldObject {
     }
     public void setCommands(List<String> commands) {
         this.commands = commands;
+    }
+    public void setInitialCommands(List<String> initialCommands) {
+        this.initialCommands = initialCommands;
     }
     public void setSafeWorldEnabled(boolean safeWorldEnabled) {
         this.safeWorldEnabled = safeWorldEnabled;

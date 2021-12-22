@@ -7,7 +7,9 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Worlds {
 
@@ -151,6 +153,22 @@ public class Worlds {
 
                 if (isSet(settings + "commands")) {
                     worldObject.setCommands(main.langUtils().convertList(config, "worlds." + settings + "commands"));
+                }
+
+                if (isSet(settings + "commands")) {
+                    List<String> commands = main.langUtils().convertList(config, "worlds." + settings + "commands");
+                    List<String> initialCommands = new ArrayList<>();
+
+                    for (String s : commands) {
+                        while (s.charAt(0) == ' ') s = s.substring(1);
+                        if (s.toLowerCase().startsWith("[initial")) {
+                            initialCommands.add(s.replace("[initial]", ""));
+                        }
+                    }
+
+                    worldObject.setCommands(commands);
+                    worldObject.setInitialCommands(initialCommands);
+
                 }
 
                 if (isSet(settings + "time")) {

@@ -111,8 +111,8 @@ public final class CyberWorldReset extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        if (getVersion() > 17) {
-            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support 1.18 and newer. Please update!");
+        if (getVersion() > 18) {
+            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support 1.19 and newer. Please update!");
             return;
         }
         if (getVersion() < 8) {
@@ -173,7 +173,7 @@ public final class CyberWorldReset extends JavaPlugin {
     private void loadUtilities() {
         // load utilities
         langUtils = new LangUtils(this);
-        worldUtils = new WorldUtils(this);
+        worldUtils = new WorldUtils();
         zipUtils = new ZipUtils(this);
     }
 

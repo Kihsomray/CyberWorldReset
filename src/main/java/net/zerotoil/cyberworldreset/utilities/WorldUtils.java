@@ -11,12 +11,6 @@ import java.util.Properties;
 
 public class WorldUtils {
 
-    private CyberWorldReset main;
-
-    public WorldUtils(CyberWorldReset main) {
-        this.main = main;
-    }
-
     public String getLevelName() {
         try {
             Properties props = new Properties();
@@ -29,14 +23,15 @@ public class WorldUtils {
     }
 
     public boolean isWorld(String worldName) {
-
         return Bukkit.getWorld(worldName) != null;
-
     }
 
     public Location getLocationFromString(String worldName, String locationString) {
         double[] location = coordinateStringToDouble(locationString);
-        return new Location(Bukkit.getWorld(worldName), location[0], location[1], location[2], 0, 0);
+        float pitch = 0, yaw = 0;
+        if (location.length >= 4) pitch = (float) location[3];
+        if (location.length == 5) yaw = (float) location[4];
+        return new Location(Bukkit.getWorld(worldName), location[0], location[1], location[2], yaw, pitch);
     }
 
     public double[] coordinateStringToDouble(String locationString) {
@@ -46,13 +41,10 @@ public class WorldUtils {
 
     public boolean areCoordinates(String string) {
         try {
-            double[] coords = coordinateStringToDouble(string);
-            if (coords.length != 3) return false;
-        } catch (Exception e) {
-            return false;
+            double[] doubles = coordinateStringToDouble(string);
+            if (doubles.length < 3 || doubles.length > 5) return false;
         }
+        catch (Exception e) { return false; }
         return true;
     }
-
-
 }

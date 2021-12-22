@@ -20,11 +20,9 @@ public class CWRCommand implements CommandExecutor {
     public HashMap<Player, String> confirmation = new HashMap<>();
 
     public CWRCommand(CyberWorldReset main) {
-
         this.main = main;
         main.getCommand("cwr").setExecutor(this);
         consoleCmds = Arrays.asList("about", "reload");
-
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -237,6 +235,7 @@ public class CWRCommand implements CommandExecutor {
             return true;
         }
     }
+
     private boolean notLong(Player player, String arg) {
         try {
             Long.parseLong(arg);
@@ -291,6 +290,7 @@ public class CWRCommand implements CommandExecutor {
         main.worlds().getWorld(worldName).saveWorld(player, true);
         return true;
     }
+
     private boolean createSetup(Player player, String worldName) {
 
         if (noPlayerPerm(player, "admin.create")) return true;
@@ -340,19 +340,20 @@ public class CWRCommand implements CommandExecutor {
         return true;
     }
 
-
     private void infoTimes(Player player, String worldName) {
         List<String> time = main.worlds().getWorld(worldName).getTime();
         if (time.isEmpty()) return;
         sendHeader(player, 1);
         sendList(player, time);
     }
+
     private void infoMessages(Player player, String worldName) {
         List<String> messages = main.worlds().getWorld(worldName).getMessage();
         if (messages.isEmpty()) return;
         sendHeader(player, 2);
         sendList(player, main.worlds().getWorld(worldName).getMessage());
     }
+
     private void infoSafeWorld(Player player, String worldName) {
 
         String sw = "safe-world-";
@@ -365,6 +366,7 @@ public class CWRCommand implements CommandExecutor {
             infoMsg(player, sw + "spawn", new String[]{"spawn"}, new String[]{getSetup(worldName).getSafeWorldSpawn() + ""});
         }
     }
+
     private void infoWarning(Player player, String worldName) {
 
         sendHeader(player, 4);
@@ -382,13 +384,13 @@ public class CWRCommand implements CommandExecutor {
         if (main.worlds().getWorld(worldName).getWarningSubtitle() != null)
             infoMsg(player, "subtitle", new String[]{"subtitle"}, new String[]{main.worlds().getWorld(worldName).getWarningSubtitle()});
     }
+
     private void infoCommands(Player player, String worldName) {
         List<String> commands = main.worlds().getWorld(worldName).getCommands();
         if (commands.isEmpty()) return;
         sendHeader(player, 6);
         sendList(player, commands);
     }
-
 
     private void infoMsg(Player player, String path, String[] placeholder, String[] replace) {
         main.lang().getMsg("info-" + path).send(player, false, placeholder, replace);
@@ -413,6 +415,7 @@ public class CWRCommand implements CommandExecutor {
             return false;
         }
     }
+
     private boolean setEnabled(Player player, String worldName, String value) {
         if (noPlayerPerm(player, "admin.edit.enable")) return true;
 
@@ -424,6 +427,7 @@ public class CWRCommand implements CommandExecutor {
         }
         return true;
     }
+
     private boolean enabledLastSaved(Player player, String worldName, String value) {
         if (noPlayerPerm(player, "admin.edit.lastsaved")) return true;
 
@@ -432,6 +436,7 @@ public class CWRCommand implements CommandExecutor {
             main.worlds().getWorld(worldName).setLastSaved(Boolean.parseBoolean(value));
         return true;
     }
+
     private boolean enabledSafeWorld(Player player, String worldName, String value) {
         if (noPlayerPerm(player, "admin.edit.safeworld")) return true;
 
@@ -458,6 +463,7 @@ public class CWRCommand implements CommandExecutor {
         }
         return true;
     }
+
     private boolean addTimer(Player player, String worldName, String value) {
         if (noPlayerPerm(player, "admin.edit.timer")) return true;
         if (noSetupsExist(player)) return true;
@@ -743,7 +749,10 @@ public class CWRCommand implements CommandExecutor {
         if (main.worldUtils().areCoordinates(value)) {
             Location loc = main.worldUtils().getLocationFromString(main.worlds().getWorld(worldName).getSafeWorld(), value);
             finalValue = loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ();
-        } else if (!value.equalsIgnoreCase("default")) {
+            if (loc.getYaw() != 0) finalValue += ", " + loc.getYaw();
+            if (loc.getPitch() != 0) finalValue += ", " + loc.getPitch();
+        }
+        else if (!value.equalsIgnoreCase("default")) {
             main.lang().getMsg("invalid-command").send(player);
             return true;
         }
@@ -751,10 +760,7 @@ public class CWRCommand implements CommandExecutor {
             main.worlds().getWorld(worldName).setSafeWorldSpawn(finalValue);
             infoSafeWorld(player, worldName);
         }
-
         return true;
-
-
     }
 
     private boolean noSetupsExist(Player player) {
@@ -764,6 +770,7 @@ public class CWRCommand implements CommandExecutor {
         }
         return false;
     }
+
     private boolean setupDoesNotExist(Player player, String worldName) {
         if (!main.worlds().getWorlds().containsKey(worldName)) {
             main.lang().getMsg("setup-doesnt-exist").send(player, true, new String[]{"world"}, new String[]{worldName});
@@ -771,6 +778,7 @@ public class CWRCommand implements CommandExecutor {
         }
         return false;
     }
+
     private boolean noPlayerPerm(Player player, String permissionKey) {
         if (player == null) return false;
         if (!player.hasPermission("CyberWorldReset." + permissionKey)) {

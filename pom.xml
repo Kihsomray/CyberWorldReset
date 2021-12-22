@@ -6,12 +6,12 @@
 
     <groupId>net.zerotoil</groupId>
     <artifactId>CyberWorldReset</artifactId>
-    <version>0.5.0.46</version>
+    <version>0.5.5.42</version>
     <packaging>jar</packaging>
 
     <name>CyberWorldReset</name>
-
     <description>Regenerate your world at an interval time</description>
+
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,7 +44,57 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/*.MF</exclude>
+                                <exclude>META-INF/*.md</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <executions>
+                    <execution>
+                        <id>CMI</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>com.Zrips</groupId>
+                            <artifactId>CMI</artifactId>
+                            <version>9.1.0.4</version>
+                            <packaging>jar</packaging>
+                            <file>libs/CMI.jar</file>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>CMILib</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>net.Zrips</groupId>
+                            <artifactId>CMILib</artifactId>
+                            <version>1.1.0.1</version>
+                            <packaging>jar</packaging>
+                            <file>libs/CMILib.jar</file>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
         <resources>
             <resource>
@@ -81,7 +131,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.17.1-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -121,6 +171,18 @@
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.Zrips</groupId>
+            <artifactId>CMI</artifactId>
+            <version>9.1.0.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.Zrips</groupId>
+            <artifactId>CMILib</artifactId>
+            <version>1.1.0.4</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

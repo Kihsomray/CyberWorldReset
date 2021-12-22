@@ -42,7 +42,7 @@ config:
 
   # Amount of seconds between teleportation of players back to the
   # world. The higher the number, the less stress on the server.
-  # Highly recommended to enable if using random teleportation.
+  # Highly recommended enabling if using random teleportation.
   recursive-teleporting: # COMING SOON!
     enabled: true
     milliseconds: 150
@@ -58,6 +58,9 @@ config:
   hooks:
     # If enabled, when a world is reset, all regions will be deleted.
     world-guard-delete: false
+
+    # If enabled, will make sure warps are saved.
+    save-cmi-warps: true
 
   # updates the config every time you update. Prior strings will
   # remain the same! NOTE: disabling this will leave new settings

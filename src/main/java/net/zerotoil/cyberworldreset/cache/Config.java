@@ -34,6 +34,7 @@ public class Config {
     private boolean suffocationFix;
 
     private boolean worldGuardDelete;
+    private boolean cmiWarpSave;
 
 
     public Config(CyberWorldReset main) {
@@ -46,7 +47,6 @@ public class Config {
             lang = config.getString("config.lang");
             if (!lang.matches("(?i)en|es|ru")) lang = "en";
         }
-
     }
 
     public void loadConfig() {
@@ -76,6 +76,7 @@ public class Config {
         suffocationFix = getBoolean("fix-suffocation-teleport-1_8-1_9", true);
 
         worldGuardDelete = getBoolean("hooks.world-guard-delete", false);
+        cmiWarpSave = getBoolean("hooks.save-cmi-warps", true);
 
     }
 
@@ -157,6 +158,9 @@ public class Config {
     }
     public boolean isWorldGuardDelete() {
         return worldGuardDelete;
+    }
+    public boolean isCmiWarpSave() {
+        return cmiWarpSave;
     }
 
 }
