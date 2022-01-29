@@ -6,7 +6,7 @@
 
     <groupId>net.zerotoil</groupId>
     <artifactId>CyberWorldReset</artifactId>
-    <version>0.5.6.1</version>
+    <version>0.5.6.3</version>
     <packaging>jar</packaging>
 
     <name>CyberWorldReset</name>

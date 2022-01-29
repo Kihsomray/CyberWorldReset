@@ -22,7 +22,7 @@ public class CWRCommand implements CommandExecutor {
     public CWRCommand(CyberWorldReset main) {
         this.main = main;
         main.getCommand("cwr").setExecutor(this);
-        consoleCmds = Arrays.asList("about", "reload");
+        consoleCmds = Arrays.asList("about", "reload", "regen", "reset");
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -31,7 +31,9 @@ public class CWRCommand implements CommandExecutor {
         String uuid;
 
         // console check
-        if (!(sender instanceof Player) && !consoleCmds.contains(args[0])) {
+        if (!(sender instanceof Player) && (!consoleCmds.contains(args[0].toLowerCase()) ||
+                ((args[0].equalsIgnoreCase("regen") || args[0].equalsIgnoreCase("reset"))
+                        && args.length != 2))) {
             Bukkit.getLogger().warning("Console cannot use this command!");
             return true;
         } else if (!(sender instanceof Player)) {
@@ -251,7 +253,7 @@ public class CWRCommand implements CommandExecutor {
         if (noSetupsExist(player)) return true;
         if (setupDoesNotExist(player, worldName)) return true;
 
-        if (main.config().isConfirmationEnabled()) {
+        if (main.config().isConfirmationEnabled() && player != null) {
 
             if (confirmation.containsKey(player)) {
                 main.lang().getMsg("confirmation-needed").send(player, true, new String[]{"world"}, new String[]{worldName});
