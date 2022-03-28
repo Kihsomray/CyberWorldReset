@@ -8,6 +8,7 @@ import net.zerotoil.cyberworldreset.CyberWorldReset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
+import org.bukkit.boss.DragonBattle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,7 +18,7 @@ import java.util.*;
 
 public class WorldObject {
 
-    final private CyberWorldReset main; // req
+    private final CyberWorldReset main; // req
     private boolean enabled; // req
     private boolean lastSaved;
     private String worldName; // req
@@ -48,23 +49,23 @@ public class WorldObject {
     private List<Integer> warningTitleFade;
 
     // timed resets module
-    private HashMap<String, TimedReset> timedResets= new HashMap<>();
+    private final HashMap<String, TimedReset> timedResets = new HashMap<>();
 
     // teleport player module
-    private List<Player> tpPlayers = new ArrayList<>();
+    private final  List<Player> tpPlayers = new ArrayList<>();
 
-    private long loadDelay;
+    // chunk loading cache
+    private final long loadDelay;
     private ArrayList<Integer> chunkInfo;
     private int xChunk;
     private int zChunk;
     private int chunkNumber;
     private int chunkCounter;
+    private Map<Long, List<Integer>> chunks;
 
     private boolean startingReset;
 
-    private Map<Long, List<Integer>> chunks;
-
-    protected CommandSender console = Bukkit.getConsoleSender();
+    private final CommandSender console = Bukkit.getConsoleSender();
 
     public WorldObject(CyberWorldReset main, String worldName) {
 
@@ -121,6 +122,11 @@ public class WorldObject {
             return false;
         }
 
+        if (safeWorldEnabled && (safeWorld.equals(worldName) || Bukkit.getWorld(safeWorld) == null)) {
+            main.lang().getMsg("invalid-safeworld").send(sender, true, new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
+            return false;
+        }
+
         resetting = true;
         sendCommands(true);
         tpPlayersAway();
@@ -140,6 +146,12 @@ public class WorldObject {
         } catch (Exception e) {
             return regenFail("file-delete-failed", sender);
         }
+
+        return regen2(sender);
+    }
+
+    // second process in the reset sequence
+    private boolean regen2(Player sender) {
 
         // reset delay
         long resetDelay = main.config().getWorldResetDelay();
@@ -190,7 +202,7 @@ public class WorldObject {
                 // fast, normal, safe, ultra-safe chunk loading
                 if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE"))
                     newProperLoading(sender);
-                // else safeLoadChunks(main.config().getLoadRadius(), sender);
+                    // else safeLoadChunks(main.config().getLoadRadius(), sender);
                 else finishRegen(sender);
             }
         }).runTaskLater(main, resetDelay);
@@ -208,8 +220,10 @@ public class WorldObject {
                 }
         }
         else {
-            if (getWorld().getEnvironment().toString().contains("THE_END"))
-                getWorld().getEnderDragonBattle().getBossBar().removeAll();
+            if (getWorld().getEnvironment().toString().contains("THE_END")) {
+                DragonBattle dBattle = getWorld().getEnderDragonBattle();
+                if (dBattle != null) dBattle.getBossBar().removeAll();
+            }
 
             if (!tpPlayers.isEmpty()) tpPlayers.clear();
 
@@ -261,7 +275,6 @@ public class WorldObject {
         Bukkit.getLogger().info("The world is being loaded, please wait!");
         chunks = new HashMap<>();
         getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
-        //main.logger(main.multiverse().getMVWorldManager().getMVWorld(getWorld()).isKeepingSpawnInMemory() + "");
         startingReset = true;
         (new BukkitRunnable() {
 
@@ -293,7 +306,6 @@ public class WorldObject {
                 }
                 startingReset = false;
                 newChunkLoading(sender);
-                //System.out.println(chunks.size());
 
             }
 
@@ -348,7 +360,7 @@ public class WorldObject {
         else if (main.config().getLang().equalsIgnoreCase("ru")) loading = "Загрузка";
         if (main.config().isDetailedMessages() && main.getVersion() > 12)
             System.out.printf(loading + " [%s]: %3d%% | Chunk: %5d/%d | ETA: %-10s | TPS %.2f%n", worldName, Math.round((chunkNumber + 0.0) / (width * width) * 100), chunkNumber,
-                width * width, ChatColor.stripColor(main.langUtils().formatTime(Math.round((((width * width) - chunkNumber) * (loadDelay / 20.0) * (20.0 / tps)) / 3))), tps);
+                    width * width, ChatColor.stripColor(main.langUtils().formatTime(Math.round((((width * width) - chunkNumber) * (loadDelay / 20.0) * (20.0 / tps)) / 3))), tps);
         else main.logger(loading + " [" + worldName + "]: " + Math.round((chunkNumber + 0.0) / (width * width) * 100) + "%");
     }
 
@@ -380,9 +392,8 @@ public class WorldObject {
 
         Location spawnPoint = getWorld().getSpawnLocation();
         main.onDamage().setEnabled(true);
-        List<Player> tempTpPlayers = tpPlayers;
 
-        for (Player player : tempTpPlayers) {
+        for (Player player : tpPlayers) {
             if (!player.isOnline()) continue;
             main.lang().getMsg("teleporting-back").send(player, true, new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
 
@@ -553,6 +564,8 @@ public class WorldObject {
         }
 
         for (String cmd : commands) {
+
+            // TODO redo this entire section, may be faulty
 
             while (cmd.charAt(0) == ' ') cmd = cmd.substring(1);
             if (cmd.startsWith("[initial") && !initial) continue;
