@@ -105,10 +105,7 @@ public class Metrics {
 
         addCustomChart(new SimplePie("chunkRadius", () -> main.config().getLoadRadius() + ""));
 
-        addCustomChart(new SimplePie("edition", () -> {
-            if (main.isPremium()) return "Premium";
-            else return "Standard";
-        }));
+        addCustomChart(new SimplePie("edition", () -> "Standard"));
     }
 
     /**

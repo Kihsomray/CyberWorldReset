@@ -73,23 +73,9 @@
                         <configuration>
                             <groupId>com.Zrips</groupId>
                             <artifactId>CMI</artifactId>
-                            <version>9.1.0.4</version>
+                            <version>9.1.3.3</version>
                             <packaging>jar</packaging>
                             <file>libs/CMI.jar</file>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>CMILib</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>net.Zrips</groupId>
-                            <artifactId>CMILib</artifactId>
-                            <version>1.1.0.1</version>
-                            <packaging>jar</packaging>
-                            <file>libs/CMILib.jar</file>
                         </configuration>
                     </execution>
                 </executions>
