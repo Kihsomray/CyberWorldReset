@@ -18,7 +18,7 @@ public class OnWorldChange implements Listener {
     public OnWorldChange(CyberWorldReset main) {
         this.main = main;
         Bukkit.getPluginManager().registerEvents(this, main);
-        main.events++;
+        main.addEvent();
     }
 
     @EventHandler (priority = EventPriority.LOWEST)

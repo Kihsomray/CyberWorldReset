@@ -18,7 +18,7 @@ public class OnJoin implements Listener {
 
         this.main = main;
         Bukkit.getPluginManager().registerEvents(this, main);
-        main.events++;
+        main.addEvent();
         serverOpen = true;
     }
 

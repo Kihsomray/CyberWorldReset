@@ -17,8 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CyberWorldReset extends JavaPlugin {
 
-    private boolean premium;
-
     private Files files;
     private Config config;
     private Lang lang;
@@ -41,89 +39,22 @@ public final class CyberWorldReset extends JavaPlugin {
     private MultiverseCore multiverseCore;
     private WorldGuard worldGuard;
 
-
-    public boolean isPremium() {
-        return premium;
-    }
-    public int events = 0;
-    public String getEdition() {
-        String edition = "Standard";
-        if (premium) edition = "Premium";
-        return edition;
-    }
-
-    public Files files() {
-        return files;
-    }
-    public Config config() {
-        return config;
-    }
-    public Lang lang() {
-        return lang;
-    }
-    public Worlds worlds() {
-        return worlds;
-    }
-
-    public CWRCommand cwrCommand() {
-        return cwrCommand;
-    }
-    public CWRTabComplete cwrTabComplete() {
-        return cwrTabComplete;
-    }
-
-    public LangUtils langUtils() {
-        return langUtils;
-    }
-    public WorldUtils worldUtils() {
-        return worldUtils;
-    }
-    public ZipUtils zipUtils() {
-        return zipUtils;
-    }
-
-    public OnJoin onJoin() {
-        return onJoin;
-    }
-    public OnWorldChange onWorldChange() {
-        return onWorldChange;
-    }
-    public OnDamage onDamage() {
-        return onDamage;
-    }
-    public OnWorldCreate onWorldCreate() {
-        return onWorldCreate;
-    }
-
-    public boolean isPlaceholderAPIEnabled() {
-        return placeholderAPIEnabled;
-    }
-    public boolean isMultiverseEnabled() {
-        return multiverseEnabled;
-    }
-    public MultiverseCore multiverse() {
-        return multiverseCore;
-    }
-    public WorldGuard worldGuard() {
-        return worldGuard;
-    }
+    private int events = 0;
 
     @Override
     public void onEnable() {
 
         if (getVersion() > 18) {
-            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support 1.19 and newer. Please update!");
+            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support MC version 1.19 and newer. Please update!");
             return;
         }
         if (getVersion() < 8) {
-            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support 1.7.10 and older (yet)!");
+            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support MC versions older than 1.8");
             return;
         }
 
         sendBootMSG();
         long startTime = System.currentTimeMillis();
-
-        premium = false;
 
         // lag initialize
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Lag(), 100L, 1L);
@@ -135,7 +66,6 @@ public final class CyberWorldReset extends JavaPlugin {
         // commands
         cwrCommand = new CWRCommand(this);
         cwrTabComplete = new CWRTabComplete(this);
-        this.getCommand("cwr").setTabCompleter(cwrTabComplete);
 
         // addons
         new Metrics(this, 13007, this);
@@ -206,7 +136,7 @@ public final class CyberWorldReset extends JavaPlugin {
     public void sendBootMSG() {
         logger("&b―――――――――――――――――――――――――――――――――――――――――――――――");
         String author = "&7Authors: &f" + getAuthors();
-        String version = "&7Version: &f" + this.getDescription().getVersion() + "-BETA [" + getEdition() + "]";
+        String version = "&7Version: &f" + this.getDescription().getVersion() + " [STANDARD]";
         if (!SystemUtils.OS_NAME.contains("Windows")) {
             logger("&b╭━━━╮&7╱╱╱&b╭╮&7╱╱╱╱╱╱&b╭╮╭╮╭╮&7╱╱╱╱&b╭╮&7╱╱&b╭┳━━━╮&7╱╱╱╱╱╱╱╱&b╭╮");
             logger("&b┃╭━╮┃&7╱╱╱&b┃┃&7╱╱╱╱╱╱&b┃┃┃┃┃┃&7╱╱╱╱&b┃┃&7╱╱&b┃┃╭━╮┃&7╱╱╱╱╱╱╱&b╭╯╰╮");
@@ -241,6 +171,67 @@ public final class CyberWorldReset extends JavaPlugin {
 
     public int getVersion() {
         return Integer.parseInt(Bukkit.getBukkitVersion().split("-")[0].split("\\.")[1]);
+    }
+
+    public void addEvent() {
+        events++;
+    }
+
+    // field getters
+    public Files files() {
+        return files;
+    }
+    public Config config() {
+        return config;
+    }
+    public Lang lang() {
+        return lang;
+    }
+    public Worlds worlds() {
+        return worlds;
+    }
+
+    public CWRCommand cwrCommand() {
+        return cwrCommand;
+    }
+    public CWRTabComplete cwrTabComplete() {
+        return cwrTabComplete;
+    }
+
+    public LangUtils langUtils() {
+        return langUtils;
+    }
+    public WorldUtils worldUtils() {
+        return worldUtils;
+    }
+    public ZipUtils zipUtils() {
+        return zipUtils;
+    }
+
+    public OnJoin onJoin() {
+        return onJoin;
+    }
+    public OnWorldChange onWorldChange() {
+        return onWorldChange;
+    }
+    public OnDamage onDamage() {
+        return onDamage;
+    }
+    public OnWorldCreate onWorldCreate() {
+        return onWorldCreate;
+    }
+
+    public boolean isPlaceholderAPIEnabled() {
+        return placeholderAPIEnabled;
+    }
+    public boolean isMultiverseEnabled() {
+        return multiverseEnabled;
+    }
+    public MultiverseCore multiverse() {
+        return multiverseCore;
+    }
+    public WorldGuard worldGuard() {
+        return worldGuard;
     }
 
 }

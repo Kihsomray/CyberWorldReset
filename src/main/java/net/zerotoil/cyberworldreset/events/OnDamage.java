@@ -19,7 +19,7 @@ public class OnDamage implements Listener {
     public OnDamage(CyberWorldReset main) {
         this.main = main;
         Bukkit.getPluginManager().registerEvents(this, main);
-        main.events++;
+        main.addEvent();
         enabled = false;
     }
 

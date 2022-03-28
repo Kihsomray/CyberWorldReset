@@ -19,6 +19,7 @@ public class CWRTabComplete implements TabCompleter {
 
     public CWRTabComplete (CyberWorldReset main) {
         this.main = main;
+        main.getCommand("cwr").setTabCompleter(this);
     }
 
     @Override
