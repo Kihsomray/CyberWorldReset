@@ -33,11 +33,12 @@ public class OnDamage implements Listener {
         if (event.getEntity().getWorld().getEnvironment() == World.Environment.NETHER) return; // ignore nether top
         if ((event.getCause() != SUFFOCATION) && (event.getCause() != LAVA) && (event.getCause() != FIRE) && (event.getCause() != FIRE_TICK)) return;
         Player player = (Player) event.getEntity();
-        Location location = player.getWorld().getSpawnLocation();
+        World world = player.getWorld();
+        Location location = world.getSpawnLocation();
         double preX = location.getX() - 1, preZ = location.getZ() - 1, postX = location.getX() + 1, postZ = location.getZ() + 1;
         double playerX = player.getLocation().getX(), playerZ = player.getLocation().getZ();
         if ((playerX < postX) && (playerX > preX) && (playerZ < postZ) && (playerZ > preZ)) {
-            player.teleport(new Location(player.getWorld(), location.getBlockX(), player.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ()), location.getZ()));
+            player.teleport(new Location(world, location.getBlockX(), world.getHighestBlockYAt(location.getBlockX(), location.getBlockZ()), location.getZ()));
             event.setCancelled(true);
         }
     }

@@ -41,6 +41,7 @@ messages:
   already-resetting: '&cThe world "{world}" is already resetting!'
   resetting-error: '&cA world is being reset. This action cannot be completed.'
   safeworld-not-set: '&cPlease set a safe world before enabling the safe world option (&7/cwr {world} edit setSafeWorld <world>&c).'
+  invalid-safeworld: '&cThe world cannot be reset with the safe world "{safeWorld}"! Please adjust it (&7/cwr {world} edit setSafeWorld <world>&c).'
   setup-created: '&aThe world setup "{world}" has been created! Edit it using &7/cwr edit <world> <setting> <value>&a.'
   setup-already-exists: '&cThe world setup "{world}" already exists! Edit it using &a/cwr edit <world> <setting> <value>&7.'
   no-setups-found: '&cNo world setups found. Create one with &7/cwr create [<world>]&c.'

@@ -4,20 +4,17 @@ import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DecimalFormat;
 
 public class Lag implements Runnable {
 
-    public static int TICK_COUNT = 0;
-    public static long[] TICKS = new long[600];
-    public static long LAST_TICK = 0L;
+    private static int TICK_COUNT = 0;
+    private static long[] TICKS = new long[600];
 
     public static double getTPS() {
         return getTPS(100);
     }
 
-    public static double getTPS(int ticks)
-    {
+    public static double getTPS(int ticks) {
         if (TICK_COUNT < ticks) {
             return 20.0D;
         }
@@ -37,9 +34,7 @@ public class Lag implements Runnable {
         String name1 = Bukkit.getServer().getClass().getPackage().getName();
         String version = name1.substring(name1.lastIndexOf('.') + 1);
 
-        Class<?> mcsclass = null;
-
-        DecimalFormat format = new DecimalFormat("##.##");
+        Class<?> mcsclass;
 
         Object si = null;
         Field tpsField = null;
@@ -74,16 +69,8 @@ public class Lag implements Runnable {
         return Math.min(getTPS(), getNewTPS());
     }
 
-    public static long getElapsed(int tickID)
-    {
-        long time = TICKS[(tickID % TICKS.length)];
-        return System.currentTimeMillis() - time;
-    }
-
-    public void run()
-    {
+    public void run() {
         TICKS[(TICK_COUNT% TICKS.length)] = System.currentTimeMillis();
-
         TICK_COUNT += 1;
     }
 

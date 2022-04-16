@@ -127,6 +127,11 @@ public class WorldObject {
             return false;
         }
 
+        if (safeWorldEnabled && (safeWorld.equals(worldName) || Bukkit.getWorld(safeWorld) == null)) {
+            main.lang().getMsg("invalid-safeworld").send(sender, true, new String[]{"world", "safeWorld"}, new String[]{worldName, safeWorld});
+            return false;
+        }
+
         resetting = true;
         sendCommands(true);
         tpPlayersAway();

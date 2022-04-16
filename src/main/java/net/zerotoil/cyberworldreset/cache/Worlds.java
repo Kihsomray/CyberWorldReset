@@ -2,7 +2,6 @@ package net.zerotoil.cyberworldreset.cache;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -71,12 +70,6 @@ public class Worlds {
                     worldObject.setTime(config.getStringList("worlds." + settings + "time"));
 
                 }
-
-                    /* main.logger(main.langUtils().getLang(
-                            "&cThe world &7'" + worldName + "'&c does not have any times set. Disabling this world.",
-                            "&cEl mundo &7'" + worldName + "'&c no tiene tiempo establecido. Deshabiltando el mundo.",
-                            "&cМир &7'" + worldName + "'&c не имеет времени. Этот мир не будет использоваться.")); */
-                    //continue;
 
                 // reset message
                 if (isSet(settings + "message")) {
