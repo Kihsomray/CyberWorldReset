@@ -55,6 +55,10 @@ config:
   # suffocates in a block when teleported to the world.
   fix-suffocation-teleport-1_8-1_9: true
 
+  # Fixes being teleported to an unsafe location in the over world
+  # and end when rejoining the server to a reset world.
+  fix-suffocation-on-join: true
+
   hooks:
     # If enabled, when a world is reset, all regions will be deleted.
     world-guard-delete: false

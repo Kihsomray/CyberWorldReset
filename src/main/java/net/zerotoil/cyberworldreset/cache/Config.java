@@ -8,8 +8,8 @@ import java.util.Arrays;
 
 public class Config {
 
-    private CyberWorldReset main;
-    private Configuration config;
+    private final CyberWorldReset main;
+    private final Configuration config;
     private boolean updateConfig;
     private boolean updateLang;
     private String lang;
@@ -32,6 +32,7 @@ public class Config {
     private long confirmationSeconds;
 
     private boolean suffocationFix;
+    private boolean unsafeLocationFix;
 
     private boolean worldGuardDelete;
     private boolean cmiWarpSave;
@@ -74,6 +75,7 @@ public class Config {
         detailedMessages = getBoolean("detailed-messages", true);
 
         suffocationFix = getBoolean("fix-suffocation-teleport-1_8-1_9", true);
+        unsafeLocationFix = getBoolean("fix-suffocation-on-join", true);
 
         worldGuardDelete = getBoolean("hooks.world-guard-delete", false);
         cmiWarpSave = getBoolean("hooks.save-cmi-warps", true);
@@ -155,6 +157,9 @@ public class Config {
     }
     public boolean isSuffocationFix() {
         return suffocationFix;
+    }
+    public boolean isUnsafeLocationFix() {
+        return unsafeLocationFix;
     }
     public boolean isWorldGuardDelete() {
         return worldGuardDelete;

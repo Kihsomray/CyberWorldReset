@@ -1,7 +1,9 @@
 package net.zerotoil.cyberworldreset.events;
 
 import net.zerotoil.cyberworldreset.CyberWorldReset;
+import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,11 +38,25 @@ public class OnJoin implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String worldName = player.getWorld().getName();
-        if (main.worlds().getWorlds().containsKey(worldName)) {
-            if (main.worlds().getWorld(worldName).isResetting()) {
-                player.kickPlayer(main.lang().getMsg("still-regenerating").toString(false));
-            }
+        if (!main.worlds().getWorlds().containsKey(worldName)) return;
+
+        WorldObject wo = main.worlds().getWorld(worldName);
+
+        if (wo.isResetting()) {
+            player.kickPlayer(main.lang().getMsg("still-regenerating").toString(false));
+            return;
         }
+
+        if (main.config().isUnsafeLocationFix()) {
+            Location lAt = player.getLocation();
+            Location lDown = new Location(wo.getWorld(), lAt.getX(), lAt.getY() - 1, lAt.getZ());
+            Location lUp = new Location(wo.getWorld(), lAt.getX(), lAt.getY() + 1, lAt.getZ());
+
+            if (!lAt.getBlock().getType().isAir() || !lUp.getBlock().getType().isAir() || lDown.getBlock().isPassable())
+                player.teleport(new Location (wo.getWorld(), lAt.getX(), wo.getWorld().getHighestBlockYAt(lAt.getBlockX(), lAt.getBlockZ()), lAt.getZ()));
+
+        }
+
     }
 
     public boolean isServerOpen() {
