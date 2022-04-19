@@ -27,6 +27,11 @@ public class CWRCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
+        if (args.length == 0) {
+            if (sender instanceof Player) return main.langUtils().sendHelpMSG((Player) sender);
+            else return main.langUtils().sendHelpMSG(null);
+        }
+
         Player player;
         String uuid;
 
