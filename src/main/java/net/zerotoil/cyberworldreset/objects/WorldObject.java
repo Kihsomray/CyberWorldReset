@@ -326,7 +326,7 @@ public class WorldObject {
 
         int counter = chunkCounter + 3;
         for (int i = chunkCounter; i < counter; i++) {
-            if (chunkNumber == width * width) {
+            if (chunkNumber >= width * width) {
 
                 printChunkInfo(width);
                 finishRegen(sender);
