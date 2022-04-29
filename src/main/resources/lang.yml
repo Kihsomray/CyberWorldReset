@@ -45,6 +45,7 @@ messages:
   setup-created: '&aThe world setup "{world}" has been created! Edit it using &7/cwr edit <world> <setting> <value>&a.'
   setup-already-exists: '&cThe world setup "{world}" already exists! Edit it using &a/cwr edit <world> <setting> <value>&7.'
   no-setups-found: '&cNo world setups found. Create one with &7/cwr create [<world>]&c.'
+  create-invalid-world: '&cThe world "{world}" does not exist! Please create it first (you can use Multiverse).'
   setup-doesnt-exist: '&cThe world setup "{world}" does not exist!'
   saving-world: '&aAttempting to save the world "{world}".'
   save-failed: '&cThe world "{world}" failed to save!'

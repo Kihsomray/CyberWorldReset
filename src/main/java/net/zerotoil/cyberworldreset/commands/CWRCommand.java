@@ -309,6 +309,10 @@ public class CWRCommand implements CommandExecutor {
             main.lang().getMsg("default-world-fail").send(player, true, new String[]{"world"}, new String[]{worldName});
             return true;
         }
+        if (!main.worldUtils().isWorld(worldName)) {
+            main.lang().getMsg("create-invalid-world").send(player, true, new String[]{"world"}, new String[]{worldName});
+            return true;
+        }
         main.worlds().createWorld(worldName, player);
         return true;
     }
