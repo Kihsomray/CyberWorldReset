@@ -4,6 +4,7 @@ import net.zerotoil.cyberworldreset.CyberWorldReset;
 import net.zerotoil.cyberworldreset.objects.WorldObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,7 +48,11 @@ public class OnJoin implements Listener {
             return;
         }
 
-        if (main.config().isUnsafeLocationFix()) {
+        if (main.config().isUnsafeLocationFix() && main.getVersion() > 12) {
+
+            // nether ceiling prevention
+            if (player.getWorld().getEnvironment() == World.Environment.NETHER) return;
+
             Location lAt = player.getLocation();
             Location lDown = new Location(wo.getWorld(), lAt.getX(), lAt.getY() - 1, lAt.getZ());
             Location lUp = new Location(wo.getWorld(), lAt.getX(), lAt.getY() + 1, lAt.getZ());
