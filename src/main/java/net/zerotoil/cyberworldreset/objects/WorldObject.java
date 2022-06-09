@@ -175,8 +175,7 @@ public class WorldObject {
                 if (!lastSaved) {
                     if (randomSeed) seed = new Random().nextLong();
                     finalWorld.seed(seed);
-                }
-                else {
+                } else {
                     if (!rollbackWorld(sender)) {
                         regenFail(null, sender);
                         return;

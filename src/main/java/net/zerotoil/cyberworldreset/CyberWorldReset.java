@@ -44,8 +44,8 @@ public final class CyberWorldReset extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        if (getVersion() > 18) {
-            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support MC version 1.19 and newer. Please update!");
+        if (getVersion() > 19) {
+            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support MC version 1.20 and newer. Please update!");
             return;
         }
         if (getVersion() < 8) {
@@ -127,7 +127,7 @@ public final class CyberWorldReset extends JavaPlugin {
         onWorldChange = new OnWorldChange(this);
         onDamage = new OnDamage(this);
         onWorldCreate = new OnWorldCreate(this);
-        logger("&7Loaded events in &a" + (System.currentTimeMillis() - startTime) + "ms&7.");
+        logger("&7Loaded &e" + events + " &7events in &a" + (System.currentTimeMillis() - startTime) + "ms&7.");
         logger("");
     }
 
