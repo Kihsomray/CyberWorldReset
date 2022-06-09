@@ -228,13 +228,9 @@ public class WorldObject {
                 }
         }
         else {
-            if (getWorld().getEnvironment().toString().contains("THE_END")) {
-                try {
-                    DragonBattle dBattle = getWorld().getEnderDragonBattle();
-                    if (dBattle != null) dBattle.getBossBar().removeAll();
-                } catch (Exception e) {
-                    // for versions lower than 1.13.
-                }
+            if (getWorld().getEnvironment().toString().contains("THE_END") && main.getVersion() > 12) {
+                DragonBattle dBattle = getWorld().getEnderDragonBattle();
+                if (dBattle != null) dBattle.getBossBar().removeAll();
             }
 
             if (!tpPlayers.isEmpty()) tpPlayers.clear();
