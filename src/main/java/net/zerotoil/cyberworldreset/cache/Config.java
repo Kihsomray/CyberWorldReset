@@ -36,6 +36,8 @@ public class Config {
 
     private boolean worldGuardDelete;
     private boolean cmiWarpSave;
+    private boolean cmiPortalRefresh;
+    private boolean mvPortalRefresh;
 
 
     public Config(CyberWorldReset main) {
@@ -79,6 +81,9 @@ public class Config {
 
         worldGuardDelete = getBoolean("hooks.world-guard-delete", false);
         cmiWarpSave = getBoolean("hooks.save-cmi-warps", true);
+        cmiPortalRefresh = getBoolean("hooks.refresh-cmi-portals", false);
+        mvPortalRefresh = getBoolean("hooks.refresh-mv-portals", true);
+
 
     }
 
@@ -166,6 +171,12 @@ public class Config {
     }
     public boolean isCmiWarpSave() {
         return cmiWarpSave;
+    }
+    public boolean isCmiPortalRefresh() {
+        return cmiPortalRefresh;
+    }
+    public boolean isMvPortalRefresh() {
+        return mvPortalRefresh;
     }
 
 }

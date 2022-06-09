@@ -66,6 +66,12 @@ config:
     # If enabled, will make sure warps are saved.
     save-cmi-warps: true
 
+    # If enabled, will refresh CMI portals.
+    refresh-cmi-portals: false
+
+    # If enabled, will refresh Multiverse portals.
+    refresh-mv-portals: true
+
   # updates the config every time you update. Prior strings will
   # remain the same! NOTE: disabling this will leave new settings
   # as default and new lang string won't send.

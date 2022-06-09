@@ -1,6 +1,10 @@
 package net.zerotoil.cyberworldreset.objects;
 
 import com.Zrips.CMI.CMI;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MultiversePlugin;
+import com.onarandombox.MultiverseNetherPortals.MultiverseNetherPortals;
+import com.onarandombox.MultiversePortals.MultiversePortals;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -461,8 +465,22 @@ public class WorldObject {
         resetting = false;
         chunkCounter = -2;
 
-        if (Bukkit.getPluginManager().isPluginEnabled("CMI") && main.config().isCmiWarpSave())
-            CMI.getInstance().getWarpManager().load();
+        // refresh CMI stuff
+        if (Bukkit.getPluginManager().isPluginEnabled("CMI")) {
+            if (main.config().isCmiWarpSave()) CMI.getInstance().getWarpManager().load();
+            if (main.config().isCmiPortalRefresh()) CMI.getInstance().getPortalManager().load();
+        }
+
+        // refresh MV portals
+        if (main.config().isMvPortalRefresh()) {
+
+            MultiversePortals portals = (MultiversePortals) Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Portals");
+            if (portals != null) portals.reloadConfigs();
+
+            MultiverseNetherPortals netherportals = (MultiverseNetherPortals) Bukkit.getServer().getPluginManager().getPlugin("Multiverse-NetherPortals");
+            if (netherportals != null) netherportals.loadConfig();
+
+        }
 
         main.lang().getMsg("regen-success").send(sender, true, new String[]{"world"}, new String[]{worldName});
         chunkNumber = 0;

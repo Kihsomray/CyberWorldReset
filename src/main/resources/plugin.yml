@@ -3,7 +3,7 @@ version: ${project.version}
 main: net.zerotoil.cyberworldreset.CyberWorldReset
 api-version: 1.16
 prefix: CWR
-softdepend: [ Multiverse-Core, PlaceholderAPI, WorldGuard ]
+softdepend: [ Multiverse-Core, Multiverse-Portals, Multiverse-NetherPortals, PlaceholderAPI, WorldGuard ]
 loadafter: [ Multiverse-Core ]
 authors: [ Kihsomray, CroaBeast ]
 description: Regenerate your world at an interval time
