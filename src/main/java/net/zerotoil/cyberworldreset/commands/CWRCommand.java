@@ -498,7 +498,7 @@ public class CWRCommand implements CommandExecutor {
 
         List<String> messages = main.worlds().getWorld(worldName).getMessage();
         messages.add(value);
-        if (worldSetting(player, worldName, "settings.messages", messages) || worldSetting(player, worldName, "settings.message", null)) {
+        if (worldSetting(player, worldName, "settings.message", messages)) {
             main.worlds().getWorld(worldName).setMessage(messages);
             infoMessages(player, worldName);
         }
@@ -620,7 +620,7 @@ public class CWRCommand implements CommandExecutor {
             return true;
         }
         messages.remove(number);
-        if (worldSetting(player, worldName, "settings.messages", messages) || worldSetting(player, worldName, "settings.message", null)) {
+        if (worldSetting(player, worldName, "settings.message", messages)) {
             main.worlds().getWorld(worldName).setMessage(messages);
             infoMessages(player, worldName);
         }

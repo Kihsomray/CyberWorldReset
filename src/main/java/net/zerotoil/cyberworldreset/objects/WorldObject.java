@@ -179,42 +179,43 @@ public class WorldObject {
                 if (!lastSaved) {
                     if (randomSeed) seed = new Random().nextLong();
                     finalWorld.seed(seed);
+                    continueRegen(sender, finalWorld);
                 } else {
-                    if (!rollbackWorld(sender)) {
-                        regenFail(null, sender);
-                        return;
-                    }
+                    rollbackWorld(sender, finalWorld);
                 }
 
-                // generator settings
-                if (generator != null) {
-                    try {
-                        finalWorld.generator(generator);
-                    } catch (Exception e) {
-                        main.logger("&cFailed to set the generator " + generator + ". Please check the name. Using default generator.");
-                    }
-                }
-                finalWorld.createWorld();
-
-                if (main.isMultiverseEnabled()) {
-                    try {
-                        main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
-                    } catch (Exception e) {
-                        main.logger("&cFailed to prevent Multiverse from loading spawn chunks. Please check your generator name.");
-                    }
-                }
-
-                // ultra fast chunk loading
-                if (main.config().getLoadingType().matches("(?i)ULTRA-FAST")) getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
-
-                // fast, normal, safe, ultra-safe chunk loading
-                if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE"))
-                    newProperLoading(sender);
-                    // else safeLoadChunks(main.config().getLoadRadius(), sender);
-                else finishRegen(sender);
             }
         }).runTaskLater(main, resetDelay);
         return true;
+    }
+
+    private void continueRegen(Player sender, WorldCreator finalWorld) {
+        // generator settings
+        if (generator != null) {
+            try {
+                finalWorld.generator(generator);
+            } catch (Exception e) {
+                main.logger("&cFailed to set the generator " + generator + ". Please check the name. Using default generator.");
+            }
+        }
+        finalWorld.createWorld();
+
+        if (main.isMultiverseEnabled()) {
+            try {
+                main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
+            } catch (Exception e) {
+                main.logger("&cFailed to prevent Multiverse from loading spawn chunks. Please check your generator name.");
+            }
+        }
+
+        // ultra fast chunk loading
+        if (main.config().getLoadingType().matches("(?i)ULTRA-FAST")) getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
+
+        // fast, normal, safe, ultra-safe chunk loading
+        if (main.config().getLoadingType().matches("(?i)FAST|NORMAL|SAFE|ULTRA-SAFE"))
+            newProperLoading(sender);
+            // else safeLoadChunks(main.config().getLoadRadius(), sender);
+        else finishRegen(sender);
     }
 
     private void tpPlayersAway() {
@@ -519,36 +520,40 @@ public class WorldObject {
     }
 
     private boolean zipSavedWorld(Player player) {
-        try {
-            main.zipUtils().zip(worldName);
-            main.lang().getMsg("save-success").send(player, true, new String[]{"world"}, new String[]{worldName});
-            return true;
-        } catch (Exception e) {
-            main.lang().getMsg("save-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
-            e.printStackTrace();
-            return false;
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            try {
+                main.zipUtils().zip(worldName);
+                main.lang().getMsg("save-success").send(player, true, new String[]{"world"}, new String[]{worldName});
+            } catch (Exception e) {
+                main.lang().getMsg("save-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
+                e.printStackTrace();
+            }
+        });
+        return true;
     }
 
-    public boolean rollbackWorld(Player player){
+    public void rollbackWorld(Player player, WorldCreator finalWorld){
 
-        main.lang().getMsg("rolling-back-world").send(player, true, new String[]{"world"}, new String[]{worldName});
-        File worldSave = main.zipUtils().getLastModified(worldName);
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            main.lang().getMsg("rolling-back-world").send(player, true, new String[]{"world"}, new String[]{worldName});
+            File worldSave = main.zipUtils().getLastModified(worldName);
 
-        if (worldSave == null) {
-            main.lang().getMsg("rollback-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
-            return false;
-        }
+            if (worldSave == null) {
+                main.lang().getMsg("rollback-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
+                regenFail(null, player);
+                return;
+            }
 
-        try {
-            main.zipUtils().unZip(worldSave);
-            main.lang().getMsg("rollback-success").send(player, true, new String[]{"world"}, new String[]{worldName});
-            return true;
-        } catch (IOException e) {
-            main.lang().getMsg("rollback-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
-            e.printStackTrace();
-            return false;
-        }
+            try {
+                main.zipUtils().unZip(worldSave);
+                main.lang().getMsg("rollback-success").send(player, true, new String[]{"world"}, new String[]{worldName});
+                Bukkit.getScheduler().runTask(main, () -> continueRegen(player, finalWorld));
+            } catch (IOException e) {
+                main.lang().getMsg("rollback-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
+                e.printStackTrace();
+                regenFail(null, player);
+            }
+        });
     }
 
     public void loadTimedResets() {
