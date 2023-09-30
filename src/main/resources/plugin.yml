@@ -5,9 +5,9 @@ api-version: 1.16
 prefix: CWR
 softdepend: [ Multiverse-Core, Multiverse-Portals, Multiverse-NetherPortals, PlaceholderAPI, WorldGuard ]
 loadafter: [ Multiverse-Core ]
-authors: [ Kihsomray, CroaBeast ]
+authors: [ Kihsomray ]
 description: Regenerate your world at an interval time
-website: zerotoil.net
+website: mc.zerotoil.net
 
 commands:
   cwr:

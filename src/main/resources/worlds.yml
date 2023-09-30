@@ -1,46 +1,160 @@
+###################################################################################
+#   ____ _   _ ___  ____ ____ _ _ _ ____ ____ _    ___  ____ ____ ____ ____ ___   #
+#   |     \_/  |__] |___ |__/ | | | |  | |__/ |    |  \ |__/ |___ [__  |___  |    #
+#   |___   |   |__] |___ |  \ |_|_| |__| |  \ |___ |__/ |  \ |___ ___] |___  |    #
+#                                                                                 #
+#                     Standard Edition | ZeroToil Development                     #
+#                                                                                 #
+#      --> WIKI: https://dev.zerotoil.net/cyberworldreset-standard/wiki <--       #
+#                 --> Discord: https://discord.gg/DC4Gqj3y5V <--                  #
+#                                                                                 #
+#         Thank you for your usage of CWR standard! We really appreciate          #
+#         your support. We strive to produce quality plugins. If you run          #
+#        into any issues or have any questions, feel free to reach out on         #
+#          Discord or to Kihsomray on SpigotMC, Polymart, or MC-Market.           #
+#                                                                                 #
+###################################################################################
 worlds:
-  world_name:
+
+
+  ##############################
+  #                            #
+  #     TP/RTP World Setup     #
+  #                            #
+  ##############################
+
+  # A TP/RTP world is one that is not intended to be reset. It is only
+  # used to TP/RTP into. A setup like this allows the default world,
+  # which cannot be reset, to still have random teleport functionality.
+  #
+  # For this type of world setup, you only want to include the enabled
+  # option and teleport section as shown in the example below.
+  #
+  # NOTE: The default world CANNOT be reset. This rule is enforced by
+  # Bukkit, and there is no way to bypass it! Trust me, I tried!
+  #
+  # The name of the setup is the name of the world (case-sensitive)!
+  name_of_world:
     enabled: false
-    last-saved: true
-    settings:
-      time:
-        - '****-**-** **:** 15m' # every 15 minutes
-        - '****-**-** **:00 2h' # every 2 hours at xx:00
-        - '****-**-** 14:30 3d' # every 3rd day at 2:30 pm
-        - '****-**-20 09:00 2M' # every other month, on the 20th, at 9:00 am
-        - '****-08-20 13:45 12M' # every August 20, at 1:45 pm
-        - '2021-08-20 17:00' # august 20, 2021, 5:00 pm
-      message: 'The world {world} has been reset!'
-      seed: DEFAULT
-        # NOTE: will NOT work if last-saved is 'true'
-        # use "random" for a random seed
-        # "default" means the same seed
-        # example of a custom seed:
-        # seed: -2156120156 / seed: 'myppbig' >> for plain text
-      environment: DEFAULT
-        # NORMAL, THE_END, NETHER, DEFAULT
-      generator: DEFAULT
-        # Add it inside bukkit.yml and reboot before adding it here.
-        # Set the generator here- typically the name of the plugin. Please
-        # review the WIKI on their side. DEFAULT for the same generator.
-      safe-world:
-        enabled: false # if disabled, it will kick all players
-        world: 'world'
-        delay: 5 # delay after the world has been reset to teleport back
-        # -1 if no need to tp back
-        spawn: DEFAULT # use '15, 52, -231' for a custom spawn
-      warning:
+
+    #################################
+    #        Teleport Options       #
+    #################################
+
+    # Be sure to include the teleport section in both an TP world setup
+    # and a world reset setup. The default values are shown below.
+    teleport:
+
+      # For a standard NON-RTP world setup, the location option will act
+      # as a place where the player is teleported to. For an RTP world,
+      # it will act as the middle point for the radius.
+      #
+      # Examples:
+      # --> 'DEFAULT' - Teleports to world spawn point.
+      # --> '0, 64, 0' - Teleports to safe Y coordinate at the specified
+      #            - X, Y, and Z coordinate.
+      location: DEFAULT
+
+      # How much should players be charged to teleport to this location?
+      # A cost of 0 will not charge the player anything. Be sure to turn
+      # on teleport confirmation in config.yml if there is a cost.
+      cost: 0
+
+      # The random teleport module allows players to be teleported
+      # randomly in the world. A radius of 2000 with a spawn of 150, -25
+      # will teleport the player randomly in the range X: -1850, 2150
+      # Z -2025, 1975 to a safe location.
+      random:
         enabled: true
-        message: '&cWarning: resetting the world {world} in {time}.'
-        time: [1800, 600, 300, 60, 5] # seconds before the reset happens
-        # 30 minutes, 10 minutes, 5 minutes, 1 minute, 5 seconds
-        title:
-          title: 'Warning'
-          sub-title: 'resetting in {time}!'
-          fade: [20, 60, 20] # fade in, stay, fade out - in ticks
-      commands:
-        - '[all-players] eco give {player} 500'
-        # placeholders: {playerUUID} {playerName} {playerDisplayName} {world}
-        - '[world-players] eco give {player} 25'
-        - '[world-players:world_name] eco give {player} 25'
-        - '[general] broadcast resetting world {world}!'
+        radius: 2000
+
+      # This warning module is used to warn a player with a message when
+      # they join the server or teleport to the world.
+      warning:
+        on-join: false
+        on-teleport: false
+        message:
+          - '&cWarning: This world will reset in {timeUntilReset}'
+          - '&cPlease do not build here!'
+
+    # Leave the setups section empty or remove it completely for a setup
+    # that is strictly used for teleportation.
+    setups: []
+
+
+  ##############################
+  #                            #
+  #     World Reset Setup      #
+  #                            #
+  ##############################
+
+  # A world reset setup includes all the options within a TP/RTP setup,
+  # but also has the ability to reset with options set in setups.yml.
+  resetting_world_name:
+    enabled: false
+
+    #################################
+    #         Portal Linking        #
+    #################################
+
+    # Nether and end portal world options allow you to relink where
+    # players will be routed when going through a portal in this world.
+    nether-portal-world: world_nether
+    end-portal-world: world_the_end
+
+
+    #################################
+    #        Teleport Options       #
+    #################################
+
+    # Be sure to include the teleport section in both an TP world setup
+    # and a world reset setup. The default values are shown below.
+    teleport:
+
+      # For a standard NON-RTP world setup, the spawn option will act
+      # as a place where the player is teleported to. For an RTP world,
+      # it will act as the middle point for the radius.
+      #
+      # Examples:
+      # --> 'DEFAULT' - Teleports to world spawn point.
+      # --> '0, 0' - Teleports to safe Y coordinate at the specified
+      #            - X and Z coordinate.
+      spawn: DEFAULT
+
+      # How much should players be charged to teleport to this location?
+      # A cost of 0 will not charge the player anything. Be sure to turn
+      # on teleport confirmation in config.yml if there is a cost.
+      cost: 0
+
+      # The random teleport module allows players to be teleported
+      # randomly in the world. A radius of 2000 with a spawn of 150, -25
+      # will teleport the player randomly in the range X: -1850, 2150
+      # Z -2025, 1975 to a safe location.
+      random:
+        enabled: true
+        radius: 2000
+
+      # This warning module is used to warn a player with a message when
+      # they join the server or teleport to the world.
+      warning:
+        on-join: false
+        on-teleport: false
+        message:
+          - '&cWarning: This world will reset in {timeUntilReset}'
+          - '&cPlease do not build here!'
+
+      # The teleport on leave option will teleport a player away to another
+      # world as they leave the server.
+      teleport-on-leave:
+        enabled: false
+        world: world
+        location: 0, 64, 0
+
+    # In a resetting world, it is crucial to include the 'settings' section.
+    # If it is not included, the setup will be read as a TP/RTP setup.
+    reset-options:
+      setups:
+        list:
+          - id-of-setup-1
+          - id-of-setup-2
+

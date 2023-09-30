@@ -1,0 +1,83 @@
+config:
+
+  # should admins be forced to confirm before resetting a world?
+  confirmation:
+    enabled: true
+    seconds: 15
+
+  # should the world save before resetting?
+  save-world-before-reset: false
+
+  # STANDARD - only loads in spawn chunks.
+  # Not recommended, drops TPS and lags players.
+
+  # ULTRA-SAFE - loads in chunks, over a long period of time.
+  # Recommended for low-end CPUS or large amounts of players.
+
+  # SAFE - loads in chunks, over a longer period of time.
+  # Recommended for low/mid-end CPUS or large amounts of players.
+
+  # NORMAL - loads in chunks, over an 'average' period of time.
+  # Recommended for mid-end CPUS or medium amounts of players.
+
+  # FAST - loads in chunks, over a faster period of time.
+  # Recommended for high-end CPUS or small amounts of players.
+
+  # ULTRA-FAST - force loads chunks when the player teleports there.
+  # Recommended for top-notch CPUs or very small amounts of players.
+  loading-type: NORMAL
+
+  # Radius of loading if FAST, NORMAL, SAFE or ULTRA-SAFE is
+  # enabled. If larger than server view/render distance in
+  # server.properties, then will override.
+  loading-radius: 3
+
+  # After rebooting or timers resetting, what delay should there
+  # be until timers are initialized again?
+  timer-load-delay: 10
+
+  # How many ticks after teleporting/kicking players should
+  # the world start to reset? At least 10 ticks is recommended.
+  world-reset-delay: 15
+
+  # Amount of seconds between teleportation of players back to the
+  # world. The higher the number, the less stress on the server.
+  # Highly recommended enabling if using random teleportation.
+  recursive-teleporting: # COMING SOON!
+    enabled: true
+    milliseconds: 150
+
+  # Sends a detailed, spaced out message during chunk loading.
+  # NOTE: not supported on LEGACY versions.
+  detailed-messages: true
+
+  # Fixes glitch in legacy versions 1.8 and 1.9 where a player
+  # suffocates in a block when teleported to the world.
+  fix-suffocation-teleport-1_8-1_9: true
+
+  # Fixes being teleported to an unsafe location in the over world
+  # and end when rejoining the server to a reset world.
+  fix-suffocation-on-join: true
+
+  hooks:
+    # If enabled, when a world is reset, all regions will be deleted.
+    world-guard-delete: false
+
+    # If enabled, will make sure warps are saved.
+    save-cmi-warps: true
+
+    # If enabled, will refresh CMI portals.
+    refresh-cmi-portals: false
+
+    # If enabled, will refresh Multiverse portals.
+    refresh-mv-portals: true
+
+  # updates the config every time you update. Prior strings will
+  # remain the same! NOTE: disabling this will leave new settings
+  # as default and new lang string won't send.
+  auto-update-configs:
+    config: true
+    lang: true
+
+  lang: 'en'
+  # en = english (default), es = español, ru = русский.

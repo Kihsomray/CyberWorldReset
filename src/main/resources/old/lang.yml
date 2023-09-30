@@ -1,0 +1,121 @@
+messages:
+  prefix: '&b&lCyber&f&lWorldReset &8»&r'
+  no-permission: '&cYou don''t have permission to do that!'
+  help-player:
+    - '&8&m―――――&8<&b&l Cyber&f&lWorldReset &8>&8&m―――――'
+    - '&8➼ &b/cwr about &fAbout the plugin.'
+    - '&8➼ &b/cwr help &fSee the help menu.'
+    - '&8&m―――――――――――――――――――――――――――――――――'
+  help-admin:
+    - '&8&m―――――&8<&b&l Cyber&f&lWorldReset &8>&8&m―――――'
+    - '&8➼ &b/cwr about &fAbout the plugin.'
+    - '&8➼ &b/cwr help &fSee the help menu.'
+    - '&8➼ &b/cwr reload &fReload the plugin.'
+    - '&8➼ &b/cwr confirm &fConfirm an action.'
+    - '&8➼ &b/cwr reset [<world>] &fRegenerate a world.'
+    - '&8➼ &b/cwr save [<world>] &fBackup a world.'
+    - '&8➼ &b/cwr create [<world>] &fCreate a world setup.'
+    - '&8➼ &b/cwr info [<world>] &fInfo about world setup.'
+    - '&8&m―――――――――――――――――――――――――――――――――'
+    - '&8➼ &b/cwr edit <world> <setting> <value> &fAdjust a setting.'
+    - '&7Please visit the Spigot page for details on editing'
+    - '&7a world setup or use TAB-complete!'
+    - '&8&m―――――――――――――――――――――――――――――――――'
+
+  # global
+  kick-reason: '&cThe world "{world}" is regenerating! Please join back momentarily.'
+  still-regenerating: '&cA world is in the process of being reset. Please join back momentarily.'
+  cancel-teleport: '&cThe world "{world}" is regenerating! You cannot teleport there right now.'
+  teleporting-safe-world: '&7This world is resetting, teleporting you to the safe world...'
+  teleported-safe-world: '&aYou have been teleported to the safe world!'
+  teleporting-back: '&7Teleporting you back to world "{world}"...'
+  teleported-back: '&aYou have successfully been teleported back!'
+
+  # admin
+  reloading: '&7Reloading...'
+  reloaded: '&aReloaded!'
+  default-world-fail: '&cThe world "{world}" is a default world (server.properties)! This world cannot be reset!'
+  world-not-exist: '&cThe world "{world}" does not exist!'
+  same-world-fail: '&cYou cannot set the safe world to be the same as the world you''re resetting ("{world}")!'
+  unload-failed: '&cThe world "{world}" failed to unload!'
+  already-resetting: '&cThe world "{world}" is already resetting!'
+  resetting-error: '&cA world is being reset. This action cannot be completed.'
+  safeworld-not-set: '&cPlease set a safe world before enabling the safe world option (&7/cwr {world} edit setSafeWorld <world>&c).'
+  invalid-safeworld: '&cThe world cannot be reset with the safe world "{safeWorld}"! Please adjust it (&7/cwr {world} edit setSafeWorld <world>&c).'
+  setup-created: '&aThe world setup "{world}" has been created! Edit it using &7/cwr edit <world> <setting> <value>&a.'
+  setup-already-exists: '&cThe world setup "{world}" already exists! Edit it using &a/cwr edit <world> <setting> <value>&7.'
+  no-setups-found: '&cNo world setups found. Create one with &7/cwr create [<world>]&c.'
+  create-invalid-world: '&cThe world "{world}" does not exist! Please create it first (you can use Multiverse).'
+  setup-doesnt-exist: '&cThe world setup "{world}" does not exist!'
+  saving-world: '&aAttempting to save the world "{world}".'
+  save-failed: '&cThe world "{world}" failed to save!'
+  save-success: '&aThe world "{world}" has been saved!'
+  regen-success: '&aThe world "{world}" has been successfully reset!'
+  no-saves: '&cThis world has not yet been saved. Save it using &7/cwr save [<world>]&c.'
+  not-enabled: '&cThis world has not yet been enabled. Enable it using &7/cwr edit {world} setEnabled true&c.'
+  no-messages-found: '&cNo messages found, please add one first.'
+  invalid-index: '&cThat is an invalid index, please use a number in the range {min} - {max}.'
+  file-delete-failed: '&cThe world "{world}" failed to delete!'
+  world-create-failed: '&cThe world "{world}" failed to save to the file!'
+  rolling-back-world: '&aAttempting to rollback the world "{world}".'
+  rollback-failed: '&cThe world "{world}" failed to roll back!'
+  rollback-success: '&aThe world "{world}" has been rolled back! Now loading the world...'
+  confirm-regen: '&7Please confirm that you would like to regenerate "{world}" with &a/cwr confirm &7within {time}.'
+  confirmation-needed: '&cYou have already run this command. Please use &7/cwr confirm &cto regenerate!'
+  confirmation-expired: '&cConfirmation for regenerating "{world}" has expired!'
+  confirmation-not-required: '&cYou have nothing to confirm.'
+  invalid-command: '&cIncorrect use of arguments!'
+  setting-set-failed: '&cFailed to write the setting to the world config.'
+  setting-set-success: '&aThe setting has been updated successfully.'
+  custom-generator-warning: '&6Please make sure to add this generator to bukkit.yml, otherwise chunks can get messy after a reboot.'
+
+  # info strings
+  info-header: '&8&m―――――&8<&b&l {world} &8>&8&m―――――'
+  info-enabled: 'Enabled: {boolean}'
+  info-last-saved: 'Last Saved: {boolean}'
+  info-seed: 'Seed: {seed}'
+  info-generator: 'Generator: {generator}'
+  info-environment: 'Environment: {environment}'
+  info-headers:
+    - 'Basic Info'
+    - 'Timers'
+    - 'Messages'
+    - 'Safe World'
+    - 'Warnings'
+    - '  Times'
+    - 'Commands'
+  info-list-header: '&b{header}:'
+  info-list-format: '&8  - &f{id}: &7{value}'
+  info-safe-world-enabled: '&f  Enabled: &7{enabled}'
+  info-safe-world-world: '&f  World: &7{world}'
+  info-safe-world-delay: '&f  Delay: &7{delay}'
+  info-safe-world-spawn: '&f  Spawn: &7{spawn}'
+  info-warning: '&f  Enabled: &7{enabled}'
+  info-title: '&f  Title: &7{title}'
+  info-subtitle: '&f  Subtitle: &7{subtitle}'
+  info-footer: '&8&m―――――――――――――――――――――――――'
+
+  # world list strings
+  list-header: '&8&m―――――&8<&b&l Worlds &8>&8&m―――――'
+  list-info: '&8➼ &b{world} &7- Enabled: &f{enabled}'
+  list-footer: '&8&m―――――――――――――――――――――――――'
+
+time:
+  # time formats
+  days: '&a{time} Day(s)'
+  hours: '&a{time} Hour(s)'
+  minutes: '&a{time} Minute(s)'
+  seconds: '&a{time} Second(s)'
+  splitter: '&a, '
+
+placeholder-api:
+  reset-status:
+    countdown: '&aReset in: {formattedTime}'
+    # internal placeholders: {seconds} {formattedTime} {world}
+    no-running-timers: '&cNo running timers' # {world}
+    initializing: '&6Initializing...' # {world}
+    starting: '&eStarting...' # {world}
+    progress: '&aETA: {formattedTime} ({chunkNumber}/{chunkTotal}) [{percent}%]'
+    # internal placeholders: {seconds} {formattedTime} {percent} {tps} {chunkNumber} {chunkTotal} {world}
+    finishing: '&aFinishing...' # {world}
+    invalid-world: '&cInvalid world' # {world}

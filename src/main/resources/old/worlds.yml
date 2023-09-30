@@ -1,0 +1,46 @@
+worlds:
+  world_name:
+    enabled: false
+    last-saved: true
+    settings:
+      time:
+        - '****-**-** **:** 15m' # every 15 minutes
+        - '****-**-** **:00 2h' # every 2 hours at xx:00
+        - '****-**-** 14:30 3d' # every 3rd day at 2:30 pm
+        - '****-**-20 09:00 2M' # every other month, on the 20th, at 9:00 am
+        - '****-08-20 13:45 12M' # every August 20, at 1:45 pm
+        - '2021-08-20 17:00' # august 20, 2021, 5:00 pm
+      message: 'The world {world} has been reset!'
+      seed: DEFAULT
+        # NOTE: will NOT work if last-saved is 'true'
+        # use "random" for a random seed
+        # "default" means the same seed
+        # example of a custom seed:
+        # seed: -2156120156 / seed: 'myppbig' >> for plain text
+      environment: DEFAULT
+        # NORMAL, THE_END, NETHER, DEFAULT
+      generator: DEFAULT
+        # Add it inside bukkit.yml and reboot before adding it here.
+        # Set the generator here- typically the name of the plugin. Please
+        # review the WIKI on their side. DEFAULT for the same generator.
+      safe-world:
+        enabled: false # if disabled, it will kick all players
+        world: 'world'
+        delay: 5 # delay after the world has been reset to teleport back
+        # -1 if no need to tp back
+        spawn: DEFAULT # use '15, 52, -231' for a custom spawn
+      warning:
+        enabled: true
+        message: '&cWarning: resetting the world {world} in {time}.'
+        time: [1800, 600, 300, 60, 5] # seconds before the reset happens
+        # 30 minutes, 10 minutes, 5 minutes, 1 minute, 5 seconds
+        title:
+          title: 'Warning'
+          sub-title: 'resetting in {time}!'
+          fade: [20, 60, 20] # fade in, stay, fade out - in ticks
+      commands:
+        - '[all-players] eco give {player} 500'
+        # placeholders: {playerUUID} {playerName} {playerDisplayName} {world}
+        - '[world-players] eco give {player} 25'
+        - '[world-players:world_name] eco give {player} 25'
+        - '[general] broadcast resetting world {world}!'
