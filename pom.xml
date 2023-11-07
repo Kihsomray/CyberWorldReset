@@ -7,7 +7,7 @@
     <!-- Project Information -->
     <groupId>net.zerotoil.dev</groupId>
     <artifactId>CyberWorldReset</artifactId>
-    <version>1.0.0-SNAPSHOT-R1</version>
+    <version>1.0.0-SNAPSHOT-02</version>
     <packaging>jar</packaging>
 
     <!-- Plugin Name -->
@@ -187,14 +187,14 @@
         <dependency>
             <groupId>com.github.Kihsomray</groupId>
             <artifactId>CyberCore</artifactId>
-            <version>1.3.5</version>
+            <version>1.3.31</version>
         </dependency>
 
         <!-- Zip4j -->
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
             <artifactId>zip4j</artifactId>
-            <version>2.10.0</version>
+            <version>2.11.4</version>
         </dependency>
 
         <!-- Placeholder API -->
@@ -211,33 +211,6 @@
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- Multiverse Core -->
-        <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>4.3.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Multiverse Inventories -->
-        <dependency>
-            <groupId>com.onarandombox.multiverseinventories</groupId>
-            <artifactId>Multiverse-Inventories</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>craftbukkit</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- AuthLib -->
@@ -264,73 +237,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- FAWE Core -->
-        <dependency>
-            <groupId>com.fastasyncworldedit</groupId>
-            <artifactId>FastAsyncWorldEdit-Core</artifactId>
-            <version>2.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- FAWE Bukkit -->
-        <dependency>
-            <groupId>com.fastasyncworldedit</groupId>
-            <artifactId>FastAsyncWorldEdit-Bukkit</artifactId>
-            <version>2.0.1</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>FastAsyncWorldEdit-Core</artifactId>
-                    <groupId>*</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Grief Defender -->
-        <dependency>
-            <groupId>com.griefdefender</groupId>
-            <artifactId>api</artifactId>
-            <version>2.1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Grief Prevention -->
-        <dependency>
-            <groupId>me.ryanhamshire</groupId>
-            <artifactId>GriefPrevention</artifactId>
-            <version>16.18</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Lands API -->
-        <dependency>
-            <groupId>com.github.angeschossen</groupId>
-            <artifactId>LandsAPI</artifactId>
-            <version>6.5.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Residence -->
-        <dependency>
-            <groupId>com.bekvon.bukkit</groupId>
-            <artifactId>Residence</artifactId>
-            <version>5.0.2.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- WorldGuard -->
-        <dependency>
-            <groupId>com.sk89q.worldguard</groupId>
-            <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.4</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Project Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
 

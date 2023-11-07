@@ -1,0 +1,91 @@
+config:
+
+  ##############################
+  #                            #
+  #    Command Confirmation    #
+  #                            #
+  ##############################
+
+  # Command confirmation requires the command sender to confirm
+  # the command before it can be executed. The command confirmation
+  # will expire after the amount of seconds below.
+  #
+  # We encourage enabling reset confirmation and teleport
+  # confirmation if the teleport cost is not free.
+  confirmation:
+    enabled: true
+    seconds: 15
+
+  # CyberWorldReset is unique in its ability to generate spawn
+  # chunks when a world is being created. Although I cannot
+  # change how a world is loaded, I can change how a world's
+  # spawn chunks are loaded to reduce instantaneous stress.
+  #
+  # Below I have created a few preset spawn chunk loading
+  # types. If you do not wish to tweak the individual settings,
+  # using the best method will be most helpful to you.
+  #
+  # Best types for:
+  # --> Bukkit/Spigot - NORMAL
+  # --> Paper/Purpur/other - SMART (PREMIUM ONLY)
+  #
+  # Available loading types:
+  #
+  # --> 'STANDARD' - Typical Bukkit spawn chunk loading method.
+  #                - NOT recommended: drops TPS & causes lag.
+  #
+  # --> 'NORMAL' - Loads chunks at an average speed.
+  #              - Recommended for Bukkit/Spigot: sync loading.
+  #
+  # --> 'ULTRA-FAST' - Skips spawn chunk loading entirely.
+  #                  - Recommended for rollback worlds.
+  #
+  # --> 'ULTRA-SAFE' - Loads chunks REALLY slowly.
+  #                  - Recommended for microwaves & fridges.
+  #
+  # --> 'FAST' - Loads chunks fast, different from ULTRA-FAST.
+  #            - Recommended for NASA machines.
+  #
+  # --> 'SAFE' - Loads chunks slow, similar to ULTRA-SAFE.
+  #            - Recommended for 90's PCs and smart fridges.
+  #
+  loading-type: NORMAL
+
+  # Radius of chunk loading if any option other than STANDARD
+  # is enabled.
+  #
+  # Please DO NOT use for loading mass amounts of chunks! Your
+  # machine WILL run out of memory, causing a crash! The chunks
+  # have a ticket added to them, preventing unloading, until
+  # all chunks have been loaded.
+  loading-radius: 3
+
+  # Recently, Paper introduced a new file within a world's folder
+  # called 'paper-world.yml' which saves additional settings for
+  # that specific world only. This option enabled the contents of
+  # that file to be transferred over to the newly reset world.
+  save-paper-world-yml: true
+
+  # Fixes issue where players are teleported to the same coords
+  # in another world when they log back in after a reset.
+  fix-incorrect-world-bug: true
+
+  # Additional hook settings are displayed here.
+  hooks:
+
+    # Should CMI warps be saved after a world resets?
+    save-cmi-warps: true
+
+  # Updates the config every time you update. Prior strings will
+  # remain the same! NOTE: disabling this will leave new settings
+  # as default and new lang string won't send.
+  auto-update:
+    config-yml: true
+    lang-yml: true
+
+  # Debug shows a bunch of messages in chat and console. Used for
+  # testing new features and fixing certain bugs.
+  debug: false
+
+# Do not touch unless asked by ZeroToil Staff!
+version: 1.1
