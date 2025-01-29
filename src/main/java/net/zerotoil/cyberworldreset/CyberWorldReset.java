@@ -44,8 +44,8 @@ public final class CyberWorldReset extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        if (getVersion() > 20) {
-            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support MC version 1.20 and newer. Please update!");
+        if (getVersion() > 21) {
+            Bukkit.getLogger().severe("CWR v" + getDescription().getVersion() + " does not support MC version 1.21 and newer. Please update!");
             return;
         }
         if (getVersion() < 8) {
