@@ -1,6 +1,5 @@
 package net.zerotoil.cyberworldreset;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.sk89q.worldguard.WorldGuard;
 import net.zerotoil.cyberworldreset.addons.Metrics;
 import net.zerotoil.cyberworldreset.addons.PlaceholderAPI;
@@ -13,7 +12,12 @@ import net.zerotoil.cyberworldreset.utilities.*;
 import org.apache.commons.lang.SystemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Method;
 
 public final class CyberWorldReset extends JavaPlugin {
 
@@ -36,10 +40,14 @@ public final class CyberWorldReset extends JavaPlugin {
 
     private boolean placeholderAPIEnabled;
     private boolean multiverseEnabled;
-    private MultiverseCore multiverseCore;
+    private Object multiverseCore;
     private WorldGuard worldGuard;
 
     private int events = 0;
+
+    // new enum to track detected MV version
+    public enum MultiverseVersion { NONE, V4, V5 }
+    private MultiverseVersion multiverseVersion = MultiverseVersion.NONE;
 
     @Override
     public void onEnable() {
@@ -73,8 +81,12 @@ public final class CyberWorldReset extends JavaPlugin {
         // multiverse
         multiverseEnabled = getServer().getPluginManager().isPluginEnabled("Multiverse-Core");
         if (multiverseEnabled) {
-            multiverseCore = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
-            logger("&7CWR recognizes Multiverse is &aENABLED.");
+            Plugin mv = getServer().getPluginManager().getPlugin("Multiverse-Core");
+            multiverseCore = mv;
+            String cls = mv.getClass().getName();
+            if (cls.startsWith("org.mvplugins.multiverse")) multiverseVersion = MultiverseVersion.V5;
+            else multiverseVersion = MultiverseVersion.V4;
+            logger("&7CWR recognizes Multiverse is &aENABLED. Detected: " + multiverseVersion);
             logger("");
         }
 
@@ -227,9 +239,75 @@ public final class CyberWorldReset extends JavaPlugin {
     public boolean isMultiverseEnabled() {
         return multiverseEnabled;
     }
-    public MultiverseCore multiverse() {
+
+    // returns the raw plugin instance (may be v4 or v5), prefer using the helper methods below
+    public Object multiverse() {
         return multiverseCore;
     }
+
+    public MultiverseVersion getMultiverseVersion() {
+        return multiverseVersion;
+    }
+
+    // Reflection helpers to interact with Multiverse without compile-time dependency
+    public Object getMVWorldManager() {
+        if (!multiverseEnabled || multiverseCore == null) return null;
+        try {
+            Method m = multiverseCore.getClass().getMethod("getMVWorldManager");
+            return m.invoke(multiverseCore);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Object getMVWorld(World world) {
+        Object manager = getMVWorldManager();
+        if (manager == null) return null;
+        try {
+            try {
+                Method m = manager.getClass().getMethod("getMVWorld", World.class);
+                return m.invoke(manager, world);
+            } catch (NoSuchMethodException ex) {
+                Method m2 = manager.getClass().getMethod("getMVWorld", String.class);
+                return m2.invoke(manager, world.getName());
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void setMvWorldKeepSpawnInMemory(Object mvWorld, boolean keep) {
+        if (mvWorld == null) return;
+        try {
+            Method m = mvWorld.getClass().getMethod("setKeepSpawnInMemory", boolean.class);
+            m.invoke(mvWorld, keep);
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+
+    public boolean isMvWorldKeepingSpawnInMemory(Object mvWorld) {
+        if (mvWorld == null) return false;
+        try {
+            Method m = mvWorld.getClass().getMethod("isKeepingSpawnInMemory");
+            Object res = m.invoke(mvWorld);
+            if (res instanceof Boolean) return (Boolean) res;
+        } catch (Exception e) {
+            // ignore
+        }
+        return false;
+    }
+
+    public void setMvSpawnLocation(Object mvWorld, Location loc) {
+        if (mvWorld == null) return;
+        try {
+            Method m = mvWorld.getClass().getMethod("setSpawnLocation", Location.class);
+            m.invoke(mvWorld, loc);
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+
     public WorldGuard worldGuard() {
         return worldGuard;
     }
