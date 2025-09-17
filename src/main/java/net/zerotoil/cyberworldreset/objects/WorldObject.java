@@ -1,8 +1,6 @@
 package net.zerotoil.cyberworldreset.objects;
 
 import com.Zrips.CMI.CMI;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MultiversePlugin;
 import com.onarandombox.MultiverseNetherPortals.MultiverseNetherPortals;
 import com.onarandombox.MultiversePortals.MultiversePortals;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -15,9 +13,11 @@ import org.bukkit.*;
 import org.bukkit.boss.DragonBattle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class WorldObject {
@@ -202,7 +202,8 @@ public class WorldObject {
 
         if (main.isMultiverseEnabled()) {
             try {
-                main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setKeepSpawnInMemory(main.config().getLoadingType().matches("(?i)STANDARD"));
+                Object mvWorld = main.getMVWorld(getWorld());
+                main.setMvWorldKeepSpawnInMemory(mvWorld, main.config().getLoadingType().matches("(?i)STANDARD"));
             } catch (Exception e) {
                 main.logger("&cFailed to prevent Multiverse from loading spawn chunks. Please check your generator name.");
             }
@@ -430,7 +431,7 @@ public class WorldObject {
 
         try {
             if (main.isMultiverseEnabled())
-                main.multiverse().getMVWorldManager().getMVWorld(getWorld()).setSpawnLocation(getWorld().getSpawnLocation());
+                main.setMvSpawnLocation(main.getMVWorld(getWorld()), getWorld().getSpawnLocation());
         } catch (Exception e) {
             main.logger("&cFailed to set spawn location for " + worldName + " in Multiverse.");
         }
@@ -471,11 +472,21 @@ public class WorldObject {
         // refresh MV portals
         if (main.config().isMvPortalRefresh()) {
 
-            MultiversePortals portals = (MultiversePortals) Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Portals");
-            if (portals != null) portals.reloadConfigs();
+            Plugin portals = Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Portals");
+            if (portals != null) {
+                try {
+                    Method m = portals.getClass().getMethod("reloadConfigs");
+                    m.invoke(portals);
+                } catch (Exception ignored) {}
+            }
 
-            MultiverseNetherPortals netherportals = (MultiverseNetherPortals) Bukkit.getServer().getPluginManager().getPlugin("Multiverse-NetherPortals");
-            if (netherportals != null) netherportals.loadConfig();
+            Plugin netherportals = Bukkit.getServer().getPluginManager().getPlugin("Multiverse-NetherPortals");
+            if (netherportals != null) {
+                try {
+                    Method m = netherportals.getClass().getMethod("loadConfig");
+                    m.invoke(netherportals);
+                } catch (Exception ignored) {}
+            }
 
         }
 
