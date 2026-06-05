@@ -1,6 +1,5 @@
 package net.zerotoil.cyberworldreset.utilities;
 
-import net.zerotoil.cyberworldreset.CyberWorldReset;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 

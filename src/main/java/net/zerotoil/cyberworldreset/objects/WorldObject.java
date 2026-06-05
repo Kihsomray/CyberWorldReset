@@ -1,8 +1,6 @@
 package net.zerotoil.cyberworldreset.objects;
 
 import com.Zrips.CMI.CMI;
-import com.onarandombox.MultiverseNetherPortals.MultiverseNetherPortals;
-import com.onarandombox.MultiversePortals.MultiversePortals;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -958,5 +956,4 @@ public class WorldObject {
     public void setLastSaved(boolean lastSaved) {
         this.lastSaved = lastSaved;
     }
-
 }
