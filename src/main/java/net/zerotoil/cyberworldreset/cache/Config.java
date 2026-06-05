@@ -69,7 +69,7 @@ public class Config {
         if (loadingType.matches("(?i)ULTRA-SAFE")) loadingDelay = 15;
         timerLoadDelay = getLong("timer-load-delay", 10);
         worldResetDelay = getLong("world-reset-delay", 750);
-        loadRadius = Math.max(Math.max(Math.min(getInt("loading-radius", 5), 64), 1), main.getServer().getViewDistance());
+        loadRadius = Math.max(Math.min(getInt("loading-radius", 5), 64), 1);
 
         recursiveTeleportEnabled = getBoolean("recursive-teleporting.enabled", true);
         if (recursiveTeleportEnabled) recursiveTeleportMilliseconds = getLong("recursive-teleporting.milliseconds", 10);
