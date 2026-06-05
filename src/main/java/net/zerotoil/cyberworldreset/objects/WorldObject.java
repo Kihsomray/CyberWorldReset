@@ -160,18 +160,38 @@ public class WorldObject {
         // can the world unload?
         if (!Bukkit.unloadWorld(currentWorld, false)) return regenFail("unload-failed", sender);
 
-        // save before reset
-        if (main.config().isSaveWorldBeforeReset() && !zipSavedWorld(null, worldFolder, false)) return regenFail(null, null);
+        prepareResetFiles(sender, worldFolder, main.config().isSaveWorldBeforeReset());
+        return true;
+    }
 
-        // deletes old world files
-        try {
-            cachePaperWorldYml(worldFolder);
-            FileUtils.deleteDirectory(getWorldFolderForReset());
-        } catch (Exception e) {
-            return regenFail("file-delete-failed", sender);
-        }
+    private void prepareResetFiles(Player sender, File targetFolder, boolean saveBeforeReset) {
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            try {
+                cachePaperWorldYml(targetFolder);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        return regen2(sender);
+            if (saveBeforeReset) {
+                try {
+                    main.zipUtils().zip(worldName, targetFolder);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Bukkit.getScheduler().runTask(main, () -> regenFail("save-failed", sender));
+                    return;
+                }
+            }
+
+            try {
+                FileUtils.deleteDirectory(targetFolder);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getScheduler().runTask(main, () -> regenFail("file-delete-failed", sender));
+                return;
+            }
+
+            Bukkit.getScheduler().runTask(main, () -> regen2(sender));
+        });
     }
 
     // second process in the reset sequence
@@ -561,18 +581,24 @@ public class WorldObject {
 
     private boolean zipSavedWorld(Player player, File sourceFolder, boolean async) {
         if (async) {
-            Bukkit.getScheduler().runTaskAsynchronously(main, () -> zipSavedWorld(player, sourceFolder, false));
+            Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+                boolean saved = zipSavedWorld(player, sourceFolder, false);
+                Bukkit.getScheduler().runTask(main, () -> sendSaveResult(player, saved));
+            });
             return true;
         }
         try {
             main.zipUtils().zip(worldName, sourceFolder);
-            main.lang().getMsg("save-success").send(player, true, new String[]{"world"}, new String[]{worldName});
             return true;
         } catch (Exception e) {
-            main.lang().getMsg("save-failed").send(player, true, new String[]{"world"}, new String[]{worldName});
             e.printStackTrace();
             return false;
         }
+    }
+
+    private void sendSaveResult(Player player, boolean saved) {
+        String messageKey = saved ? "save-success" : "save-failed";
+        main.lang().getMsg(messageKey).send(player, true, new String[]{"world"}, new String[]{worldName});
     }
 
     public void rollbackWorld(Player player, WorldCreator finalWorld){
