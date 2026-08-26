@@ -22,7 +22,7 @@ public class CWRCommand implements CommandExecutor {
     public CWRCommand(CyberWorldReset main) {
         this.main = main;
         main.getCommand("cwr").setExecutor(this);
-        consoleCmds = Arrays.asList("about", "reload", "regen", "reset");
+        consoleCmds = Arrays.asList("about", "version", "reload", "regen", "reset");
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -112,15 +112,25 @@ public class CWRCommand implements CommandExecutor {
         return message;
     }
 
+    private void sendAbout(CommandSender sender) {
+        sender.sendMessage(main.langUtils().getColor("&b&lCyber&f&lWorldReset &fv" + main.getDescription().getVersion() + "&7.", false));
+        sender.sendMessage(main.langUtils().getColor("&7Server: &f" + main.getServer().getName() + " " + main.getServer().getBukkitVersion(), false));
+        sender.sendMessage(main.langUtils().getColor("&7Authors: &f" + main.getAuthors(), false));
+        sender.sendMessage(main.langUtils().getColor("&7Database: &ffalse", false));
+        sender.sendMessage(main.langUtils().getColor("&7World setups: &f" + main.worlds().getWorlds().size(), false));
+        sender.sendMessage(main.langUtils().getColor("&7Config: &fconfirmation " + main.config().isConfirmationEnabled() +
+                " / " + main.config().getConfirmationSeconds() + "s&7, &floading " +
+                main.config().getLoadingType() + " / radius " + main.config().getLoadRadius(), false));
+        sender.sendMessage(main.langUtils().getColor("&7Hooks: &fPlaceholderAPI " + main.isPlaceholderAPIEnabled() +
+                "&7, &fMultiverse " + main.isMultiverseEnabled() + " (" + main.getMultiverseVersion() + ")", false));
+    }
+
     private boolean argsLen1(CommandSender sender, Player player, String[] args) {
         if (args[0].matches("(?i)about|version")) {
 
             if (noPlayerPerm(player, "player.about")) return true;
 
-            sender.sendMessage(main.langUtils().getColor("&b&lCyber&f&lWorldReset &fv" + main.getDescription().getVersion() + " &7(&7&nhttps://bit.ly/2YSlqYq&7).", false));
-            sender.sendMessage(main.langUtils().getColor("&fDeveloped by &b" + main.getAuthors() + "&f.", false));
-            sender.sendMessage(main.langUtils().getColor("&7Easily regenerate worlds with little to no TPS drop. Simply set up a recursive", false));
-            sender.sendMessage(main.langUtils().getColor("&7timer or a specific time & date you want the world to reset, and you’re all set!", false));
+            sendAbout(sender);
             return true;
 
         }
