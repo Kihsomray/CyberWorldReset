@@ -62,12 +62,13 @@ public class WorldObject {
 
     // chunk loading cache
     private final long loadDelay;
-    private ArrayList<Integer> chunkInfo;
+    private Set<Integer> chunkInfo;
     private int xChunk;
     private int zChunk;
     private int chunkNumber;
     private int chunkCounter;
-    private Map<Long, List<Integer>> chunks;
+    private int[] chunkXOffsets;
+    private int[] chunkZOffsets;
 
     private boolean startingReset;
 
@@ -310,7 +311,7 @@ public class WorldObject {
         int width = radius * 2 + 1;
         int area = width * width;
         Random random = new Random();
-        chunkInfo = new ArrayList<>();
+        chunkInfo = new HashSet<>();
 
         int avgMsgInterval = (int) Math.round((random.nextInt(4) + 3) * (20.0 / loadDelay));
         long numMsg = (area - (area % avgMsgInterval)) / avgMsgInterval;
@@ -323,7 +324,6 @@ public class WorldObject {
         chunkNumber = 0;
         chunkCounter = 1;
         Bukkit.getLogger().info("The world is being loaded, please wait!");
-        chunks = new HashMap<>();
         getWorld().loadChunk(getWorld().getSpawnLocation().getChunk());
         startingReset = true;
         (new BukkitRunnable() {
@@ -332,28 +332,7 @@ public class WorldObject {
             public void run() {
                 printChunkInfo(width);
 
-                int z = 1;
-                chunks.put((long) z, Arrays.asList(xChunk, zChunk));
-                for (int i = 1; i <= radius; i++) {
-                    xChunk++;
-                    z++;
-                    chunks.put((long) z, Arrays.asList(xChunk, zChunk));
-                    for (int a = 1; a <= ((i * 2) - 1); a++) {
-                        zChunk--;
-                        z++;
-                        chunks.put((long) z, Arrays.asList(xChunk, zChunk));
-                    }
-                    int w = i * 2;
-                    for (int a = 1; a <= 3; a++) {
-                        for (int b = w; b > 0; b--) {
-                            if (a == 1) xChunk--;
-                            else if (a == 2) zChunk++;
-                            else xChunk++;
-                            z++;
-                            chunks.put((long) z, Arrays.asList(xChunk, zChunk));
-                        }
-                    }
-                }
+                cacheChunkOffsets(radius, area);
                 startingReset = false;
                 newChunkLoading(sender);
 
@@ -380,9 +359,8 @@ public class WorldObject {
             }
             chunkNumber++;
             if (chunkInfo.contains(chunkNumber)) printChunkInfo(width);
-            //main.logger(chunks.get((long) chunkCounter).get(0) + spawnX + " " + (chunks.get((long) chunkCounter).get(1) + spawnZ));
-            xChunk = chunks.get((long) chunkCounter).get(0) + spawnX;
-            zChunk = chunks.get((long) chunkCounter).get(1) + spawnZ;
+            xChunk = chunkXOffsets[chunkCounter] + spawnX;
+            zChunk = chunkZOffsets[chunkCounter] + spawnZ;
             //main.logger("pre: " + main.multiverse().getMVWorldManager().getMVWorld(getWorld()).isKeepingSpawnInMemory());
             if (main.getVersion() > 14) getWorld().getChunkAt(xChunk, zChunk).addPluginChunkTicket(main);
             else getWorld().loadChunk(xChunk, zChunk);
@@ -401,6 +379,44 @@ public class WorldObject {
 
         }).runTaskLater(main, loadDelay * Math.round(20/Lag.getLowerTPS()));
 
+    }
+
+    private void cacheChunkOffsets(int radius, int area) {
+        chunkXOffsets = new int[area + 1];
+        chunkZOffsets = new int[area + 1];
+
+        int index = 1;
+        int offsetX = 0;
+        int offsetZ = 0;
+        cacheChunkOffset(index, offsetX, offsetZ);
+
+        for (int i = 1; i <= radius; i++) {
+            offsetX++;
+            index++;
+            cacheChunkOffset(index, offsetX, offsetZ);
+
+            for (int a = 1; a <= ((i * 2) - 1); a++) {
+                offsetZ--;
+                index++;
+                cacheChunkOffset(index, offsetX, offsetZ);
+            }
+
+            int width = i * 2;
+            for (int a = 1; a <= 3; a++) {
+                for (int b = width; b > 0; b--) {
+                    if (a == 1) offsetX--;
+                    else if (a == 2) offsetZ++;
+                    else offsetX++;
+                    index++;
+                    cacheChunkOffset(index, offsetX, offsetZ);
+                }
+            }
+        }
+    }
+
+    private void cacheChunkOffset(int index, int offsetX, int offsetZ) {
+        chunkXOffsets[index] = offsetX;
+        chunkZOffsets[index] = offsetZ;
     }
 
     private void printChunkInfo(int width) {
@@ -532,6 +548,13 @@ public class WorldObject {
 
         main.lang().getMsg("regen-success").send(sender, true, new String[]{"world"}, new String[]{worldName});
         chunkNumber = 0;
+        clearChunkLoadingCache();
+    }
+
+    private void clearChunkLoadingCache() {
+        chunkInfo = null;
+        chunkXOffsets = null;
+        chunkZOffsets = null;
     }
 
     public void deleteWGRegions() {
