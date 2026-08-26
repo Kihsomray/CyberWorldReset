@@ -665,15 +665,21 @@ public class WorldObject {
         if (worldKey == null) return new WorldCreator(worldName);
         try {
             Class<?> keyClass = Class.forName("org.bukkit.NamespacedKey");
-            Method ofNameAndKey = WorldCreator.class.getMethod("ofNameAndKey", String.class, keyClass);
-            return (WorldCreator) ofNameAndKey.invoke(null, worldName, worldKey);
+            Method ofKey = WorldCreator.class.getMethod("ofKey", keyClass);
+            return (WorldCreator) ofKey.invoke(null, worldKey);
         } catch (Exception ignored) {
             try {
                 Class<?> keyClass = Class.forName("org.bukkit.NamespacedKey");
-                Constructor<WorldCreator> constructor = WorldCreator.class.getConstructor(String.class, keyClass);
-                return constructor.newInstance(worldName, worldKey);
+                Method ofNameAndKey = WorldCreator.class.getMethod("ofNameAndKey", String.class, keyClass);
+                return (WorldCreator) ofNameAndKey.invoke(null, worldName, worldKey);
             } catch (Exception ignoredAgain) {
-                return new WorldCreator(worldName);
+                try {
+                    Class<?> keyClass = Class.forName("org.bukkit.NamespacedKey");
+                    Constructor<WorldCreator> constructor = WorldCreator.class.getConstructor(String.class, keyClass);
+                    return constructor.newInstance(worldName, worldKey);
+                } catch (Exception ignoredLast) {
+                    return new WorldCreator(worldName);
+                }
             }
         }
     }
