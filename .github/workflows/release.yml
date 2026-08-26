@@ -32,25 +32,35 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
-      - name: Download build artifact
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build release jar
         shell: bash
         run: |
-          gh run download "${{ github.event.workflow_run.id }}" \
-            --repo "$GITHUB_REPOSITORY" \
-            --dir release-assets
+          set -euo pipefail
+          mvn -B -DskipTests package
 
-          mapfile -t JARS < <(find release-assets -type f -name "${PROJECT_NAME}-*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | sort)
-          RELEASE_JAR="${JARS[0]:-}"
+          VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          JAR_SOURCE="target/${PROJECT_NAME}-${VERSION}.jar"
 
-          if [ -z "$RELEASE_JAR" ] || [ ! -f "$RELEASE_JAR" ]; then
-            echo "Could not find ${PROJECT_NAME} jar in downloaded artifacts."
-            find release-assets -type f -print
+          if [ ! -f "$JAR_SOURCE" ]; then
+            JAR_SOURCE=$(find target -maxdepth 1 -type f -name "${PROJECT_NAME}-${VERSION}*.jar" ! -name "original-*" ! -name "*-sources.jar" ! -name "*-javadoc.jar" -print -quit)
+          fi
+
+          if [ -z "$JAR_SOURCE" ] || [ ! -f "$JAR_SOURCE" ]; then
+            echo "Could not find final ${PROJECT_NAME} jar in target/."
+            find target -maxdepth 1 -type f -name "*.jar" -print
             exit 1
           fi
 
-          BASENAME=$(basename "$RELEASE_JAR" .jar)
-          PREFIX="${PROJECT_NAME}-"
-          VERSION="${BASENAME#$PREFIX}"
+          mkdir -p release-assets
+          RELEASE_JAR="release-assets/${PROJECT_NAME}-${VERSION}.jar"
+          cp "$JAR_SOURCE" "$RELEASE_JAR"
 
           echo "RELEASE_JAR=$RELEASE_JAR" >> "$GITHUB_ENV"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"

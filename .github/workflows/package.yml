@@ -55,11 +55,3 @@ jobs:
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "path=$JAR_PATH" >> "$GITHUB_OUTPUT"
-
-      - name: Upload plugin jar
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.PROJECT_NAME }}-${{ steps.artifact.outputs.version }}
-          path: ${{ steps.artifact.outputs.path }}
-          if-no-files-found: error
-          retention-days: 7
