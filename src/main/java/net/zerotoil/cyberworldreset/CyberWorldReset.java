@@ -1,6 +1,7 @@
 package net.zerotoil.cyberworldreset;
 
 import com.sk89q.worldguard.WorldGuard;
+import me.croabeast.vnc.VNC;
 import net.zerotoil.cyberworldreset.addons.Metrics;
 import net.zerotoil.cyberworldreset.addons.PlaceholderAPI;
 import net.zerotoil.cyberworldreset.cache.*;
@@ -177,12 +178,9 @@ public final class CyberWorldReset extends JavaPlugin {
         worlds.cancelTimers();
     }
 
+    // Classic minor of the server (1.24 -> 24); drops such as 26.3 resolve through VNC.
     public int getVersion() {
-        String minecraftVersion = Bukkit.getBukkitVersion().split("-")[0];
-        String[] parts = minecraftVersion.split("\\.");
-        int major = Integer.parseInt(parts[0]);
-        if (major == 1 && parts.length > 1) return Integer.parseInt(parts[1]);
-        return major;
+        return (int) VNC.SERVER_VERSION;
     }
 
     public void addEvent() {

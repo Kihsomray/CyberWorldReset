@@ -1,7 +1,7 @@
 package net.zerotoil.cyberworldreset.addons.configupdater;
 
 import com.google.common.base.Preconditions;
-import org.bukkit.Bukkit;
+import me.croabeast.vnc.VNC;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,11 +41,7 @@ public class ConfigUpdater {
     }
 
     private static int getVersion() {
-        String minecraftVersion = Bukkit.getBukkitVersion().split("-")[0];
-        String[] parts = minecraftVersion.split("\\.");
-        int major = Integer.parseInt(parts[0]);
-        if (major == 1 && parts.length > 1) return Integer.parseInt(parts[1]);
-        return major;
+        return (int) VNC.SERVER_VERSION;
     }
 
     private static String replace(String string) {
